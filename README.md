@@ -85,6 +85,8 @@ The server listens on port 6989 by default. You can modify this behavior using e
 -   `ENCRYPTION_KEY`: Encryption key for passwords, SSH keys and passphrases. Supports Docker secrets via /run/secrets/encryption_key`
 -   `AI_SYSTEM_PROMPT`: System prompt for AI features (example: You are a Linux command generator assistant.)
 -   `LOG_LEVEL`: Logging level for application and guacd (system/info/verbose/debug/warn/error, default: system)
+-   `STRICT_TLS`: Enforce TLS certificate validation for outbound integrations like Proxmox and LDAP (default: true)
+-   `ENABLE_SOURCE_SYNC`: Enable automatic external source synchronization and default official source creation (default: false)
 
 ## 🛡️ Security
 

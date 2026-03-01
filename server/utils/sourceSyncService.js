@@ -1,10 +1,16 @@
 const { syncAllSources, ensureDefaultSource } = require("../controllers/source");
 const logger = require("./logger");
+const { isSourceSyncEnabled } = require("./security");
 
 let syncInterval = null;
 const SYNC_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 
 const startSourceSyncService = async () => {
+    if (!isSourceSyncEnabled()) {
+        logger.system("Source sync service is disabled (ENABLE_SOURCE_SYNC=false)");
+        return;
+    }
+
     logger.system("Starting source sync service (hourly interval)");
 
     try {

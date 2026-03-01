@@ -13,6 +13,7 @@ const Integration = require("../models/Integration");
 const { resolveIdentity } = require("../utils/identityResolver");
 const { getScript } = require("../controllers/script");
 const OrganizationMember = require("../models/OrganizationMember");
+const { isStrictTlsEnabled } = require("../utils/security");
 
 async function createConnectionForSession(sessionId, accountId) {
     const session = SessionManager.get(sessionId);
@@ -168,7 +169,7 @@ async function createPveLxcConnectionForSession(sessionId, entry, organizationId
         const lxcSocket = new WebSocket(
             `wss://${server.ip}:${server.port}/api2/json/nodes/${node}/${containerPart}/vncwebsocket?port=${vncTicket.port}&vncticket=${encodeURIComponent(vncTicket.ticket)}`,
             undefined,
-            { rejectUnauthorized: false, headers: { "Cookie": `PVEAuthCookie=${ticket.ticket}` } }
+            { rejectUnauthorized: isStrictTlsEnabled(), headers: { "Cookie": `PVEAuthCookie=${ticket.ticket}` } }
         );
 
         const timeout = setTimeout(() => { lxcSocket.close(); reject(new Error("PVE LXC timeout")); }, 30000);

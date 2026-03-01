@@ -6,11 +6,12 @@ const Session = require("../models/Session");
 const { genSalt, hash } = require("bcrypt");
 const crypto = require("crypto");
 const logger = require("../utils/logger");
+const { getLdapTlsOptions } = require("../utils/security");
 
 const createLdapClient = (provider) => {
     const url = `${provider.useTLS ? "ldaps" : "ldap"}://${provider.host}:${provider.port}`;
     const options = { url };
-    if (provider.useTLS) options.tlsOptions = { rejectUnauthorized: false };
+    if (provider.useTLS) options.tlsOptions = getLdapTlsOptions();
     return new Client(options);
 };
 

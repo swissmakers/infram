@@ -1,9 +1,11 @@
 const axios = require("axios");
-const { Agent } = require("https");
 const { createTicket, getNodeForServer } = require("../../controllers/pve");
 const Integration = require("../../models/Integration");
 const Credential = require("../../models/Credential");
 const logger = require("../../utils/logger");
+const { createHttpsAgent } = require("../../utils/security");
+
+const httpsAgent = createHttpsAgent();
 
 const checkPVEStatus = async (entry) => {
     try {
@@ -48,7 +50,7 @@ const checkPVEStatus = async (entry) => {
             const nodeUrl = `https://${config.ip}:${config.port}/api2/json/nodes/${node}/status`;
             const nodeResponse = await axios.get(nodeUrl, {
                 timeout: 3000,
-                httpsAgent: new Agent({ rejectUnauthorized: false }),
+                httpsAgent,
                 headers: {
                     Cookie: `PVEAuthCookie=${ticket.ticket}`,
                 },
@@ -75,7 +77,7 @@ const checkPVEStatus = async (entry) => {
         const statusUrl = `https://${config.ip}:${config.port}/api2/json/nodes/${node}/${resourceType}/${vmid}/status/current`;
         const response = await axios.get(statusUrl, {
             timeout: 3000,
-            httpsAgent: new Agent({ rejectUnauthorized: false }),
+            httpsAgent,
             headers: {
                 Cookie: `PVEAuthCookie=${ticket.ticket}`,
             },

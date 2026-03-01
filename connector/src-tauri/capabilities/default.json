@@ -19,8 +19,9 @@
     {
       "identifier": "http:default",
       "allow": [
-        "http://*:*",
-        "https://*:*"
+        "https://*:*",
+        "http://localhost:*",
+        "http://127.0.0.1:*"
       ]
     },
     "dialog:allow-save",

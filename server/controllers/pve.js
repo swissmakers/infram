@@ -1,7 +1,8 @@
 const logger = require("../utils/logger");
 const axios = require("axios");
-const https = require("https");
-const { Agent } = require("https");
+const { createHttpsAgent } = require("../utils/security");
+
+const httpsAgent = createHttpsAgent();
 
 module.exports.createTicket = async (server = { ip: "", port: 0 }, username, password) => {
     const data = await axios.post(`https://${server.ip}:${server.port}/api2/json/access/ticket`, {
@@ -9,7 +10,7 @@ module.exports.createTicket = async (server = { ip: "", port: 0 }, username, pas
         password: password,
     }, {
         timeout: 3000,
-        httpsAgent: new Agent({ rejectUnauthorized: false }),
+        httpsAgent,
     });
 
     return data.data.data;
@@ -17,7 +18,7 @@ module.exports.createTicket = async (server = { ip: "", port: 0 }, username, pas
 
 module.exports.getAllNodes = async (server = { ip: "", port: 0 }, ticket) => {
     const response = await axios.get(`https://${server.ip}:${server.port}/api2/json/nodes`, {
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent,
         headers: {
             Cookie: `PVEAuthCookie=${ticket.ticket}`,
         },
@@ -30,7 +31,7 @@ module.exports.openLXCConsole = async (server = { ip: "", port: 0 }, node, vmid,
     const containerPart = vmid === 0 || vmid === "0" ? "" : `lxc/${vmid}`;
 
     const response = await axios.post(`https://${server.ip}:${server.port}/api2/json/nodes/${node}/${containerPart}/termproxy`, {}, {
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent,
         headers: {
             Cookie: `PVEAuthCookie=${ticket.ticket}`,
             CSRFPreventionToken: ticket.CSRFPreventionToken,
@@ -42,7 +43,7 @@ module.exports.openLXCConsole = async (server = { ip: "", port: 0 }, node, vmid,
 
 module.exports.openVNCConsole = async (server = { ip: "", port: 0 }, node, vmId, ticket) => {
     const response = await axios.post(`https://${server.ip}:${server.port}/api2/json/nodes/${node}/qemu/${vmId}/vncproxy`, { websocket: 0 }, {
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent,
         headers: {
             Cookie: `PVEAuthCookie=${ticket.ticket}`,
             CSRFPreventionToken: ticket.CSRFPreventionToken,
@@ -68,7 +69,7 @@ module.exports.startPVEServer = async (server = { ip: "", port: 0, username: "",
     const node = await this.getNodeForServer(server, ticket);
 
     const response = await axios.post(`https://${server.ip}:${server.port}/api2/json/nodes/${node}/${type}/${vmId}/status/start`, {}, {
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent,
         headers: {
             Cookie: `PVEAuthCookie=${ticket.ticket}`,
             CSRFPreventionToken: ticket.CSRFPreventionToken,
@@ -83,7 +84,7 @@ module.exports.stopPVEServer = async (server = { ip: "", port: 0, username: "", 
     const node = await this.getNodeForServer(server, ticket);
 
     const response = await axios.post(`https://${server.ip}:${server.port}/api2/json/nodes/${node}/${type}/${vmId}/status/stop`, {}, {
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent,
         headers: {
             Cookie: `PVEAuthCookie=${ticket.ticket}`,
             CSRFPreventionToken: ticket.CSRFPreventionToken,
@@ -98,7 +99,7 @@ module.exports.shutdownPVEServer = async (server = { ip: "", port: 0, username: 
     const node = await this.getNodeForServer(server, ticket);
 
     const response = await axios.post(`https://${server.ip}:${server.port}/api2/json/nodes/${node}/${type}/${vmId}/status/shutdown`, {}, {
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent,
         headers: {
             Cookie: `PVEAuthCookie=${ticket.ticket}`,
             CSRFPreventionToken: ticket.CSRFPreventionToken,
@@ -110,7 +111,7 @@ module.exports.shutdownPVEServer = async (server = { ip: "", port: 0, username: 
 
 module.exports.getNodeResources = async (server = { ip: "", port: 0, username: "", password: "" }, nodeName, ticket) => {
     const response = await axios.get(`https://${server.ip}:${server.port}/api2/json/nodes/${nodeName}/qemu`, {
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent,
         headers: {
             Cookie: `PVEAuthCookie=${ticket.ticket}`,
         },
@@ -119,7 +120,7 @@ module.exports.getNodeResources = async (server = { ip: "", port: 0, username: "
     const qemuVMs = response.data.data || [];
 
     const lxcResponse = await axios.get(`https://${server.ip}:${server.port}/api2/json/nodes/${nodeName}/lxc`, {
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        httpsAgent,
         headers: {
             Cookie: `PVEAuthCookie=${ticket.ticket}`,
         },

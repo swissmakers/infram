@@ -5,14 +5,14 @@ const MonitoringData = require("../models/MonitoringData");
 const MonitoringSnapshot = require("../models/MonitoringSnapshot");
 const { Op } = require("sequelize");
 const axios = require("axios");
-const https = require("https");
 const { getMonitoringSettingsInternal } = require("../controllers/monitoring");
+const { createHttpsAgent } = require("./security");
 
 let monitoringInterval = null;
 let isRunning = false;
 let currentSettings = null;
 
-const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+const httpsAgent = createHttpsAgent();
 
 const start = async () => {
     if (isRunning) return;
