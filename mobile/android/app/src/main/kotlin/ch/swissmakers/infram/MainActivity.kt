@@ -1,4 +1,4 @@
-package dev.gnm.nexterm
+package ch.swissmakers.infram
 
 import io.flutter.embedding.android.FlutterActivity
 

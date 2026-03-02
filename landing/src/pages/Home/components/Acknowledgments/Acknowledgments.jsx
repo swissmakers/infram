@@ -19,7 +19,7 @@ export const Acknowledgments = () => {
                     </a>
                     project, whose clientless remote desktop gateway powers our core connectivity,
                     and all the amazing
-                    <a href="https://github.com/gnmyt/Nexterm/graphs/contributors" target="_blank" rel="noopener noreferrer">
+                    <a href="https://github.com/swissmakers/infra-manager/graphs/contributors" target="_blank" rel="noopener noreferrer">
                         Nexterm contributors
                     </a>
                     who help make this project better every day.

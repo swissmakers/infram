@@ -13,7 +13,7 @@ the project.
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/gnmyt/Nexterm.git
+    git clone https://github.com/swissmakers/infra-manager.git
     ```
 2. Install the dependencies for the server:
     ```sh
@@ -39,7 +39,7 @@ at [http://127.0.0.1:5173](http://127.0.0.1:5173).
 ## 🤝 Contributing
 
 1. **Fork the repository**: Click the "Fork" button at the top right of
-   the [repository page](https://github.com/gnmyt/Nexterm).
+   the [repository page](https://github.com/swissmakers/infra-manager).
 2. **Create a new branch**:
     ```sh
     git checkout -b feature/my-new-feature

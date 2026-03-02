@@ -5,7 +5,7 @@ import {faGithub, faDiscord} from "@fortawesome/free-brands-svg-icons";
 import {Link, useLocation} from "react-router-dom";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {useState, useEffect} from "react";
-import {DOCUMENTATION_BASE, GITHUB_LINK, DISCORD_LINK} from "@/main.jsx";
+import {DOCUMENTATION_BASE, GITHUB_LINK, WEBSITE_LINK} from "@/main.jsx";
 
 export const Navigation = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -46,8 +46,8 @@ export const Navigation = () => {
                 </div>
 
                 <div className="nav-actions">
-                    <a href={DISCORD_LINK} target="_blank" rel="noopener noreferrer" className="discord-link">
-                        <FontAwesomeIcon icon={faDiscord}/>
+                    <a href={WEBSITE_LINK} target="_blank" rel="noopener noreferrer" className="discord-link">
+                        <FontAwesomeIcon icon={faWebsite}/>
                     </a>
                     <a href={GITHUB_LINK} target="_blank" rel="noopener noreferrer" className="github-link">
                         <FontAwesomeIcon icon={faGithub}/>
@@ -76,7 +76,7 @@ export const Navigation = () => {
                             Docs
                             <FontAwesomeIcon icon={faArrowUpRightFromSquare}/>
                         </a>
-                        <a href={DISCORD_LINK} target="_blank" rel="noopener noreferrer">Discord</a>
+                        <a href={WEBSITE_LINK} target="_blank" rel="noopener noreferrer">Website</a>
                         <a href={GITHUB_LINK} target="_blank" rel="noopener noreferrer">GitHub</a>
                     </div>
                 </div>

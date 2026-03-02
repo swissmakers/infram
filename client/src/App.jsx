@@ -25,7 +25,7 @@ const Share = lazy(() => import("@/pages/Share"));
 const Tunnel = lazy(() => import("@/pages/Tunnel"));
 const Link = lazy(() => import("@/pages/Link"));
 
-export const GITHUB_URL = "https://github.com/gnmyt/Nexterm";
+export const GITHUB_URL = "https://github.com/swissmakers/infra-manager";
 export const DISCORD_URL = "https://dc.gnm.dev/";
 
 const App = () => {

@@ -97,8 +97,8 @@ export default defineConfig({
         ],
 
         socialLinks: [
-            { icon: "github", link: "https://github.com/gnmyt/Nexterm" },
-            { icon: "discord", link: "https://dc.gnmyt.dev" },
+            { icon: "github", link: "https://github.com/swissmakers/infra-manager" },
+            { icon: "website", link: "https://swissmakers.ch" },
         ],
     },
 });

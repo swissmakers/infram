@@ -2,7 +2,7 @@
 
 
 
-# 📝 Scripts & Snippets
+# Scripts & Snippets
 
 Nexterm uses file extensions to distinguish scripts from snippets, not folder structure. This means you can organize your repository however you like.
 

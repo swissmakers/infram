@@ -1,7 +1,7 @@
 # 🚀 Installation
 
 > [!WARNING]
-> Nexterm is still in beta. Please back up your data regularly and report any issues on [GitHub](https://github.com/gnmyt/Nexterm/issues).
+> Nexterm is still in beta. Please back up your data regularly and report any issues on [GitHub](https://github.com/swissmakers/infra-manager/issues).
 
 ## 🔐 Generate Encryption Key
 

@@ -3,7 +3,7 @@ import "./styles.sass";
 import Logo from "@/common/assets/logo.png";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faGithub, faDiscord} from "@fortawesome/free-brands-svg-icons";
-import {DOCUMENTATION_BASE, GITHUB_LINK, DISCORD_LINK} from "@/main.jsx";
+import {DOCUMENTATION_BASE, GITHUB_LINK, WEBSITE_LINK} from "@/main.jsx";
 
 export const Footer = () => {
     return (
@@ -36,8 +36,8 @@ export const Footer = () => {
                         <a href={GITHUB_LINK} target="_blank" rel="noopener noreferrer">
                             <FontAwesomeIcon icon={faGithub}/> GitHub
                         </a>
-                        <a href={DISCORD_LINK} target="_blank" rel="noopener noreferrer">
-                            <FontAwesomeIcon icon={faDiscord}/> Discord
+                        <a href={WEBSITE_LINK} target="_blank" rel="noopener noreferrer">
+                            <FontAwesomeIcon icon={faWebsite}/> Website
                         </a>
                     </div>
                 </div>

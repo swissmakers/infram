@@ -25,8 +25,8 @@ const router = createBrowserRouter([
 ]);
 
 export const DOCUMENTATION_BASE = "https://docs.nexterm.dev";
-export const GITHUB_LINK = "https://github.com/gnmyt/Nexterm";
-export const DISCORD_LINK = "https://dc.gnmyt.dev";
+export const GITHUB_LINK = "https://github.com/swissmakers/infra-manager";
+export const WEBSITE_LINK = "https://swissmakers.ch";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>

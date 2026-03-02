@@ -14,7 +14,7 @@ hero:
       link: /screenshots
     - theme: alt
       text: GitHub
-      link: https://github.com/gnmyt/Nexterm
+      link: https://github.com/swissmakers/infra-manager
   image:
     src: /logo.png
     alt: MySpeed

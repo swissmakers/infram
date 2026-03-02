@@ -6,7 +6,7 @@ import {faWindows, faApple, faLinux, faAndroid} from "@fortawesome/free-brands-s
 import Footer from "@/pages/Home/components/Footer";
 import {Link} from "react-router-dom";
 
-const GITHUB_API = "https://api.github.com/repos/gnmyt/Nexterm/releases/latest";
+const GITHUB_API = "https://api.github.com/repos/swissmakers/infra-manager/releases/latest";
 
 const platforms = [
     {

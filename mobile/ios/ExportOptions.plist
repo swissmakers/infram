@@ -14,7 +14,7 @@
     <string>manual</string>
     <key>provisioningProfiles</key>
     <dict>
-        <key>dev.gnm.nexterm</key>
+        <key>ch.swissmakers.infram</key>
         <string>Nexterm Distribution</string>
     </dict>
 </dict>

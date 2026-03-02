@@ -5,7 +5,7 @@ import {faTag, faCalendar, faArrowUpRightFromSquare, faSpinner, faCircleExclamat
 import {faGithub} from "@fortawesome/free-brands-svg-icons";
 import Footer from "@/pages/Home/components/Footer";
 
-const GITHUB_API = "https://api.github.com/repos/gnmyt/Nexterm/releases";
+const GITHUB_API = "https://api.github.com/repos/swissmakers/infra-manager/releases";
 const PER_PAGE = 5;
 
 const parseChangelog = (body) => {

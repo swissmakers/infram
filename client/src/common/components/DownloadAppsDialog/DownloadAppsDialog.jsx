@@ -40,7 +40,7 @@ const PLATFORMS = [
         icon: mdiAndroid,
         useVersionInFilename: true,
         downloads: [
-            { label: "Google Play", arch: "Recommended", url: "https://play.google.com/store/apps/details?id=dev.gnm.nexterm", icon: mdiGooglePlay },
+            { label: "Google Play", arch: "Recommended", url: "https://play.google.com/store/apps/details?id=ch.swissmakers.infram", icon: mdiGooglePlay },
             { label: "APK", arch: "Universal", file: "universal" },
             { label: "APK", arch: "ARM64", file: "arm64-v8a" },
             { label: "APK", arch: "ARM32", file: "armeabi-v7a" },

@@ -4,7 +4,7 @@ version = "1.2.0"
 description = "The open source server management software for SSH, VNC & RDP"
 authors = ["Mathias Wagner"]
 license = "MIT"
-repository = "https://github.com/gnmyt/Nexterm"
+repository = "https://github.com/swissmakers/infra-manager"
 edition = "2021"
 rust-version = "1.77.2"
 
