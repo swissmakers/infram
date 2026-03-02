@@ -1,9 +1,9 @@
 {
-  "name": "nexterm",
-  "version": "1.2.0-BETA",
+  "name": "infram",
+  "version": "1.2.1",
   "main": "server/index.js",
-  "repository": "https://github.com/gnmyt/Nexterm.git",
-  "author": "Mathias Wagner",
+  "repository": "https://github.com/swissmakers/infra-manager.git",
+  "author": "Swissmakers GmbH",
   "license": "MIT",
   "dependencies": {
     "@simplewebauthn/server": "^13.2.2",
