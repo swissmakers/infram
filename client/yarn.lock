@@ -954,10 +954,10 @@ arraybuffer.prototype.slice@^1.0.4:
     get-intrinsic "^1.2.6"
     is-array-buffer "^3.0.4"
 
-asciinema-player@^3.15.0:
-  version "3.15.0"
-  resolved "https://registry.yarnpkg.com/asciinema-player/-/asciinema-player-3.15.0.tgz#6e9c10841a9d3086ed268ceeff525305d5558abd"
-  integrity sha512-w21VF7G9uNvs9GEkaWcLSrGJRXEF0DoGuvsaRf2rgGqTc5foZ7QD7DfrmiQbfkugEdMJMq2FWNEY58yTcaLtPQ==
+asciinema-player@^3.15.1:
+  version "3.15.1"
+  resolved "https://registry.yarnpkg.com/asciinema-player/-/asciinema-player-3.15.1.tgz#3facad2782330f4c843f9fdbbf339be405d0bfea"
+  integrity sha512-agVYeNlPxthLyAb92l9AS7ypW0uhesqOuQzyR58Q4Sj+MvesQztZBgx86lHqNJkB8rQ6EP0LeA9czGytQUBpYw==
   dependencies:
     "@babel/runtime" "^7.21.0"
     solid-js "^1.3.0"
@@ -1774,10 +1774,10 @@ i18next-http-backend@^3.0.2:
   dependencies:
     cross-fetch "4.0.0"
 
-i18next@^25.8.13:
-  version "25.8.13"
-  resolved "https://registry.yarnpkg.com/i18next/-/i18next-25.8.13.tgz#1f9df59329f1706f02b2b58b5d1f75196ddb6e4a"
-  integrity sha512-E0vzjBY1yM+nsFrtgkjLhST2NBkirkvOVoQa0MSldhsuZ3jUge7ZNpuwG0Cfc74zwo5ZwRzg3uOgT+McBn32iA==
+i18next@^25.8.14:
+  version "25.8.14"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-25.8.14.tgz#5c3fcbb31014597e01d98a86250803cef836f9a7"
+  integrity sha512-paMUYkfWJMsWPeE/Hejcw+XLhHrQPehem+4wMo+uELnvIwvCG019L9sAIljwjCmEMtFQQO3YeitJY8Kctei3iA==
   dependencies:
     "@babel/runtime" "^7.28.4"
 
@@ -2373,10 +2373,10 @@ react-dom@^19.2.4:
   dependencies:
     scheduler "^0.27.0"
 
-react-i18next@^16.5.4:
-  version "16.5.4"
-  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-16.5.4.tgz#4f458b1baab274dca439ab67629c854203bf97c6"
-  integrity sha512-6yj+dcfMncEC21QPhOTsW8mOSO+pzFmT6uvU7XXdvM/Cp38zJkmTeMeKmTrmCMD5ToT79FmiE/mRWiYWcJYW4g==
+react-i18next@^16.5.5:
+  version "16.5.5"
+  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-16.5.5.tgz#902396cf2f6d7969496ae4f20a3cea8a3e20491e"
+  integrity sha512-5Z35e2JMALNR16FK/LDNQoAatQTVuO/4m4uHrIzewOPXIyf75gAHzuNLSWwmj5lRDJxDvXRJDECThkxWSAReng==
   dependencies:
     "@babel/runtime" "^7.28.4"
     html-parse-stringify "^3.0.1"
