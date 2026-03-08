@@ -13,7 +13,7 @@ export const GetStarted = () => {
                 <div className="cta-glow"/>
                 <div className="cta-content">
                     <h2>Ready to get started?</h2>
-                    <p>Deploy Nexterm in minutes. Free, open-source, and self-hosted.</p>
+                    <p>Deploy Infram in minutes. Free, open-source, and self-hosted.</p>
                     
                     <div className="cta-actions">
                         <button className="cta-primary" onClick={() => navigate("/install")}>

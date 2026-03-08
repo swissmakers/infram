@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: Nexterm
+  name: Infram
   text: Server management
   tagline: The open source server management software for SSH, VNC & RDP
   actions:
@@ -28,7 +28,7 @@ features:
     details: Two-factor authentication, session management and encryption built-in.
   - icon: 📁
     title: Structured
-    details: Nexterm is structured into folders and tabs for easy navigation.
+    details: Infram is structured into folders and tabs for easy navigation.
   - icon: 🏢
     title: Organizations
     details: Seamlessly share server access with your team members.

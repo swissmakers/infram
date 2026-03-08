@@ -1,0 +1,1 @@
+export { InframLogo as default } from "./InframLogo";

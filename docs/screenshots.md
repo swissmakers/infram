@@ -1,6 +1,6 @@
 # Screenshots
 
-Take a look at what Nexterm has to offer.
+Take a look at what Infram has to offer.
 
 ## Servers
 
@@ -40,6 +40,6 @@ Record and replay terminal sessions for documentation or debugging.
 
 ## Settings
 
-Customize Nexterm to fit your workflow.
+Customize Infram to fit your workflow.
 
 ![Settings](/assets/showoff/settings.png)

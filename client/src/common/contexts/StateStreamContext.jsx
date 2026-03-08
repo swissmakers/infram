@@ -6,7 +6,7 @@ import { isTauri } from "@/common/utils/TauriUtil.js";
 export const StateStreamContext = createContext({});
 export { STATE_TYPES };
 
-const popoutChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("nexterm_popout") : null;
+const popoutChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("infram_popout") : null;
 const stateTypes = Object.values(STATE_TYPES).filter(t => t !== "LOGOUT");
 
 const forceLogoutClient = async () => {

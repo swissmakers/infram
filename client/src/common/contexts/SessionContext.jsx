@@ -4,7 +4,7 @@ import { isTauri } from "@/common/utils/TauriUtil.js";
 export const SessionContext = createContext({});
 export const useActiveSessions = () => useContext(SessionContext);
 
-const channel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("nexterm_popout") : null;
+const channel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("infram_popout") : null;
 
 export const SessionProvider = ({ children }) => {
     const [activeSessions, setActiveSessions] = useState([]);
@@ -26,7 +26,7 @@ export const SessionProvider = ({ children }) => {
                 console.error("Failed to open popout window:", e);
             }
         } else {
-            window.open(`/popout/${id}`, `nexterm_popout_${id}`, "width=1024,height=768,menubar=no,toolbar=no,location=no,status=no")?.focus();
+            window.open(`/popout/${id}`, `infram_popout_${id}`, "width=1024,height=768,menubar=no,toolbar=no,location=no,status=no")?.focus();
         }
     }, [activeSessionId, activeSessions, poppedOutSessions]);
 

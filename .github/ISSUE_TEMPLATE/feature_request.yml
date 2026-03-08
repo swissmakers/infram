@@ -8,7 +8,7 @@ body:
       label: General
       description: Please confirm the following statements
       options:
-        - label: My feature does not exist in the latest version of Nexterm.
+        - label: My feature does not exist in the latest version of Infram.
           required: true
         - label: I have checked that my feature has not been suggested by anyone else.
           required: true

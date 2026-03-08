@@ -8,12 +8,12 @@ let cachedUserAgent = null;
 
 const getTauriUserAgent = async () => {
     if (cachedUserAgent) return cachedUserAgent;
-    if (!isTauri()) return "NextermConnector/1.0.0";
+    if (!isTauri()) return "InframConnector/1.0.0";
     try {
         cachedUserAgent = await invoke("get_user_agent");
         return cachedUserAgent;
     } catch {
-        return "NextermConnector/1.0.0";
+        return "InframConnector/1.0.0";
     }
 };
 

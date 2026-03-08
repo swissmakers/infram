@@ -7,7 +7,7 @@ const app = express.Router();
 /**
  * GET /service/is-fts
  * @summary Check Status
- * @description Determines if the Nexterm server requires initial setup. This endpoint is used during the first-time setup process to check if the server has been configured with initial user accounts and settings.
+ * @description Determines if the Infram server requires initial setup. This endpoint is used during the first-time setup process to check if the server has been configured with initial user accounts and settings.
  * @tags Service
  * @produces application/json
  * @return {boolean} 200 - First Time Setup status information
@@ -21,7 +21,7 @@ app.get("/is-fts", (req, res) => {
 /**
  * GET /service/version
  * @summary Get Version
- * @description Returns the current Nexterm server version.
+ * @description Returns the current Infram server version.
  * @tags Service
  * @produces application/json
  * @return {object} 200 - Version information

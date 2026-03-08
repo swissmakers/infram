@@ -1,10 +1,10 @@
-export const registerNextermLanguage = (monaco) => {
-    const isRegistered = monaco.languages.getLanguages().some(lang => lang.id === "nexterm");
+export const registerInframLanguage = (monaco) => {
+    const isRegistered = monaco.languages.getLanguages().some(lang => lang.id === "infram");
     if (!isRegistered) {
-        monaco.languages.register({ id: "nexterm" });
+        monaco.languages.register({ id: "infram" });
     }
 
-    monaco.languages.setLanguageConfiguration("nexterm", {
+    monaco.languages.setLanguageConfiguration("infram", {
         comments: {
             lineComment: "#",
             blockComment: [": <<'COMMENT'", "COMMENT"],
@@ -50,9 +50,9 @@ export const registerNextermLanguage = (monaco) => {
         ],
     });
 
-    monaco.languages.setMonarchTokensProvider("nexterm", {
+    monaco.languages.setMonarchTokensProvider("infram", {
         defaultToken: "",
-        tokenPostfix: ".nexterm",
+        tokenPostfix: ".infram",
         ignoreCase: false,
 
         keywords: [
@@ -79,7 +79,7 @@ export const registerNextermLanguage = (monaco) => {
             "true", "false", "sleep", "wait", "exec", "eval",
         ],
 
-        nextermCommands: [
+        inframCommands: [
             "STEP", "INPUT", "SELECT", "CONFIRM",
             "INFO", "SUCCESS", "WARN", "ERROR",
             "PROGRESS", "SUMMARY", "TABLE", "MSGBOX",
@@ -98,8 +98,8 @@ export const registerNextermLanguage = (monaco) => {
                 [/[ \t\r\n]+/, "white"],
                 [/\\$/, "constant.character.escape"],
 
-                [/@@NEXTERM:(STEP|INPUT|SELECT|CONFIRM|INFO|SUCCESS|WARN|ERROR|PROGRESS|SUMMARY|TABLE|MSGBOX)\b/, "keyword.control.nexterm"],
-                [/@@NEXTERM:[A-Z]+/, "invalid.nexterm"],
+                [/@@INFRAM:(STEP|INPUT|SELECT|CONFIRM|INFO|SUCCESS|WARN|ERROR|PROGRESS|SUMMARY|TABLE|MSGBOX)\b/, "keyword.control.infram"],
+                [/@@INFRAM:[A-Z]+/, "invalid.infram"],
 
                 [/#.*$/, "comment"],
 
@@ -167,12 +167,12 @@ export const registerNextermLanguage = (monaco) => {
         },
     });
 
-    monaco.editor.defineTheme("nexterm-dark", {
+    monaco.editor.defineTheme("infram-dark", {
         base: "vs-dark",
         inherit: true,
         rules: [
-            { token: "keyword.control.nexterm", foreground: "FF6B9D", fontStyle: "bold" },
-            { token: "invalid.nexterm", foreground: "FF0000", fontStyle: "bold underline" },
+            { token: "keyword.control.infram", foreground: "FF6B9D", fontStyle: "bold" },
+            { token: "invalid.infram", foreground: "FF0000", fontStyle: "bold underline" },
 
             { token: "variable.other", foreground: "4EC9B0", fontStyle: "italic" },
             { token: "variable.other.bracket", foreground: "4EC9B0", fontStyle: "bold italic" },
@@ -211,12 +211,12 @@ export const registerNextermLanguage = (monaco) => {
         },
     });
 
-    monaco.editor.defineTheme("nexterm-light", {
+    monaco.editor.defineTheme("infram-light", {
         base: "vs",
         inherit: true,
         rules: [
-            { token: "keyword.control.nexterm", foreground: "D73A49", fontStyle: "bold" },
-            { token: "invalid.nexterm", foreground: "FF0000", fontStyle: "bold underline" },
+            { token: "keyword.control.infram", foreground: "D73A49", fontStyle: "bold" },
+            { token: "invalid.infram", foreground: "FF0000", fontStyle: "bold underline" },
 
             { token: "variable.other", foreground: "0070C1", fontStyle: "italic" },
             { token: "variable.other.bracket", foreground: "0070C1", fontStyle: "bold italic" },
@@ -255,150 +255,150 @@ export const registerNextermLanguage = (monaco) => {
         },
     });
 
-    const nextermCommands = [
+    const inframCommands = [
         {
-            label: "@NEXTERM:STEP",
+            label: "@INFRAM:STEP",
             kind: monaco.languages.CompletionItemKind.Function,
             detail: "Define a step in the script execution",
             documentation: {
-                value: "**@NEXTERM:STEP** - Display a step indicator\n\nBreaks down the script into logical phases with a visual step indicator.\n\n**Syntax:**\n```bash\n@NEXTERM:STEP \"description\"\n```\n\n**Example:**\n```bash\n@NEXTERM:STEP \"Installing dependencies\"\napt-get update && apt-get install -y nginx\n\n@NEXTERM:STEP \"Configuring service\"\ncp /tmp/nginx.conf /etc/nginx/nginx.conf\n```\n\n**Use Cases:**\n- Multi-step installation processes\n- Complex deployment workflows\n- Progress tracking for long scripts",
+                value: "**@INFRAM:STEP** - Display a step indicator\n\nBreaks down the script into logical phases with a visual step indicator.\n\n**Syntax:**\n```bash\n@INFRAM:STEP \"description\"\n```\n\n**Example:**\n```bash\n@INFRAM:STEP \"Installing dependencies\"\napt-get update && apt-get install -y nginx\n\n@INFRAM:STEP \"Configuring service\"\ncp /tmp/nginx.conf /etc/nginx/nginx.conf\n```\n\n**Use Cases:**\n- Multi-step installation processes\n- Complex deployment workflows\n- Progress tracking for long scripts",
             },
-            insertText: "@NEXTERM:STEP \"${1:Step description}\"",
+            insertText: "@INFRAM:STEP \"${1:Step description}\"",
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
             sortText: "00_STEP",
-            filterText: "@NEXTERM:STEP NEXTERM STEP",
+            filterText: "@INFRAM:STEP INFRAM STEP",
         },
         {
-            label: "@NEXTERM:INPUT",
+            label: "@INFRAM:INPUT",
             kind: monaco.languages.CompletionItemKind.Function,
             detail: "Request user input and store in variable",
             documentation: {
-                value: "**@NEXTERM:INPUT** - Prompt user for input\n\nDisplays an input dialog and stores the user's response in a variable.\n\n**Syntax:**\n```bash\n@NEXTERM:INPUT VARIABLE_NAME \"prompt\" \"default_value\"\n```\n\n**Example:**\n```bash\n@NEXTERM:INPUT USERNAME \"Enter your username\" \"admin\"\n@NEXTERM:INPUT PORT \"Enter port number\" \"8080\"\necho \"Deploying for $USERNAME on port $PORT\"\n```\n\n**Parameters:**\n- `VARIABLE_NAME`: Name of the variable (uppercase recommended)\n- `prompt`: Question or instruction for the user\n- `default_value`: Pre-filled default value (optional)\n\n**Notes:**\n- Variable is accessible as `$VARIABLE_NAME` in subsequent commands\n- Input is validated and trimmed automatically",
+                value: "**@INFRAM:INPUT** - Prompt user for input\n\nDisplays an input dialog and stores the user's response in a variable.\n\n**Syntax:**\n```bash\n@INFRAM:INPUT VARIABLE_NAME \"prompt\" \"default_value\"\n```\n\n**Example:**\n```bash\n@INFRAM:INPUT USERNAME \"Enter your username\" \"admin\"\n@INFRAM:INPUT PORT \"Enter port number\" \"8080\"\necho \"Deploying for $USERNAME on port $PORT\"\n```\n\n**Parameters:**\n- `VARIABLE_NAME`: Name of the variable (uppercase recommended)\n- `prompt`: Question or instruction for the user\n- `default_value`: Pre-filled default value (optional)\n\n**Notes:**\n- Variable is accessible as `$VARIABLE_NAME` in subsequent commands\n- Input is validated and trimmed automatically",
             },
-            insertText: "@NEXTERM:INPUT ${1:VARIABLE_NAME} \"${2:Enter value}\" \"${3:default}\"",
+            insertText: "@INFRAM:INPUT ${1:VARIABLE_NAME} \"${2:Enter value}\" \"${3:default}\"",
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
             sortText: "01_INPUT",
-            filterText: "@NEXTERM:INPUT NEXTERM INPUT",
+            filterText: "@INFRAM:INPUT INFRAM INPUT",
         },
         {
-            label: "@NEXTERM:SELECT",
+            label: "@INFRAM:SELECT",
             kind: monaco.languages.CompletionItemKind.Function,
             detail: "Present selection menu with multiple options",
             documentation: {
-                value: "**@NEXTERM:SELECT** - Display option selector\n\nPresents a list of options for the user to choose from.\n\n**Syntax:**\n```bash\n@NEXTERM:SELECT VARIABLE_NAME \"prompt\" \"option1\" \"option2\" \"option3\" ...\n```\n\n**Example:**\n```bash\n@NEXTERM:SELECT ENV \"Choose environment\" \"development\" \"staging\" \"production\"\n@NEXTERM:SELECT DB_TYPE \"Select database\" \"PostgreSQL\" \"MySQL\" \"MongoDB\"\necho \"Deploying to $ENV with $DB_TYPE\"\n```\n\n**Parameters:**\n- `VARIABLE_NAME`: Variable to store selected option\n- `prompt`: Question or instruction\n- `options`: Two or more options (space-separated, quoted strings)\n\n**Notes:**\n- First option is pre-selected by default\n- Selected value is stored exactly as displayed",
+                value: "**@INFRAM:SELECT** - Display option selector\n\nPresents a list of options for the user to choose from.\n\n**Syntax:**\n```bash\n@INFRAM:SELECT VARIABLE_NAME \"prompt\" \"option1\" \"option2\" \"option3\" ...\n```\n\n**Example:**\n```bash\n@INFRAM:SELECT ENV \"Choose environment\" \"development\" \"staging\" \"production\"\n@INFRAM:SELECT DB_TYPE \"Select database\" \"PostgreSQL\" \"MySQL\" \"MongoDB\"\necho \"Deploying to $ENV with $DB_TYPE\"\n```\n\n**Parameters:**\n- `VARIABLE_NAME`: Variable to store selected option\n- `prompt`: Question or instruction\n- `options`: Two or more options (space-separated, quoted strings)\n\n**Notes:**\n- First option is pre-selected by default\n- Selected value is stored exactly as displayed",
             },
-            insertText: "@NEXTERM:SELECT ${1:CHOICE} \"${2:Select option}\" \"${3:Option 1}\" \"${4:Option 2}\" \"${5:Option 3}\"",
+            insertText: "@INFRAM:SELECT ${1:CHOICE} \"${2:Select option}\" \"${3:Option 1}\" \"${4:Option 2}\" \"${5:Option 3}\"",
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
             sortText: "02_SELECT",
-            filterText: "@NEXTERM:SELECT NEXTERM SELECT",
+            filterText: "@INFRAM:SELECT INFRAM SELECT",
         },
         {
-            label: "@NEXTERM:CONFIRM",
+            label: "@INFRAM:CONFIRM",
             kind: monaco.languages.CompletionItemKind.Function,
             detail: "Ask for Yes/No confirmation",
             documentation: {
-                value: "**@NEXTERM:CONFIRM** - Display confirmation dialog\n\nShows a Yes/No confirmation dialog. **Script exits with code 1 if user selects No.**\n\n**Syntax:**\n```bash\n@NEXTERM:CONFIRM \"question\"\n```\n\n**Example:**\n```bash\n@NEXTERM:CONFIRM \"Delete all files in /tmp directory?\"\nrm -rf /tmp/*\n\n@NEXTERM:CONFIRM \"This will restart the server. Continue?\"\nsystemctl restart nginx\n```\n\n**Behavior:**\n- Clicking \"Yes\" → Script continues\n- Clicking \"No\" → Script exits immediately with exit code 1\n\n**Best Practices:**\n- Use before destructive operations\n- Make question clear and specific\n- Explain consequences in the question",
+                value: "**@INFRAM:CONFIRM** - Display confirmation dialog\n\nShows a Yes/No confirmation dialog. **Script exits with code 1 if user selects No.**\n\n**Syntax:**\n```bash\n@INFRAM:CONFIRM \"question\"\n```\n\n**Example:**\n```bash\n@INFRAM:CONFIRM \"Delete all files in /tmp directory?\"\nrm -rf /tmp/*\n\n@INFRAM:CONFIRM \"This will restart the server. Continue?\"\nsystemctl restart nginx\n```\n\n**Behavior:**\n- Clicking \"Yes\" → Script continues\n- Clicking \"No\" → Script exits immediately with exit code 1\n\n**Best Practices:**\n- Use before destructive operations\n- Make question clear and specific\n- Explain consequences in the question",
             },
-            insertText: "@NEXTERM:CONFIRM \"${1:Are you sure you want to continue?}\"",
+            insertText: "@INFRAM:CONFIRM \"${1:Are you sure you want to continue?}\"",
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
             sortText: "03_CONFIRM",
-            filterText: "@NEXTERM:CONFIRM NEXTERM CONFIRM",
+            filterText: "@INFRAM:CONFIRM INFRAM CONFIRM",
         },
         {
-            label: "@NEXTERM:INFO",
+            label: "@INFRAM:INFO",
             kind: monaco.languages.CompletionItemKind.Function,
             detail: "Display information message",
             documentation: {
-                value: "**@NEXTERM:INFO** - Show informational notification\n\nDisplays a blue informational message to the user.\n\n**Syntax:**\n```bash\n@NEXTERM:INFO \"message\"\n```\n\n**Example:**\n```bash\n@NEXTERM:INFO \"Starting deployment process\"\n@NEXTERM:INFO \"Configuration validated successfully\"\n```\n\n**Use Cases:**\n- Status updates\n- Non-critical information\n- Progress notifications\n- Helpful hints",
+                value: "**@INFRAM:INFO** - Show informational notification\n\nDisplays a blue informational message to the user.\n\n**Syntax:**\n```bash\n@INFRAM:INFO \"message\"\n```\n\n**Example:**\n```bash\n@INFRAM:INFO \"Starting deployment process\"\n@INFRAM:INFO \"Configuration validated successfully\"\n```\n\n**Use Cases:**\n- Status updates\n- Non-critical information\n- Progress notifications\n- Helpful hints",
             },
-            insertText: "@NEXTERM:INFO \"${1:Information message}\"",
+            insertText: "@INFRAM:INFO \"${1:Information message}\"",
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
             sortText: "10_INFO",
-            filterText: "@NEXTERM:INFO NEXTERM INFO",
+            filterText: "@INFRAM:INFO INFRAM INFO",
         },
         {
-            label: "@NEXTERM:SUCCESS",
+            label: "@INFRAM:SUCCESS",
             kind: monaco.languages.CompletionItemKind.Function,
             detail: "Display success message",
             documentation: {
-                value: "**@NEXTERM:SUCCESS** - Show success notification\n\nDisplays a green success message to indicate successful completion.\n\n**Syntax:**\n```bash\n@NEXTERM:SUCCESS \"message\"\n```\n\n**Example:**\n```bash\n@NEXTERM:SUCCESS \"Deployment completed successfully!\"\n@NEXTERM:SUCCESS \"Database backup created\"\n```\n\n**Best Practices:**\n- Use after successful operations\n- Be specific about what succeeded\n- Typically used at the end of major steps",
+                value: "**@INFRAM:SUCCESS** - Show success notification\n\nDisplays a green success message to indicate successful completion.\n\n**Syntax:**\n```bash\n@INFRAM:SUCCESS \"message\"\n```\n\n**Example:**\n```bash\n@INFRAM:SUCCESS \"Deployment completed successfully!\"\n@INFRAM:SUCCESS \"Database backup created\"\n```\n\n**Best Practices:**\n- Use after successful operations\n- Be specific about what succeeded\n- Typically used at the end of major steps",
             },
-            insertText: "@NEXTERM:SUCCESS \"${1:Operation completed successfully!}\"",
+            insertText: "@INFRAM:SUCCESS \"${1:Operation completed successfully!}\"",
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
             sortText: "11_SUCCESS",
-            filterText: "@NEXTERM:SUCCESS NEXTERM SUCCESS",
+            filterText: "@INFRAM:SUCCESS INFRAM SUCCESS",
         },
         {
-            label: "@NEXTERM:WARN",
+            label: "@INFRAM:WARN",
             kind: monaco.languages.CompletionItemKind.Function,
             detail: "Display warning message",
             documentation: {
-                value: "**@NEXTERM:WARN** - Show warning notification\n\nDisplays a yellow/orange warning message for cautionary information.\n\n**Syntax:**\n```bash\n@NEXTERM:WARN \"message\"\n```\n\n**Example:**\n```bash\n@NEXTERM:WARN \"This operation cannot be undone\"\n@NEXTERM:WARN \"Running in development mode - not for production\"\n```\n\n**Use Cases:**\n- Non-critical issues\n- Important notices\n- Deprecation warnings\n- Performance considerations",
+                value: "**@INFRAM:WARN** - Show warning notification\n\nDisplays a yellow/orange warning message for cautionary information.\n\n**Syntax:**\n```bash\n@INFRAM:WARN \"message\"\n```\n\n**Example:**\n```bash\n@INFRAM:WARN \"This operation cannot be undone\"\n@INFRAM:WARN \"Running in development mode - not for production\"\n```\n\n**Use Cases:**\n- Non-critical issues\n- Important notices\n- Deprecation warnings\n- Performance considerations",
             },
-            insertText: "@NEXTERM:WARN \"${1:Warning: proceeding with caution}\"",
+            insertText: "@INFRAM:WARN \"${1:Warning: proceeding with caution}\"",
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
             sortText: "12_WARN",
-            filterText: "@NEXTERM:WARN NEXTERM WARN",
+            filterText: "@INFRAM:WARN INFRAM WARN",
         },
         {
-            label: "@NEXTERM:ERROR",
+            label: "@INFRAM:ERROR",
             kind: monaco.languages.CompletionItemKind.Function,
             detail: "Display error message",
             documentation: {
-                value: "**@NEXTERM:ERROR** - Show error notification\n\nDisplays a red error message for critical issues.\n\n**Syntax:**\n```bash\n@NEXTERM:ERROR \"message\"\n```\n\n**Example:**\n```bash\nif [ ! -f \"/etc/config.yml\" ]; then\n    @NEXTERM:ERROR \"Configuration file not found\"\n    exit 1\nfi\n```\n\n**Use Cases:**\n- Critical failures\n- Missing dependencies\n- Configuration errors\n- Permission issues",
+                value: "**@INFRAM:ERROR** - Show error notification\n\nDisplays a red error message for critical issues.\n\n**Syntax:**\n```bash\n@INFRAM:ERROR \"message\"\n```\n\n**Example:**\n```bash\nif [ ! -f \"/etc/config.yml\" ]; then\n    @INFRAM:ERROR \"Configuration file not found\"\n    exit 1\nfi\n```\n\n**Use Cases:**\n- Critical failures\n- Missing dependencies\n- Configuration errors\n- Permission issues",
             },
-            insertText: "@NEXTERM:ERROR \"${1:Error occurred}\"",
+            insertText: "@INFRAM:ERROR \"${1:Error occurred}\"",
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
             sortText: "13_ERROR",
-            filterText: "@NEXTERM:ERROR NEXTERM ERROR",
+            filterText: "@INFRAM:ERROR INFRAM ERROR",
         },
         {
-            label: "@NEXTERM:PROGRESS",
+            label: "@INFRAM:PROGRESS",
             kind: monaco.languages.CompletionItemKind.Function,
             detail: "Update progress indicator (0-100)",
             documentation: {
-                value: "**@NEXTERM:PROGRESS** - Display progress bar\n\nShows a visual progress indicator with percentage (0-100).\n\n**Syntax:**\n```bash\n@NEXTERM:PROGRESS percentage\n```\n\n**Example:**\n```bash\n@NEXTERM:PROGRESS 0\nfor i in {1..100}; do\n    # Do some work\n    sleep 0.1\n    @NEXTERM:PROGRESS $i\ndone\n@NEXTERM:PROGRESS 100\n```\n\n**Parameters:**\n- `percentage`: Number between 0 and 100\n\n**Best Practices:**\n- Always start at 0 and end at 100\n- Update in meaningful increments\n- Use in loops or long-running operations",
+                value: "**@INFRAM:PROGRESS** - Display progress bar\n\nShows a visual progress indicator with percentage (0-100).\n\n**Syntax:**\n```bash\n@INFRAM:PROGRESS percentage\n```\n\n**Example:**\n```bash\n@INFRAM:PROGRESS 0\nfor i in {1..100}; do\n    # Do some work\n    sleep 0.1\n    @INFRAM:PROGRESS $i\ndone\n@INFRAM:PROGRESS 100\n```\n\n**Parameters:**\n- `percentage`: Number between 0 and 100\n\n**Best Practices:**\n- Always start at 0 and end at 100\n- Update in meaningful increments\n- Use in loops or long-running operations",
             },
-            insertText: "@NEXTERM:PROGRESS ${1:50}",
+            insertText: "@INFRAM:PROGRESS ${1:50}",
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
             sortText: "14_PROGRESS",
-            filterText: "@NEXTERM:PROGRESS NEXTERM PROGRESS",
+            filterText: "@INFRAM:PROGRESS INFRAM PROGRESS",
         },
         {
-            label: "@NEXTERM:SUMMARY",
+            label: "@INFRAM:SUMMARY",
             kind: monaco.languages.CompletionItemKind.Function,
             detail: "Display formatted summary with key-value pairs",
             documentation: {
-                value: "**@NEXTERM:SUMMARY** - Show summary dialog\n\nDisplays a formatted summary table with key-value pairs.\n\n**Syntax:**\n```bash\n@NEXTERM:SUMMARY \"title\" \"key1\" \"value1\" \"key2\" \"value2\" ...\n```\n\n**Example:**\n```bash\n@NEXTERM:SUMMARY \"System Information\" \\\n    \"OS\" \"$(lsb_release -d | cut -f2)\" \\\n    \"Hostname\" \"$(hostname)\" \\\n    \"CPU\" \"$(nproc) cores\" \\\n    \"RAM\" \"$(free -h | grep Mem: | awk '{print $2}')\" \\\n    \"Disk\" \"$(df -h / | tail -1 | awk '{print $4}' free)\"\n```\n\n**Parameters:**\n- `title`: Summary title\n- `key-value pairs`: Alternating keys and values\n\n**Use Cases:**\n- Configuration summaries\n- Installation reports\n- System information\n- Deployment details",
+                value: "**@INFRAM:SUMMARY** - Show summary dialog\n\nDisplays a formatted summary table with key-value pairs.\n\n**Syntax:**\n```bash\n@INFRAM:SUMMARY \"title\" \"key1\" \"value1\" \"key2\" \"value2\" ...\n```\n\n**Example:**\n```bash\n@INFRAM:SUMMARY \"System Information\" \\\n    \"OS\" \"$(lsb_release -d | cut -f2)\" \\\n    \"Hostname\" \"$(hostname)\" \\\n    \"CPU\" \"$(nproc) cores\" \\\n    \"RAM\" \"$(free -h | grep Mem: | awk '{print $2}')\" \\\n    \"Disk\" \"$(df -h / | tail -1 | awk '{print $4}' free)\"\n```\n\n**Parameters:**\n- `title`: Summary title\n- `key-value pairs`: Alternating keys and values\n\n**Use Cases:**\n- Configuration summaries\n- Installation reports\n- System information\n- Deployment details",
             },
-            insertText: "@NEXTERM:SUMMARY \"${1:Summary Title}\" \"${2:Key 1}\" \"${3:Value 1}\" \"${4:Key 2}\" \"${5:Value 2}\"",
+            insertText: "@INFRAM:SUMMARY \"${1:Summary Title}\" \"${2:Key 1}\" \"${3:Value 1}\" \"${4:Key 2}\" \"${5:Value 2}\"",
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
             sortText: "20_SUMMARY",
-            filterText: "@NEXTERM:SUMMARY NEXTERM SUMMARY",
+            filterText: "@INFRAM:SUMMARY INFRAM SUMMARY",
         },
         {
-            label: "@NEXTERM:TABLE",
+            label: "@INFRAM:TABLE",
             kind: monaco.languages.CompletionItemKind.Function,
             detail: "Display data in tabular format",
             documentation: {
-                value: "**@NEXTERM:TABLE** - Show formatted table\n\nDisplays data in a formatted table with headers and rows.\n\n**Syntax:**\n```bash\n@NEXTERM:TABLE \"title\" \"headers\" \"row1\" \"row2\" ...\n```\n\n**Example:**\n```bash\n@NEXTERM:TABLE \"Running Processes\" \\\n    \"PID,Name,CPU%,Memory\" \\\n    \"1234,nginx,2.5%,45MB\" \\\n    \"5678,mysql,15.2%,512MB\" \\\n    \"9012,node,8.3%,128MB\"\n```\n\n**Parameters:**\n- `title`: Table title\n- `headers`: Comma-separated column headers\n- `rows`: Comma-separated row values (one per row)\n\n**Notes:**\n- Use commas to separate columns\n- Quote rows containing spaces\n- Headers automatically styled differently",
+                value: "**@INFRAM:TABLE** - Show formatted table\n\nDisplays data in a formatted table with headers and rows.\n\n**Syntax:**\n```bash\n@INFRAM:TABLE \"title\" \"headers\" \"row1\" \"row2\" ...\n```\n\n**Example:**\n```bash\n@INFRAM:TABLE \"Running Processes\" \\\n    \"PID,Name,CPU%,Memory\" \\\n    \"1234,nginx,2.5%,45MB\" \\\n    \"5678,mysql,15.2%,512MB\" \\\n    \"9012,node,8.3%,128MB\"\n```\n\n**Parameters:**\n- `title`: Table title\n- `headers`: Comma-separated column headers\n- `rows`: Comma-separated row values (one per row)\n\n**Notes:**\n- Use commas to separate columns\n- Quote rows containing spaces\n- Headers automatically styled differently",
             },
-            insertText: "@NEXTERM:TABLE \"${1:Table Title}\" \"${2:Header1,Header2,Header3}\" \"${3:val1,val2,val3}\" \"${4:val4,val5,val6}\"",
+            insertText: "@INFRAM:TABLE \"${1:Table Title}\" \"${2:Header1,Header2,Header3}\" \"${3:val1,val2,val3}\" \"${4:val4,val5,val6}\"",
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
             sortText: "21_TABLE",
-            filterText: "@NEXTERM:TABLE NEXTERM TABLE",
+            filterText: "@INFRAM:TABLE INFRAM TABLE",
         },
         {
-            label: "@NEXTERM:MSGBOX",
+            label: "@INFRAM:MSGBOX",
             kind: monaco.languages.CompletionItemKind.Function,
             detail: "Display modal message box (halts execution)",
             documentation: {
-                value: "**@NEXTERM:MSGBOX** - Show modal message dialog\n\nDisplays a modal dialog that halts script execution until acknowledged.\n\n**Syntax:**\n```bash\n@NEXTERM:MSGBOX \"title\" \"message\"\n```\n\n**Example:**\n```bash\n@NEXTERM:MSGBOX \"Important\" \"Database backup completed. Please verify before proceeding.\"\n@NEXTERM:MSGBOX \"Manual Intervention\" \"Please configure /etc/config.yml manually, then click OK to continue\"\n```\n\n**Parameters:**\n- `title`: Dialog title\n- `message`: Detailed message content\n\n**Behavior:**\n- Script pauses until user clicks OK\n- Use for critical checkpoints\n- Ideal for manual intervention steps",
+                value: "**@INFRAM:MSGBOX** - Show modal message dialog\n\nDisplays a modal dialog that halts script execution until acknowledged.\n\n**Syntax:**\n```bash\n@INFRAM:MSGBOX \"title\" \"message\"\n```\n\n**Example:**\n```bash\n@INFRAM:MSGBOX \"Important\" \"Database backup completed. Please verify before proceeding.\"\n@INFRAM:MSGBOX \"Manual Intervention\" \"Please configure /etc/config.yml manually, then click OK to continue\"\n```\n\n**Parameters:**\n- `title`: Dialog title\n- `message`: Detailed message content\n\n**Behavior:**\n- Script pauses until user clicks OK\n- Use for critical checkpoints\n- Ideal for manual intervention steps",
             },
-            insertText: "@NEXTERM:MSGBOX \"${1:Title}\" \"${2:Important message that requires acknowledgment}\"",
+            insertText: "@INFRAM:MSGBOX \"${1:Title}\" \"${2:Important message that requires acknowledgment}\"",
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
             sortText: "22_MSGBOX",
-            filterText: "@NEXTERM:MSGBOX NEXTERM MSGBOX",
+            filterText: "@INFRAM:MSGBOX INFRAM MSGBOX",
         },
     ];
 
@@ -437,7 +437,7 @@ export const registerNextermLanguage = (monaco) => {
         { label: "while", detail: "While loop", insertText: "while [ ${1:condition} ]; do\n\t${2:# commands}\ndone" },
     ];
 
-    monaco.languages.registerCompletionItemProvider("nexterm", {
+    monaco.languages.registerCompletionItemProvider("infram", {
         triggerCharacters: ["@", ":", "$", " "],
 
         provideCompletionItems: (model, position) => {
@@ -454,8 +454,8 @@ export const registerNextermLanguage = (monaco) => {
 
             const suggestions = [];
 
-            if (textUntilPosition.match(/@(NEXTERM)?(:(([A-Z]+))?)?$/i)) {
-                nextermCommands.forEach(cmd => {
+            if (textUntilPosition.match(/@(INFRAM)?(:(([A-Z]+))?)?$/i)) {
+                inframCommands.forEach(cmd => {
                     suggestions.push({
                         ...cmd,
                         range: {
@@ -471,7 +471,7 @@ export const registerNextermLanguage = (monaco) => {
 
             const trimmedLine = textUntilPosition.trimStart();
             if (trimmedLine === "" || textUntilPosition.match(/^\s*$/)) {
-                nextermCommands.forEach(cmd => {
+                inframCommands.forEach(cmd => {
                     suggestions.push({ ...cmd, range });
                 });
 
@@ -528,20 +528,20 @@ export const registerNextermLanguage = (monaco) => {
         },
     });
 
-    monaco.languages.registerHoverProvider("nexterm", {
+    monaco.languages.registerHoverProvider("infram", {
         provideHover: (model, position) => {
             const line = model.getLineContent(position.lineNumber);
-            const nextermMatch = line.match(/@NEXTERM:([A-Z]+)/);
+            const inframMatch = line.match(/@INFRAM:([A-Z]+)/);
 
-            if (nextermMatch) {
-                const command = nextermCommands.find(cmd => cmd.label === "@NEXTERM:" + nextermMatch[1]);
+            if (inframMatch) {
+                const command = inframCommands.find(cmd => cmd.label === "@INFRAM:" + inframMatch[1]);
                 if (command) {
                     return {
                         range: new monaco.Range(
                             position.lineNumber,
-                            line.indexOf("@NEXTERM") + 1,
+                            line.indexOf("@INFRAM") + 1,
                             position.lineNumber,
-                            line.indexOf("@NEXTERM") + nextermMatch[0].length + 1,
+                            line.indexOf("@INFRAM") + inframMatch[0].length + 1,
                         ),
                         contents: [
                             { value: `**${command.detail}**` },
@@ -555,7 +555,7 @@ export const registerNextermLanguage = (monaco) => {
         },
     });
 
-    monaco.languages.registerSignatureHelpProvider("nexterm", {
+    monaco.languages.registerSignatureHelpProvider("infram", {
         signatureHelpTriggerCharacters: [" ", "\""],
         signatureHelpRetriggerCharacters: [" "],
 
@@ -563,10 +563,10 @@ export const registerNextermLanguage = (monaco) => {
             const line = model.getLineContent(position.lineNumber);
             const textUntilPosition = line.substring(0, position.column - 1);
 
-            const nextermMatch = textUntilPosition.match(/@NEXTERM:([A-Z]+)/);
-            if (!nextermMatch) return null;
+            const inframMatch = textUntilPosition.match(/@INFRAM:([A-Z]+)/);
+            if (!inframMatch) return null;
 
-            const command = nextermCommands.find(cmd => cmd.label === "@NEXTERM:" + nextermMatch[1]);
+            const command = inframCommands.find(cmd => cmd.label === "@INFRAM:" + inframMatch[1]);
             if (!command) return null;
 
             return {
@@ -585,7 +585,7 @@ export const registerNextermLanguage = (monaco) => {
         },
     });
 
-    monaco.languages.registerCodeActionProvider("nexterm", {
+    monaco.languages.registerCodeActionProvider("infram", {
         provideCodeActions: (model, range) => {
             const actions = [];
             const line = model.getLineContent(range.startLineNumber);
@@ -593,16 +593,16 @@ export const registerNextermLanguage = (monaco) => {
             const knownCommands = ["STEP", "INPUT", "SELECT", "CONFIRM", "INFO", "SUCCESS", "WARN", "ERROR", "PROGRESS", "SUMMARY", "TABLE", "MSGBOX"];
             const match = line.match(/^\s*([A-Z]+)/);
 
-            if (match && knownCommands.includes(match[1]) && !line.includes("@NEXTERM:")) {
+            if (match && knownCommands.includes(match[1]) && !line.includes("@INFRAM:")) {
                 actions.push({
-                    title: "Add @NEXTERM: prefix",
+                    title: "Add @INFRAM: prefix",
                     kind: "quickfix",
                     edit: {
                         edits: [{
                             resource: model.uri,
                             edit: {
                                 range: new monaco.Range(range.startLineNumber, 1, range.startLineNumber, 1),
-                                text: "@NEXTERM:",
+                                text: "@INFRAM:",
                             },
                         }],
                     },

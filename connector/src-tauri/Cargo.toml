@@ -1,5 +1,5 @@
 [package]
-name = "nexterm-connector"
+name = "infram-connector"
 version = "1.2.0"
 description = "The open source server management software for SSH, VNC & RDP"
 authors = ["Mathias Wagner"]

@@ -74,7 +74,7 @@ const TableDialog = ({ open, onClose, tableData }) => {
                 <div className="table-content">
                     {headers.length > 0 && rows.length > 0 ? (
                         <div className="table-container">
-                            <table className="nexterm-table">
+                            <table className="infram-table">
                                 <thead>
                                 <tr>
                                     {headers.map((header, index) => (

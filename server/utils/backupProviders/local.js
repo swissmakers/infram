@@ -10,7 +10,7 @@ module.exports = class LocalProvider {
         if (!fs.existsSync(this.path)) {
             fs.mkdirSync(this.path, { recursive: true });
         }
-        const testFile = path.join(this.path, ".nexterm-test");
+        const testFile = path.join(this.path, ".infram-test");
         fs.writeFileSync(testFile, "test");
         fs.unlinkSync(testFile);
         return true;

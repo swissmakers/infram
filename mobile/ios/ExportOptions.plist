@@ -15,7 +15,7 @@
     <key>provisioningProfiles</key>
     <dict>
         <key>ch.swissmakers.infram</key>
-        <string>Nexterm Distribution</string>
+        <string>Infram Distribution</string>
     </dict>
 </dict>
 </plist>

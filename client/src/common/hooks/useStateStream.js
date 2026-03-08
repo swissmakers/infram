@@ -4,7 +4,7 @@ import { getWebSocketUrl, getTabId, getBrowserId } from "@/common/utils/Connecti
 
 export const STATE_TYPES = { ENTRIES: "ENTRIES", IDENTITIES: "IDENTITIES", SNIPPETS: "SNIPPETS", CONNECTIONS: "CONNECTIONS", LOGOUT: "LOGOUT" };
 
-const popoutChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("nexterm_popout") : null;
+const popoutChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("infram_popout") : null;
 
 const forceLogoutClient = () => {
     popoutChannel?.postMessage({ type: "force_close" });

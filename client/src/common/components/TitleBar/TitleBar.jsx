@@ -2,10 +2,10 @@ import "./styles.sass";
 import Icon from "@mdi/react";
 import { mdiWindowMinimize, mdiWindowMaximize, mdiWindowClose, mdiWindowRestore } from "@mdi/js";
 import { useEffect, useState } from "react";
-import NextermLogo from "@/common/components/NextermLogo";
+import InframLogo from "@/common/components/InframLogo";
 import { isTauri } from "@/common/utils/TauriUtil.js";
 
-export const TitleBar = ({ title = "Nexterm Connector", hideMaximize = false }) => {
+export const TitleBar = ({ title = "Infram Connector", hideMaximize = false }) => {
     const [isMaximized, setIsMaximized] = useState(false);
     const [isFocused, setIsFocused] = useState(true);
     const [appWindow, setAppWindow] = useState(null);
@@ -39,7 +39,7 @@ export const TitleBar = ({ title = "Nexterm Connector", hideMaximize = false }) 
     return (
         <div className={`title-bar ${isFocused ? "" : "inactive"}`} data-tauri-drag-region>
             <div className="title-bar-left" data-tauri-drag-region>
-                <NextermLogo size={24} />
+                <InframLogo size={24} />
                 <span data-tauri-drag-region>{title}</span>
             </div>
             <div className="title-bar-controls">

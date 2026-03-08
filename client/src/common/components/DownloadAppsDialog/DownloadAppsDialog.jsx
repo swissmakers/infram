@@ -13,26 +13,26 @@ const PLATFORMS = [
         id: "windows",
         icon: mdiMicrosoftWindows,
         downloads: [
-            { label: "EXE", arch: "x64", file: "nexterm-connector-windows-x64.exe" },
-            { label: "MSI", arch: "x64", file: "nexterm-connector-windows-x64.msi" },
-            { label: "EXE", arch: "ARM64", file: "nexterm-connector-windows-arm64.exe" },
+            { label: "EXE", arch: "x64", file: "infram-connector-windows-x64.exe" },
+            { label: "MSI", arch: "x64", file: "infram-connector-windows-x64.msi" },
+            { label: "EXE", arch: "ARM64", file: "infram-connector-windows-arm64.exe" },
         ],
     },
     {
         id: "macos",
         icon: mdiApple,
         downloads: [
-            { label: "DMG", arch: "x64", file: "nexterm-connector-macos-x64.dmg" },
-            { label: "DMG", arch: "ARM64", file: "nexterm-connector-macos-arm64.dmg" },
+            { label: "DMG", arch: "x64", file: "infram-connector-macos-x64.dmg" },
+            { label: "DMG", arch: "ARM64", file: "infram-connector-macos-arm64.dmg" },
         ],
     },
     {
         id: "linux",
         icon: mdiLinux,
         downloads: [
-            { label: "AppImage", arch: "x64", file: "nexterm-connector-linux-x64.AppImage" },
-            { label: "DEB", arch: "x64", file: "nexterm-connector-linux-x64.deb" },
-            { label: "RPM", arch: "x64", file: "nexterm-connector-linux-x64.rpm" },
+            { label: "AppImage", arch: "x64", file: "infram-connector-linux-x64.AppImage" },
+            { label: "DEB", arch: "x64", file: "infram-connector-linux-x64.deb" },
+            { label: "RPM", arch: "x64", file: "infram-connector-linux-x64.rpm" },
         ],
     },
     {
@@ -89,9 +89,9 @@ export const DownloadAppsDialog = ({ open, onClose }) => {
         if (!version) return null;
         if (platform.useVersionInFilename) {
             if (platform.id === "ios") {
-                return `${GITHUB_URL}/releases/download/v${version}/nexterm-${version}.ipa`;
+                return `${GITHUB_URL}/releases/download/v${version}/infram-${version}.ipa`;
             }
-            return `${GITHUB_URL}/releases/download/v${version}/nexterm-${version}-${download.file}.apk`;
+            return `${GITHUB_URL}/releases/download/v${version}/infram-${version}-${download.file}.apk`;
         }
         return `${GITHUB_URL}/releases/download/v${version}/${download.file}`;
     };

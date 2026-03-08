@@ -8,12 +8,12 @@ import { mdiCellphone, mdiMonitor, mdiTablet, mdiApplication, mdiCellphoneLink }
 import { useTranslation } from "react-i18next";
 import Button from "@/common/components/Button";
 
-const parseNextermUserAgent = (ua) => {
+const parseInframUserAgent = (ua) => {
     if (!ua) return null;
-    const conn = ua.match(/^NextermConnector\/([\d.]+)\s*\(([^;]+);\s*([^)]+)\)/);
-    if (conn) return { app: 'Nexterm Connector', version: conn[1], os: conn[2].trim(), osVersion: conn[3].trim(), icon: 'connector' };
-    const mobile = ua.match(/^NextermMobile\/([\d.]+)\s*\(([^;]+);?\s*([^)]*)\)/);
-    if (mobile) return { app: 'Nexterm Mobile', version: mobile[1], os: mobile[2].trim().replace(/^\w/, c => c.toUpperCase()), osVersion: mobile[3]?.trim() || '', icon: 'mobile' };
+    const conn = ua.match(/^InframConnector\/([\d.]+)\s*\(([^;]+);\s*([^)]+)\)/);
+    if (conn) return { app: 'Infram Connector', version: conn[1], os: conn[2].trim(), osVersion: conn[3].trim(), icon: 'connector' };
+    const mobile = ua.match(/^InframMobile\/([\d.]+)\s*\(([^;]+);?\s*([^)]*)\)/);
+    if (mobile) return { app: 'Infram Mobile', version: mobile[1], os: mobile[2].trim().replace(/^\w/, c => c.toUpperCase()), osVersion: mobile[3]?.trim() || '', icon: 'mobile' };
     return null;
 };
 
@@ -24,16 +24,16 @@ export const Sessions = () => {
 
     const parser = new UAParser();
 
-    const getIconFromDevice = (device, nextermApp) => {
-        if (nextermApp === 'connector') return mdiApplication;
-        if (nextermApp === 'mobile') return mdiCellphoneLink;
+    const getIconFromDevice = (device, inframApp) => {
+        if (inframApp === 'connector') return mdiApplication;
+        if (inframApp === 'mobile') return mdiCellphoneLink;
         if (device === 'wearable' || device === 'mobile') return mdiCellphone;
         if (device === 'tablet') return mdiTablet;
         return mdiMonitor;
     };
 
     const getSessionDisplay = (ua) => {
-        const n = parseNextermUserAgent(ua);
+        const n = parseInframUserAgent(ua);
         if (n) return { browser: n.app, version: n.version, os: n.os, osVersion: n.osVersion, icon: n.icon };
         const p = parser.setUA(ua);
         return { browser: p.getBrowser().name, version: p.getBrowser().version, os: p.getOS().name, osVersion: p.getOS().version, icon: null };

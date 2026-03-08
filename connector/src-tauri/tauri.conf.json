@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Nexterm Connector",
+  "productName": "Infram Connector",
   "version": "1.2.0",
   "identifier": "ch.swissmakers.infram",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Nexterm Connector",
+        "title": "Infram Connector",
         "width": 1450,
         "height": 900,
         "minWidth": 900,

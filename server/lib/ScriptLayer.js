@@ -1,4 +1,4 @@
-const { transformScript, getScriptCommands, processNextermLine, checkSudoPrompt } = require("../utils/scriptUtils");
+const { transformScript, getScriptCommands, processInframLine, checkSudoPrompt } = require("../utils/scriptUtils");
 const SessionManager = require("./SessionManager");
 const logger = require("../utils/logger");
 
@@ -84,7 +84,7 @@ class ScriptLayer {
     }
 
     processLine(line) {
-        const cmd = processNextermLine(line);
+        const cmd = processInframLine(line);
         if (!cmd) return;
         switch (cmd.type) {
             case "input": case "select":
@@ -96,20 +96,20 @@ class ScriptLayer {
             case "info": this.broadcast(MSG.INFO, { message: cmd.message }); break;
             case "success": this.broadcast(MSG.SUCCESS, { message: cmd.message }); break;
             case "confirm":
-                this.pending = { variable: "NEXTERM_CONFIRM_RESULT", prompt: cmd.message, inputType: "confirm" };
+                this.pending = { variable: "INFRAM_CONFIRM_RESULT", prompt: cmd.message, inputType: "confirm" };
                 this.broadcast(MSG.CONFIRM, this.pending);
                 break;
             case "progress": this.broadcast(MSG.PROGRESS, { percentage: cmd.percentage, message: cmd.message || "" }); break;
             case "summary":
-                this.pending = { variable: "NEXTERM_SUMMARY_RESULT", inputType: "summary" };
+                this.pending = { variable: "INFRAM_SUMMARY_RESULT", inputType: "summary" };
                 this.broadcast(MSG.SUMMARY, { title: cmd.title, data: cmd.data });
                 break;
             case "table":
-                this.pending = { variable: "NEXTERM_TABLE_RESULT", inputType: "table" };
+                this.pending = { variable: "INFRAM_TABLE_RESULT", inputType: "table" };
                 this.broadcast(MSG.TABLE, { title: cmd.title, data: cmd.data });
                 break;
             case "msgbox":
-                this.pending = { variable: "NEXTERM_MSGBOX_RESULT", inputType: "msgbox" };
+                this.pending = { variable: "INFRAM_MSGBOX_RESULT", inputType: "msgbox" };
                 this.broadcast(MSG.MSGBOX, { title: cmd.title, message: cmd.message });
                 break;
             case "end": this.handleEnd(cmd.exitCode); break;

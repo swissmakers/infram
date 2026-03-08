@@ -84,20 +84,20 @@
       }
     },
     "connectorSetup": {
-      "title": "Nexterm 连接器",
+      "title": "Infram 连接器",
       "serverUrl": "服务器 URL",
-      "serverUrlDescription": "输入 Nexterm 服务器的 URL 以进行连接。",
+      "serverUrlDescription": "输入 Infram 服务器的 URL 以进行连接。",
       "connect": "连接",
       "connecting": "连接...",
       "enterServerUrl": "请输入服务器 URL",
       "connectionFailed": "连接服务器失败。请检查 URL。",
-      "deviceLinkingNotSupported": "此服务器不支持设备链接。请更新您的 Nexterm 服务器。",
+      "deviceLinkingNotSupported": "此服务器不支持设备链接。请更新您的 Infram 服务器。",
       "authMethodDescription": "选择与服务器进行身份验证的方式。",
       "showCode": "显示代码",
       "showCodeDesc": "显示代码，以便在网络界面上手动输入",
       "openBrowser": "授权",
       "openBrowserDesc": "打开浏览器自动授权",
-      "enterCodeDescription": "在 Nexterm Web 界面上输入此代码以授权此设备。",
+      "enterCodeDescription": "在 Infram Web 界面上输入此代码以授权此设备。",
       "copyCode": "复制代码",
       "codeCopied": "代码复制到剪贴板",
       "copyFailed": "复制代码失败",
@@ -348,7 +348,7 @@
       },
       "scriptDetails": "脚本详情",
       "scriptContent": "脚本内容",
-      "helpTip": "使用 @NEXTERM: 指令实现交互功能",
+      "helpTip": "使用 @INFRAM: 指令实现交互功能",
       "fields": {
         "name": "名称",
         "description": "描述",
@@ -581,7 +581,7 @@
       "languageDescription": "选择界面显示语言。",
       "currentLanguage": "当前语言",
       "missingLanguage": "缺少您的语言？",
-      "helpTranslateLink": "帮助翻译 Nexterm",
+      "helpTranslateLink": "帮助翻译 Infram",
       "syncLoginRequired": "请登录同步设置",
       "appearanceSyncEnabled": "外观设置现在将同步到您的账户",
       "appearanceSyncDisabled": "外观设置不再同步",
@@ -793,7 +793,7 @@
         "syncDisabled": "主题设置不再同步"
       },
       "preview": {
-        "text": "$ echo '你好，Nexterm!'\n你好，Nexterm!\n$ "
+        "text": "$ echo '你好，Infram!'\n你好，Infram!\n$ "
       }
     },
     "fileManager": {
@@ -1135,7 +1135,7 @@
       "loading": "加载存储设置...",
       "storage": {
         "title": "存储",
-        "description": "查看 Nexterm 数据的磁盘使用情况。",
+        "description": "查看 Infram 数据的磁盘使用情况。",
         "database": "数据库",
         "recordings": "录音",
         "logs": "日志",
@@ -1665,7 +1665,7 @@
   "support": {
     "title": "获取支持",
     "subtitle": "需要帮助或想作出贡献？",
-    "footer": "感谢您使用 Nexterm！",
+    "footer": "感谢您使用 Infram！",
     "issues": {
       "title": "报告问题",
       "description": "发现错误或有功能请求？"
@@ -1680,7 +1680,7 @@
     }
   },
   "welcome": {
-    "subtitle": "欢迎使用 Nexterm。用于 SSH、VNC 和 RDP 的开源服务器管理器。",
+    "subtitle": "欢迎使用 Infram。用于 SSH、VNC 和 RDP 的开源服务器管理器。",
     "downloadApps": "下载应用程序",
     "connectDevice": "连接设备",
     "recentConnections": "近期联系",
@@ -1689,7 +1689,7 @@
   },
   "downloadApps": {
     "title": "下载应用程序",
-    "subtitle": "在您的设备上获取 Nexterm",
+    "subtitle": "在您的设备上获取 Infram",
     "platforms": {
       "windows": "视窗",
       "macos": "MacOS",

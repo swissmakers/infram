@@ -30,7 +30,7 @@ export const Share = () => {
         request(`share/${shareId}`, "GET")
             .then(data => {
                 setSession({ ...data, shareId });
-                if (data.server?.name) document.title = `${data.server.name} (Shared) - Nexterm`;
+                if (data.server?.name) document.title = `${data.server.name} (Shared) - Infram`;
             })
             .catch(err => setError(err.message || t("share.errors.failedToJoin")))
             .finally(() => setLoading(false));

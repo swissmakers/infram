@@ -51,7 +51,7 @@
       "unsavedChangesText": "Le modifiche non sono state salvate. Sei sicuro di voler chiudere?"
     },
     "loginDialog": {
-      "title": "Nexterm",
+      "title": "Infram,
       "registrationTitle": "Registrazione",
       "ssoOrContinueWith": "oppure continua con",
       "noAuthMethodsAvailable": "Non sono disponibili metodi di autenticazione.",
@@ -84,20 +84,20 @@
       }
     },
     "connectorSetup": {
-      "title": "Connettore Nexterm",
+      "title": "Connettore Infram",
       "serverUrl": "URL del server",
-      "serverUrlDescription": "Inserisci l'URL del tuo server Nexterm per connetterti.",
+      "serverUrlDescription": "Inserisci l'URL del tuo server Infram per connetterti.",
       "connect": "Collegati",
       "connecting": "Collegamento...",
       "enterServerUrl": "Inserisci un URL del server",
       "connectionFailed": "Impossibile connettersi al server. Controlla l'URL.",
-      "deviceLinkingNotSupported": "Questo server non supporta il collegamento dei dispositivi. Aggiorna il tuo server Nexterm.",
+      "deviceLinkingNotSupported": "Questo server non supporta il collegamento dei dispositivi. Aggiorna il tuo server Infram.",
       "authMethodDescription": "Scegli come autenticarti con il server.",
       "showCode": "Mostra il codice",
       "showCodeDesc": "Visualizza un codice da inserire manualmente nell'interfaccia web.",
       "openBrowser": "Autorizza",
       "openBrowserDesc": "Apri il tuo browser per autorizzare automaticamente",
-      "enterCodeDescription": "Inserisci questo codice nell'interfaccia web di Nexterm per autorizzare il dispositivo.",
+      "enterCodeDescription": "Inserisci questo codice nell'interfaccia web di Infram per autorizzare il dispositivo.",
       "copyCode": "Copia del codice",
       "codeCopied": "Codice copiato negli appunti",
       "copyFailed": "Impossibile copiare il codice",
@@ -348,7 +348,7 @@
       },
       "scriptDetails": "Dettagli dello script",
       "scriptContent": "Contenuto della sceneggiatura",
-      "helpTip": "Usa le direttive @NEXTERM: per le funzioni interattive",
+      "helpTip": "Usa le direttive @INFRAM per le funzioni interattive",
       "fields": {
         "name": "Nome",
         "description": "Descrizione",
@@ -581,7 +581,7 @@
       "languageDescription": "Seleziona la lingua che preferisci per l'interfaccia.",
       "currentLanguage": "Lingua corrente",
       "missingLanguage": "Ti manca la tua lingua?",
-      "helpTranslateLink": "Aiuta a tradurre Nexterm",
+      "helpTranslateLink": "Aiuta a tradurre Infram",
       "syncLoginRequired": "Effettua il login per sincronizzare le impostazioni",
       "appearanceSyncEnabled": "Le impostazioni dell'aspetto saranno ora sincronizzate con il tuo account.",
       "appearanceSyncDisabled": "Le impostazioni dell'aspetto non si sincronizzano più",
@@ -793,7 +793,7 @@
         "syncDisabled": "Le impostazioni del tema non si sincronizzano più"
       },
       "preview": {
-        "text": "$ echo 'Ciao, Nexterm!'\nCiao, Nexterm!\n$ "
+        "text": "$ echo 'Ciao, Infram!'\nCiao, Infram!\n$ "
       }
     },
     "fileManager": {
@@ -986,7 +986,7 @@
       "servers": "server",
       "statusChecker": {
         "title": "Controllore di stato",
-        "description": "Configura il modo in cui Nexterm controlla lo stato online/offline dei tuoi server.",
+        "description": "Configura il modo in cui Infram controlla lo stato online/offline dei tuoi server.",
         "enable": {
           "title": "Abilita il controllore di stato",
           "description": "Controlla automaticamente se i server sono online o offline. Se disattivato, tutti i server saranno contrassegnati come online."
@@ -1135,7 +1135,7 @@
       "loading": "Caricamento delle impostazioni di memorizzazione...",
       "storage": {
         "title": "Immagazzinamento",
-        "description": "Visualizza l'utilizzo del disco per i tuoi dati Nexterm.",
+        "description": "Visualizza l'utilizzo del disco per i tuoi dati Infram.",
         "database": "Database",
         "recordings": "Registrazioni",
         "logs": "Registri",
@@ -1665,7 +1665,7 @@
   "support": {
     "title": "Ottieni supporto",
     "subtitle": "Hai bisogno di aiuto o vuoi contribuire?",
-    "footer": "Grazie per aver utilizzato Nexterm!",
+    "footer": "Grazie per aver utilizzato Infram!",
     "issues": {
       "title": "Segnala un problema",
       "description": "Hai trovato un bug o hai una richiesta di funzionalità?"
@@ -1680,7 +1680,7 @@
     }
   },
   "welcome": {
-    "subtitle": "Benvenuto su Nexterm. Il gestore di server open-source per SSH, VNC e RDP.",
+    "subtitle": "Benvenuto su Infram. Il gestore di server open-source per SSH, VNC e RDP.",
     "downloadApps": "Scarica le applicazioni",
     "connectDevice": "Connetti il dispositivo",
     "recentConnections": "Collegamenti recenti",
@@ -1689,7 +1689,7 @@
   },
   "downloadApps": {
     "title": "Scarica le applicazioni",
-    "subtitle": "Ottieni Nexterm sui tuoi dispositivi",
+    "subtitle": "Ottieni Infram sui tuoi dispositivi",
     "platforms": {
       "windows": "Finestre",
       "macos": "macOS",

@@ -13,7 +13,7 @@ fn get_user_agent() -> String {
     let os_version = os_info::get();
     
     format!(
-        "NextermConnector/{} ({} {}; {})",
+        "InframConnector/{} ({} {}; {})",
         APP_VERSION,
         os_version.os_type(),
         os_version.version(),
@@ -36,7 +36,7 @@ async fn open_popout(app: tauri::AppHandle, session_id: String) -> Result<(), St
     let app_clone = app.clone();
     
     let window = WebviewWindowBuilder::new(&app, &window_label, WebviewUrl::App(url.into()))
-        .title("Nexterm - Session")
+        .title("Infram - Session")
         .inner_size(1024.0, 768.0)
         .min_inner_size(640.0, 480.0)
         .decorations(false)

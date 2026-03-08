@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Default permissions for Nexterm Connector",
+  "description": "Default permissions for Infram Connector",
   "windows": ["main", "popout_*", "tunnel_*"],
   "permissions": [
     "core:default",

@@ -8,7 +8,7 @@ import { postRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
-import NextermLogo from "@/common/components/NextermLogo";
+import InframLogo from "@/common/components/InframLogo";
 
 const DeviceIcon = ({ type, connected }) => (
     <div className={`device-icon-wrapper${connected ? " connected" : ""}`}>
@@ -18,7 +18,7 @@ const DeviceIcon = ({ type, connected }) => (
 
 const LinkingHeader = ({ clientType, connected = false }) => (
     <div className="linking-header">
-        <div className={`linking-logo${connected ? " connected" : ""}`}><NextermLogo size={36} /></div>
+        <div className={`linking-logo${connected ? " connected" : ""}`}><InframLogo size={36} /></div>
         <div className={`linking-dots${connected ? " connected" : ""}`}>
             <span className="dot" /><span className="dot" /><span className="dot" />
         </div>

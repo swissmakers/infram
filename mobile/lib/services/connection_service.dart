@@ -9,10 +9,10 @@ class ConnectionService {
   static Future<String> _getDeviceId() async {
     if (_deviceId != null) return _deviceId!;
     final prefs = await SharedPreferences.getInstance();
-    _deviceId = prefs.getString('nexterm_device_id');
+    _deviceId = prefs.getString('infram_device_id');
     if (_deviceId == null) {
       _deviceId = 'device_${DateTime.now().millisecondsSinceEpoch}_${_randomString(9)}';
-      await prefs.setString('nexterm_device_id', _deviceId!);
+      await prefs.setString('infram_device_id', _deviceId!);
     }
     return _deviceId!;
   }

@@ -52,7 +52,7 @@ Original copyright and third-party notices are preserved in `LICENSE` and `NOTIC
 
 ## Install
 
-You can install Infram by clicking [here](https://docs.nexterm.dev/installation).
+You can install Infram by clicking [here](https://github.com/swissmakers/infra-manager).
 
 ## Development
 
@@ -117,7 +117,7 @@ Contributions are welcome! Please feel free to:
 
 ## Useful Links
 
--   [Documentation](https://docs.nexterm.dev)
+-   [Documentation](https://github.com/swissmakers/infra-manager)
 -   [Report a bug](https://github.com/swissmakers/infra-manager/issues)
 -   [Request a feature](https://github.com/swissmakers/infra-manager/issues)
 

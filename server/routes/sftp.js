@@ -122,7 +122,7 @@ app.post("/upload", async (req, res) => {
         const v = await validateSession(sessionToken, sessionId);
         if (v.error) return res.status(v.status).json({ error: v.error });
 
-        tempFile = path.join(os.tmpdir(), `nexterm-upload-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+        tempFile = path.join(os.tmpdir(), `infram-upload-${Date.now()}-${Math.random().toString(36).slice(2)}`);
         const writeStream = fs.createWriteStream(tempFile);
 
         await new Promise((resolve, reject) => {
@@ -317,7 +317,7 @@ app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
                 const sftp = await sftpConnect(ssh);
                 const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
                 
-                res.header("Content-Disposition", `attachment; filename="nexterm-download-${timestamp}.zip"`);
+                res.header("Content-Disposition", `attachment; filename="infram-download-${timestamp}.zip"`);
                 res.header("Content-Type", "application/zip");
 
                 const archive = archiver("zip", { zlib: { level: 5 } });

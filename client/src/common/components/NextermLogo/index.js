@@ -1,1 +1,0 @@
-export { NextermLogo as default } from "./NextermLogo";

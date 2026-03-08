@@ -16,8 +16,8 @@ export const Install = () => {
     const [encryptionKey, setEncryptionKey] = useState('');
     const [deployMethod, setDeployMethod] = useState('docker');
     const [volumeType, setVolumeType] = useState('named');
-    const [volumeName, setVolumeName] = useState('nexterm');
-    const [bindPath, setBindPath] = useState('./nexterm-data');
+    const [volumeName, setVolumeName] = useState('infram');
+    const [bindPath, setBindPath] = useState('./infram-data');
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
@@ -42,7 +42,7 @@ export const Install = () => {
         return `docker run -d \\
   -e ENCRYPTION_KEY=${encryptionKey} \\
   --network host \\
-  --name nexterm \\
+  --name infram \\
   --restart always \\
   ${volumeArg} \\
   germannewsmaker/nexterm:latest`;
@@ -58,9 +58,9 @@ export const Install = () => {
             : '';
 
         return `services:
-  nexterm:
+  infram:
     image: germannewsmaker/nexterm:latest
-    container_name: nexterm
+    container_name: infram
     network_mode: host
     restart: always
     environment:
@@ -75,7 +75,7 @@ ${volumeConfig}${volumesSection}`;
         <div className="install-page">
             <div className="install-container">
                 <div className="install-header">
-                    <h1>Install Nexterm</h1>
+                    <h1>Install Infram</h1>
                     <p>Configure your deployment in a few simple steps</p>
                 </div>
 
@@ -100,7 +100,7 @@ ${volumeConfig}${volumesSection}`;
                     {step === 1 && (
                         <div className="wizard-step">
                             <h2>Deployment Method</h2>
-                            <p>Choose how you want to deploy Nexterm.</p>
+                            <p>Choose how you want to deploy Infram.</p>
                             
                             <div className="option-cards">
                                 <button 
@@ -126,7 +126,7 @@ ${volumeConfig}${volumesSection}`;
                     {step === 2 && (
                         <div className="wizard-step">
                             <h2>Storage Configuration</h2>
-                            <p>Choose how to persist your Nexterm data.</p>
+                            <p>Choose how to persist your Infram data.</p>
                             
                             <div className="option-cards">
                                 <button 
@@ -156,7 +156,7 @@ ${volumeConfig}${volumesSection}`;
                                         ? setVolumeName(e.target.value) 
                                         : setBindPath(e.target.value)
                                     }
-                                    placeholder={volumeType === 'named' ? 'nexterm' : './nexterm-data'}
+                                    placeholder={volumeType === 'named' ? 'infram' : './infram-data'}
                                 />
                             </div>
                         </div>
@@ -164,7 +164,7 @@ ${volumeConfig}${volumesSection}`;
 
                     {step === 3 && (
                         <div className="wizard-step">
-                            <h2>Deploy Nexterm</h2>
+                            <h2>Deploy Infram</h2>
                             <p>
                                 {deployMethod === 'docker' 
                                     ? 'Run this command in your terminal:' 
@@ -195,7 +195,7 @@ ${volumeConfig}${volumesSection}`;
                             </div>
 
                             <div className="access-info">
-                                <span className="access-label">After deployment, access Nexterm at</span>
+                                <span className="access-label">After deployment, access Infram at</span>
                                 <div className="access-url">
                                     <code>http://localhost:6989</code>
                                 </div>

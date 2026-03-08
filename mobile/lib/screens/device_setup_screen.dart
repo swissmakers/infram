@@ -220,7 +220,7 @@ class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Nexterm',
+                  'Infram',
                   style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -244,7 +244,7 @@ class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Enter the URL of your Nexterm server to connect.',
+          'Enter the URL of your Infram server to connect.',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),
@@ -256,7 +256,7 @@ class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
           focusNode: _serverUrlFocusNode,
           decoration: InputDecoration(
             labelText: 'Server URL',
-            hintText: 'nexterm.example.com',
+            hintText: 'infram.example.com',
             prefixIcon: Icon(MdiIcons.serverNetwork),
             border: const OutlineInputBorder(),
             errorText: _error,
@@ -329,7 +329,7 @@ class _DeviceSetupScreenState extends State<DeviceSetupScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Enter this code on your Nexterm web interface or open in browser to authorize.',
+          'Enter this code on your Infram web interface or open in browser to authorize.',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),

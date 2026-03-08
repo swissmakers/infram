@@ -9,7 +9,7 @@ import Loading from "@/common/components/Loading";
 import TitleBar from "@/common/components/TitleBar";
 import { isTauri } from "@/common/utils/TauriUtil.js";
 
-const channel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("nexterm_popout") : null;
+const channel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("infram_popout") : null;
 const noop = () => {};
 
 export const Popout = () => {
@@ -23,7 +23,7 @@ export const Popout = () => {
     useEffect(() => {
         if (!sessionId || !user) return;
         getRequest(`/connections/${sessionId}`)
-            .then(data => { setSession(data); if (data.server?.name) document.title = `${data.server.name} - Nexterm`; })
+            .then(data => { setSession(data); if (data.server?.name) document.title = `${data.server.name} - Infram`; })
             .finally(() => setLoading(false));
     }, [sessionId, user]);
 

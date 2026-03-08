@@ -51,7 +51,7 @@
       "unsavedChangesText": "You have unsaved changes. Are you sure you want to close?"
     },
     "loginDialog": {
-      "title": "Nexterm",
+      "title": "Infram",
       "registrationTitle": "Registration",
       "ssoOrContinueWith": "or continue with",
       "noAuthMethodsAvailable": "No authentication methods available.",
@@ -84,20 +84,20 @@
       }
     },
     "connectorSetup": {
-      "title": "Nexterm Connector",
+      "title": "Infram Connector",
       "serverUrl": "Server URL",
-      "serverUrlDescription": "Enter the URL of your Nexterm server to connect.",
+      "serverUrlDescription": "Enter the URL of your Infram server to connect.",
       "connect": "Connect",
       "connecting": "Connecting...",
       "enterServerUrl": "Please enter a server URL",
       "connectionFailed": "Failed to connect to server. Please check the URL.",
-      "deviceLinkingNotSupported": "This server does not support device linking. Please update your Nexterm server.",
+      "deviceLinkingNotSupported": "This server does not support device linking. Please update your Infram server.",
       "authMethodDescription": "Choose how you want to authenticate with the server.",
       "showCode": "Show Code",
       "showCodeDesc": "Display a code to enter manually on the web interface",
       "openBrowser": "Authorize",
       "openBrowserDesc": "Open your browser to authorize automatically",
-      "enterCodeDescription": "Enter this code on the Nexterm web interface to authorize this device.",
+      "enterCodeDescription": "Enter this code on the Infram web interface to authorize this device.",
       "copyCode": "Copy Code",
       "codeCopied": "Code copied to clipboard",
       "copyFailed": "Failed to copy code",
@@ -353,7 +353,7 @@
       },
       "scriptDetails": "Script Details",
       "scriptContent": "Script Content",
-      "helpTip": "Use @NEXTERM: directives for interactive features",
+      "helpTip": "Use @INFRAM: directives for interactive features",
       "fields": {
         "name": "Name",
         "description": "Description",
@@ -586,7 +586,7 @@
       "languageDescription": "Select your preferred language for the interface.",
       "currentLanguage": "Current Language",
       "missingLanguage": "Missing your language?",
-      "helpTranslateLink": "Help translate Nexterm",
+      "helpTranslateLink": "Help translate Infram",
       "syncLoginRequired": "Please log in to sync settings",
       "appearanceSyncEnabled": "Appearance settings will now sync to your account",
       "appearanceSyncDisabled": "Appearance settings will no longer sync",
@@ -798,7 +798,7 @@
         "syncDisabled": "Theme settings will no longer sync"
       },
       "preview": {
-        "text": "$ echo 'Hi, Nexterm!'\nHi, Nexterm!\n$ "
+        "text": "$ echo 'Hi, Infram!'\nHi, Infram!\n$ "
       }
     },
     "fileManager": {
@@ -992,7 +992,7 @@
       "servers": "servers",
       "statusChecker": {
         "title": "Status Checker",
-        "description": "Configure how Nexterm checks the online/offline status of your servers.",
+        "description": "Configure how Infram checks the online/offline status of your servers.",
         "enable": {
           "title": "Enable Status Checker",
           "description": "Automatically check if servers are online or offline. When disabled, all servers will be marked as online."
@@ -1141,7 +1141,7 @@
       "loading": "Loading storage settings...",
       "storage": {
         "title": "Storage",
-        "description": "View disk usage for your Nexterm data.",
+        "description": "View disk usage for your Infram data.",
         "database": "Database",
         "recordings": "Recordings",
         "logs": "Logs",
@@ -1690,7 +1690,7 @@
   "support": {
     "title": "Get Support",
     "subtitle": "Need help or want to contribute?",
-    "footer": "Thank you for using Nexterm!",
+    "footer": "Thank you for using Infram!",
     "issues": {
       "title": "Report an Issue",
       "description": "Found a bug or have a feature request?"
@@ -1705,7 +1705,7 @@
     }
   },
   "welcome": {
-    "subtitle": "Welcome to Nexterm. The open-source server manager for SSH, VNC and RDP.",
+    "subtitle": "Welcome to Infram. The open-source server manager for SSH, VNC and RDP.",
     "downloadApps": "Download Apps",
     "connectDevice": "Connect Device",
     "recentConnections": "Recent Connections",
@@ -1714,7 +1714,7 @@
   },
   "downloadApps": {
     "title": "Download Apps",
-    "subtitle": "Get Nexterm on your devices",
+    "subtitle": "Get Infram on your devices",
     "platforms": {
       "windows": "Windows",
       "macos": "macOS",

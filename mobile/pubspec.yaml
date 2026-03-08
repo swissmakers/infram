@@ -1,4 +1,4 @@
-name: nexterm
+name: infram
 description: "The open source server management software for SSH, VNC & RDP"
 publish_to: 'none'
 version: 1.2.0+9

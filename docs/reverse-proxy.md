@@ -1,6 +1,6 @@
 # Reverse Proxy & Cloudflare Tunnel
 
-This guide helps you with setting up Nexterm behind a reverse proxy or Cloudflare Tunnel. Make sure WebSocket support is
+This guide helps you with setting up Infram behind a reverse proxy or Cloudflare Tunnel. Make sure WebSocket support is
 enabled for it to work.
 
 ## Nginx
@@ -8,7 +8,7 @@ enabled for it to work.
 ```nginx
 server {
     listen 80;
-    server_name nexterm.yourdomain.com;
+    server_name infram.yourdomain.com;
 
     location / {
         proxy_pass http://127.0.0.1:6989;
@@ -40,7 +40,7 @@ sudo a2enmod proxy proxy_http proxy_wstunnel rewrite
 
 ```apache
 <VirtualHost *:80>
-    ServerName nexterm.yourdomain.com
+    ServerName infram.yourdomain.com
 
     ProxyPreserveHost On
 
@@ -59,7 +59,7 @@ sudo a2enmod proxy proxy_http proxy_wstunnel rewrite
 ## Caddy
 
 ```caddy
-nexterm.yourdomain.com {
+infram.yourdomain.com {
     reverse_proxy 127.0.0.1:6989
 }
 ```
@@ -70,18 +70,18 @@ Caddy handles WebSockets and SSL automatically.
 
 ```yaml
 services:
-  nexterm:
+  infram:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nexterm.rule=Host(`nexterm.yourdomain.com`)"
-      - "traefik.http.routers.nexterm.entrypoints=websecure"
-      - "traefik.http.routers.nexterm.tls.certresolver=letsencrypt"
-      - "traefik.http.services.nexterm.loadbalancer.server.port=6989"
+      - "traefik.http.routers.infram.rule=Host(`infram.yourdomain.com`)"
+      - "traefik.http.routers.infram.entrypoints=websecure"
+      - "traefik.http.routers.infram.tls.certresolver=letsencrypt"
+      - "traefik.http.services.infram.loadbalancer.server.port=6989"
 ```
 
 ## Cloudflare Tunnel
 
-Cloudflare Tunnel lets you expose Nexterm to the internet without opening inbound ports. Traffic flows through
+Cloudflare Tunnel lets you expose Infram to the internet without opening inbound ports. Traffic flows through
 Cloudflare's network, giving you DDoS protection and optional Zero Trust authentication.
 
 ### Prerequisites
@@ -96,7 +96,7 @@ Log in to [Cloudflare Zero Trust](https://one.dash.cloudflare.com/) and go to **
 
 1. Click **Create a tunnel**
 2. Choose **Cloudflared** as the connector type
-3. Give your tunnel a name (e.g., `nexterm`)
+3. Give your tunnel a name (e.g., `infram`)
 4. Copy the installation command and run it on your server
 
 ### 2. Configure the Public Hostname
@@ -105,11 +105,11 @@ After creating the tunnel, add a public hostname:
 
 | Field     | Value                          |
 |-----------|--------------------------------|
-| Subdomain | `nexterm` (or your preference) |
+| Subdomain | `infram` (or your preference) |
 | Domain    | Select your domain             |
 | Type      | `HTTP`                         |
 | URL       | `localhost:6989`               |
 
 ![Create Tunnel in Cloudflare Dashboard](/assets/cloudflare-tunnel-create.png)
 
-Click **Save tunnel**. Your Nexterm instance should now be accessible at `https://nexterm.yourdomain.com`.
+Click **Save tunnel**. Your Infram instance should now be accessible at `https://infram.yourdomain.com`.

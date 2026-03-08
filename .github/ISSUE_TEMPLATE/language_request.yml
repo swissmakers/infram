@@ -1,5 +1,5 @@
 name: 🌍 Suggest a Language
-description: Suggest a new language to be added to Nexterm
+description: Suggest a new language to be added to Infram
 title: "[Language] "
 labels: ["translation"]
 body:
@@ -8,7 +8,7 @@ body:
       label: General
       description: Please confirm the following statements
       options:
-        - label: This language is not already available in Nexterm.
+        - label: This language is not already available in Infram.
           required: true
         - label: I have checked that this language has not been suggested by anyone else.
           required: true

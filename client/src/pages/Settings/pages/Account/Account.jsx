@@ -353,7 +353,7 @@ export const Account = () => {
                         <p className="main-description">{t("settings.account.languageDescription")}</p>
                         <p className="translate-help">
                             {t("settings.account.missingLanguage")}
-                            <span onClick={() => openExternalUrl("https://crowdin.com/project/nexterm")}
+                            <span onClick={() => openExternalUrl("https://crowdin.com/project/infram")}
                                className="translate-link">
                                 {t("settings.account.helpTranslateLink")}
                             </span>

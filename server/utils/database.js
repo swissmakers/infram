@@ -1,7 +1,7 @@
 const {Sequelize} = require('sequelize');
 const logger = require('./logger');
 
-const STORAGE_PATH = `data/nexterm.db`;
+const STORAGE_PATH = `data/infram.db`;
 
 Sequelize.DATE.prototype._stringify = function(date) {
     return (date instanceof Date ? date : new Date(date)).toISOString();

@@ -3,7 +3,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faShieldHalved, faFolderTree, faUsers, faCode, faScroll, faVideo} from "@fortawesome/free-solid-svg-icons";
 import {useRef, useEffect} from "react";
 
-const DOCS_BASE = "https://docs.nexterm.dev";
+const DOCS_BASE = "https://github.com/swissmakers/infra-manager";
 
 const features = [
     {

@@ -7,7 +7,7 @@ Place your SSL certificate files in the `data/certs` folder:
 - `cert.pem` - Your SSL certificate
 - `key.pem` - Your private key
 
-Nexterm will automatically detect them and start an HTTPS server.
+Infram will automatically detect them and start an HTTPS server.
 
 ## 🔌 Ports
 
@@ -22,7 +22,7 @@ Add the following to your existing `docker-compose.yml`:
 
 ```diff
 services:
-  nexterm:
+  infram:
     environment:
 +     HTTPS_PORT: 5878 # optional, this is the default
     ports:
@@ -59,4 +59,4 @@ cp /etc/letsencrypt/live/yourdomain.com/fullchain.pem ./data/certs/cert.pem
 cp /etc/letsencrypt/live/yourdomain.com/privkey.pem ./data/certs/key.pem
 ```
 
-Restart Nexterm to apply the changes.
+Restart Infram to apply the changes.

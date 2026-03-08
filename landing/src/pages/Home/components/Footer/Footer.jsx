@@ -11,8 +11,8 @@ export const Footer = () => {
             <div className="footer-content">
                 <div className="footer-brand">
                     <Link to="/" className="footer-logo">
-                        <img src={Logo} alt="Nexterm"/>
-                        <span>Nexterm</span>
+                        <img src={Logo} alt="Infram"/>
+                        <span>Infram</span>
                     </Link>
                     <p>Open-source server management for SSH, VNC & RDP.</p>
                 </div>

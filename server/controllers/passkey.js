@@ -4,7 +4,7 @@ const Passkey = require("../models/Passkey");
 const Session = require("../models/Session");
 const logger = require("../utils/logger");
 
-const rpName = "Nexterm";
+const rpName = "Infram";
 const challengeStore = new Map();
 const CHALLENGE_TTL = 5 * 60 * 1000;
 

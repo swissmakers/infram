@@ -1,6 +1,6 @@
-# Contributing to Nexterm
+# Contributing to Infram
 
-You plan on contributing to Nexterm? That's great! This document will guide you through the process of contributing to
+You plan on contributing to Infram? That's great! This document will guide you through the process of contributing to
 the project.
 
 ## 📦 Prerequisites
@@ -64,6 +64,6 @@ at [http://127.0.0.1:5173](http://127.0.0.1:5173).
 
 ## 🌍 Translations
 
-Nexterm uses [Crowdin](https://crowdin.com/project/nexterm) for managing translations. If you'd like to help translate Nexterm into your language or improve existing translations, please visit our [Crowdin project page](https://crowdin.com/project/nexterm).
+Infram uses [Crowdin](https://crowdin.com/project/nexterm) for managing translations. If you'd like to help translate Infram into your language or improve existing translations, please visit our [Crowdin project page](https://crowdin.com/project/nexterm).
 
 To suggest a new language, please open an issue in the repository using the language request template. Translation pull requests will not be accepted as all translations are managed through Crowdin.

@@ -4,7 +4,7 @@
 
 # Scripts & Snippets
 
-Nexterm uses file extensions to distinguish scripts from snippets, not folder structure. This means you can organize your repository however you like.
+Infram uses file extensions to distinguish scripts from snippets, not folder structure. This means you can organize your repository however you like.
 
 ## Scripts vs Snippets
 
@@ -54,7 +54,7 @@ vzdump --all --mode snapshot --compress zstd
 
 | Tag | Description |
 |-----|-------------|
-| `@name` | Display name in the Nexterm UI |
+| `@name` | Display name in the Infram UI |
 | `@description` | Additional context about what the command does |
 | `@os` | Comma-separated list of compatible operating systems |
 

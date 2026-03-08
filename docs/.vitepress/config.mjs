@@ -10,7 +10,7 @@ const execAsync = promisify(exec);
 const sidebar = useSidebar({ spec, linkPrefix: "/operations/" });
 
 export default defineConfig({
-    title: "Nexterm",
+    title: "Infram",
     description: "The open source server management software for SSH, VNC & RDP",
     lastUpdated: true,
     cleanUrls: true,
@@ -33,14 +33,14 @@ export default defineConfig({
         ["meta", { property: "og:locale", content: "en" }],
         ["meta", {
             property: "og:title",
-            content: "Nexterm | The open source server management software for SSH, VNC & RDP",
+            content: "Infram | The open source server management software for SSH, VNC & RDP",
         }],
-        ["meta", { property: "og:site_name", content: "Nexterm" }],
+        ["meta", { property: "og:site_name", content: "Infram" }],
         ["meta", { property: "og:image", content: "/thumbnail.png" }],
         ["meta", { property: "og:image:type", content: "image/png" }],
         ["meta", { property: "twitter:card", content: "summary_large_image" }],
         ["meta", { property: "twitter:image:src", content: "/thumbnail.png" }],
-        ["meta", { property: "og:url", content: "https://docs.nexterm.dev" }],
+        ["meta", { property: "og:url", content: "https://github.com/swissmakers/infra-manager" }],
     ],
     themeConfig: {
 

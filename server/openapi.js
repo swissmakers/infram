@@ -36,9 +36,9 @@ module.exports.generateOpenAPISpec = (app) => {
 
     const options = {
         info: {
-            title: "Nexterm API",
+            title: "Infram API",
             version: packageJson.version,
-            description: "API documentation for Nexterm",
+            description: "API documentation for Infram",
         },
         servers: [
             { url: "/api", description: "Production API server" },
@@ -52,7 +52,7 @@ module.exports.generateOpenAPISpec = (app) => {
         apiDocsPath: '/api-docs.json',
         notRequiredAsNullable: false,
         swaggerUiOptions: {
-            customSiteTitle: 'Nexterm API Documentation',
+            customSiteTitle: 'Infram API Documentation',
             customfavIcon: '/assets/img/favicon.png',
         },
         security: {

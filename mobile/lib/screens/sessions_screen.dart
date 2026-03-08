@@ -77,8 +77,8 @@ class _SessionsScreenState extends State<SessionsScreen> {
 
   IconData _getDeviceIcon(String? ua) {
     if (ua == null) return MdiIcons.devices;
-    if (ua.startsWith('NextermConnector/')) return MdiIcons.application;
-    if (ua.startsWith('NextermMobile/')) return MdiIcons.cellphoneLink;
+    if (ua.startsWith('InframConnector/')) return MdiIcons.application;
+    if (ua.startsWith('InframMobile/')) return MdiIcons.cellphoneLink;
     final l = ua.toLowerCase();
     if (l.contains('mobile') || l.contains('android') || l.contains('iphone')) return MdiIcons.cellphone;
     if (l.contains('tablet') || l.contains('ipad')) return MdiIcons.tablet;
@@ -106,12 +106,12 @@ class _SessionsScreenState extends State<SessionsScreen> {
 
   String _shortenUserAgent(String? ua) {
     if (ua == null) return 'Unknown Device';
-    final conn = RegExp(r'^NextermConnector/([\d.]+)\s*\(([^;]+);').firstMatch(ua);
-    if (conn != null) return 'Nexterm Connector ${conn.group(1)} on ${conn.group(2)?.trim()}';
-    final mobile = RegExp(r'^NextermMobile/([\d.]+)\s*\(([^;)]+)').firstMatch(ua);
+    final conn = RegExp(r'^InframConnector/([\d.]+)\s*\(([^;]+);').firstMatch(ua);
+    if (conn != null) return 'Infram Connector ${conn.group(1)} on ${conn.group(2)?.trim()}';
+    final mobile = RegExp(r'^InframMobile/([\d.]+)\s*\(([^;)]+)').firstMatch(ua);
     if (mobile != null) {
       final p = mobile.group(2)?.trim() ?? '';
-      return 'Nexterm Mobile ${mobile.group(1)} on ${p.isNotEmpty ? p[0].toUpperCase() + p.substring(1) : p}';
+      return 'Infram Mobile ${mobile.group(1)} on ${p.isNotEmpty ? p[0].toUpperCase() + p.substring(1) : p}';
     }
     for (final b in ['Chrome', 'Firefox', 'Safari', 'Edge']) {
       if (ua.contains(b) && (b != 'Safari' || !ua.contains('Chrome'))) {

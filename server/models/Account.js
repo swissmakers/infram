@@ -30,7 +30,7 @@ module.exports = db.define("accounts", {
     totpSecret: {
         type: Sequelize.STRING,
         defaultValue: () => {
-            return speakeasy.generateSecret({ name: "Nexterm" }).base32;
+            return speakeasy.generateSecret({ name: "Infram" }).base32;
         },
     },
     sessionSync: {

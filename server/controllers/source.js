@@ -12,7 +12,7 @@ module.exports.validateSourceUrl = async (url) => {
         const response = await fetch(indexUrl, {
             method: "GET",
             headers: {
-                "User-Agent": "Nexterm/1.0",
+                "User-Agent": "Infram/1.0",
             },
             signal: AbortSignal.timeout(10000),
         });
@@ -342,7 +342,7 @@ const fetchSourceFile = async (baseUrl, path) => {
         const response = await fetch(url, {
             method: "GET",
             headers: {
-                "User-Agent": "Nexterm/1.0",
+                "User-Agent": "Infram/1.0",
             },
             signal: AbortSignal.timeout(30000),
         });
@@ -430,7 +430,7 @@ const parseScriptContent = (content, defaultName) => {
 };
 
 module.exports.ensureDefaultSource = async () => {
-    const DEFAULT_SOURCE_URL = "https://source.nexterm.dev";
+    const DEFAULT_SOURCE_URL = "https://github.com/swissmakers/infra-manager";
     const DEFAULT_SOURCE_NAME = "Official";
 
     const existingDefault = await Source.findOne({ where: { isDefault: true } });

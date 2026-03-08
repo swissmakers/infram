@@ -78,7 +78,7 @@ class _MyAppState extends State<MyApp> {
       listenable: _themeManager,
       builder: (context, child) {
         return MaterialApp(
-          title: 'Nexterm',
+          title: 'Infram',
           theme: ThemeManager.lightTheme,
           darkTheme: ThemeManager.darkTheme,
           themeMode: _themeManager.themeMode,

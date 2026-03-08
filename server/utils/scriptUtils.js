@@ -27,25 +27,25 @@ const transformScript = (content) => {
     const esc = (t) => t.replace(/:/g, "\\x3A");
     let t = content
         .replace(/^(\s*)sudo(?!\s+-S)(\s+)/gm, "$1sudo -S$2")
-        .replace(/^(\s*)@NEXTERM:STEP\s+"((?:\\.|[^"\\])*)"/gm, "$1echo \"NEXTERM_STEP:$2\"")
-        .replace(/^(\s*)@NEXTERM:INPUT\s+(\S+)\s+"((?:\\.|[^"\\])*)"(?:\s+"((?:\\.|[^"\\]*)*)")?/gm, (_, i, v, p, d) =>
-            `${i}echo "NEXTERM_INPUT:${v}:${esc(p)}:${d ? esc(d) : ""}" && read -r ${v}`)
-        .replace(/^(\s*)@NEXTERM:SELECT\s+"((?:\\.|[^"\\])*)"\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm, (_, i, v, p, o) =>
-            `${i}echo "NEXTERM_SELECT:${v}:${esc(p)}:${esc(o).replace(/"/g, "\\\"")}" && read -r ${v}`)
-        .replace(/^(\s*)@NEXTERM:SELECT\s+(\S+)\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm, (_, i, v, p, o) =>
-            `${i}echo "NEXTERM_SELECT:${v}:${esc(p)}:${esc(o).replace(/"/g, "\\\"")}" && read -r ${v}`)
-        .replace(/^(\s*)@NEXTERM:WARN\s+"((?:\\.|[^"\\])*)"/gm, (_, i, m) => `${i}echo "NEXTERM_WARN:${esc(m)}"`)
-        .replace(/^(\s*)@NEXTERM:INFO\s+"((?:\\.|[^"\\])*)"/gm, (_, i, m) => `${i}echo "NEXTERM_INFO:${esc(m)}"`)
-        .replace(/^(\s*)@NEXTERM:CONFIRM\s+"((?:\\.|[^"\\])*)"/gm, (_, i, m) =>
-            `${i}echo "NEXTERM_CONFIRM:${esc(m)}" && read -r NEXTERM_CONFIRM_RESULT`)
-        .replace(/^(\s*)@NEXTERM:PROGRESS\s+(\$?\w+|\d+)/gm, "$1echo \"NEXTERM_PROGRESS:$2\"")
-        .replace(/^(\s*)@NEXTERM:SUCCESS\s+"((?:\\.|[^"\\])*)"/gm, (_, i, m) => `${i}echo "NEXTERM_SUCCESS:${esc(m)}"`)
-        .replace(/^(\s*)@NEXTERM:SUMMARY\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm, (_, i, ti, d) =>
-            `${i}echo "NEXTERM_SUMMARY:${esc(ti).replace(/"/g, "\\\"")}:${esc(d).replace(/"/g, "\\\"")}" && read -r NEXTERM_SUMMARY_RESULT`)
-        .replace(/^(\s*)@NEXTERM:TABLE\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm, (_, i, ti, d) =>
-            `${i}echo "NEXTERM_TABLE:${esc(ti).replace(/"/g, "\\\"")}:${esc(d).replace(/"/g, "\\\"")}" && read -r NEXTERM_TABLE_RESULT`)
-        .replace(/^(\s*)@NEXTERM:MSGBOX\s+"((?:\\.|[^"\\])*)"\s+"((?:\\.|[^"\\])*)"/gm, (_, i, ti, m) =>
-            `${i}echo "NEXTERM_MSGBOX:${esc(ti)}:${esc(m)}" && read -r NEXTERM_MSGBOX_RESULT`);
+        .replace(/^(\s*)@INFRAM:STEP\s+"((?:\\.|[^"\\])*)"/gm, "$1echo \"INFRAM_STEP:$2\"")
+        .replace(/^(\s*)@INFRAM:INPUT\s+(\S+)\s+"((?:\\.|[^"\\])*)"(?:\s+"((?:\\.|[^"\\]*)*)")?/gm, (_, i, v, p, d) =>
+            `${i}echo "INFRAM_INPUT:${v}:${esc(p)}:${d ? esc(d) : ""}" && read -r ${v}`)
+        .replace(/^(\s*)@INFRAMSELECT\s+"((?:\\.|[^"\\])*)"\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm, (_, i, v, p, o) =>
+            `${i}echo "INFRAM_SELECT:${v}:${esc(p)}:${esc(o).replace(/"/g, "\\\"")}" && read -r ${v}`)
+        .replace(/^(\s*)@INFRAM:SELECT\s+(\S+)\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm, (_, i, v, p, o) =>
+            `${i}echo "INFRAM_SELECT:${v}:${esc(p)}:${esc(o).replace(/"/g, "\\\"")}" && read -r ${v}`)
+        .replace(/^(\s*)@INFRAM:WARN\s+"((?:\\.|[^"\\])*)"/gm, (_, i, m) => `${i}echo "INFRAM_WARN:${esc(m)}"`)
+        .replace(/^(\s*)@INFRAM:INFO\s+"((?:\\.|[^"\\])*)"/gm, (_, i, m) => `${i}echo "INFRAM_INFO:${esc(m)}"`)
+        .replace(/^(\s*)@INFRAM:CONFIRM\s+"((?:\\.|[^"\\])*)"/gm, (_, i, m) =>
+            `${i}echo "INFRAM_CONFIRM:${esc(m)}" && read -r INFRAM_CONFIRM_RESULT`)
+        .replace(/^(\s*)@INFRAM:PROGRESS\s+(\$?\w+|\d+)/gm, "$1echo \"INFRAM_PROGRESS:$2\"")
+        .replace(/^(\s*)@INFRAM:SUCCESS\s+"((?:\\.|[^"\\])*)"/gm, (_, i, m) => `${i}echo "INFRAM_SUCCESS:${esc(m)}"`)
+        .replace(/^(\s*)@INFRAM:SUMMARY\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm, (_, i, ti, d) =>
+            `${i}echo "INFRAM_SUMMARY:${esc(ti).replace(/"/g, "\\\"")}:${esc(d).replace(/"/g, "\\\"")}" && read -r INFRAM_SUMMARY_RESULT`)
+        .replace(/^(\s*)@INFRAM:TABLE\s+"((?:\\.|[^"\\])*)"\s+(.+)/gm, (_, i, ti, d) =>
+            `${i}echo "INFRAM_TABLE:${esc(ti).replace(/"/g, "\\\"")}:${esc(d).replace(/"/g, "\\\"")}" && read -r INFRAM_TABLE_RESULT`)
+        .replace(/^(\s*)@INFRAM:MSGBOX\s+"((?:\\.|[^"\\])*)"\s+"((?:\\.|[^"\\])*)"/gm, (_, i, ti, m) =>
+            `${i}echo "INFRAM_MSGBOX:${esc(ti)}:${esc(m)}" && read -r INFRAM_MSGBOX_RESULT`);
 
     const script = `#!/bin/bash\nset -e\n${t}\n`;
     const b64 = Buffer.from(script).toString("base64");
@@ -63,52 +63,52 @@ const getScriptCommands = (b64) => {
         commands.push(`printf '%s' '${chunk}' >> "$_ntb"`);
     }
     
-    commands.push(`base64 -d < "$_ntb" > "$_nts" && rm -f "$_ntb" && chmod +x "$_nts" && "$_nts"; _exit=$?; rm -f "$_nts"; echo "NEXTERM_END:$_exit"`);
+    commands.push(`base64 -d < "$_ntb" > "$_nts" && rm -f "$_ntb" && chmod +x "$_nts" && "$_nts"; _exit=$?; rm -f "$_nts"; echo "INFRAM_END:$_exit"`);
     
     return commands;
 };
 
 const stripAnsi = (s) => s.replace(/\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, "");
 
-const findNextermCommand = (line) => {
+const findInframCommand = (line) => {
     const clean = stripAnsi(line);
-    if (clean.match(/echo\s+["']?NEXTERM_/i) || clean.trim().match(/^[$#>]\s+.*NEXTERM_/)) return null;
-    const m = clean.match(/NEXTERM_(INPUT|SELECT|STEP|WARN|INFO|CONFIRM|PROGRESS|SUCCESS|SUMMARY|TABLE|MSGBOX|END):(.*)/s);
-    return m ? { command: `NEXTERM_${m[1]}`, rest: m[2] } : null;
+    if (clean.match(/echo\s+["']?INFRAM_/i) || clean.trim().match(/^[$#>]\s+.*INFRAM_/)) return null;
+    const m = clean.match(/INFRAM_(INPUT|SELECT|STEP|WARN|INFO|CONFIRM|PROGRESS|SUCCESS|SUMMARY|TABLE|MSGBOX|END):(.*)/s);
+    return m ? { command: `INFRAM_${m[1]}`, rest: m[2] } : null;
 };
 
-const processNextermLine = (line) => {
-    const found = findNextermCommand(line);
+const processInframLine = (line) => {
+    const found = findInframCommand(line);
     if (!found) return null;
     const { command, rest } = found;
     const parts = rest.split(":");
     const unescape = unescapeColons;
 
     switch (command) {
-        case "NEXTERM_INPUT":
+        case "INFRAM_INPUT":
             return { type: "input", variable: parts[0], prompt: unescape(parts[1] || ""), default: parts[2] ? unescape(parts[2]) : "" };
-        case "NEXTERM_SELECT": {
+        case "INFRAM_SELECT": {
             const opts = parseOptions(unescape(parts.slice(2).join(":")));
             return { type: "select", variable: parts[0], prompt: unescape(parts[1] || ""), options: opts, default: opts[0] || "" };
         }
-        case "NEXTERM_STEP": return { type: "step", description: rest.trim() };
-        case "NEXTERM_WARN": return { type: "warning", message: unescape(rest) };
-        case "NEXTERM_INFO": return { type: "info", message: unescape(rest) };
-        case "NEXTERM_CONFIRM": return { type: "confirm", message: unescape(rest) };
-        case "NEXTERM_PROGRESS": return { type: "progress", percentage: parseInt(rest.split(":")[0]) || 0 };
-        case "NEXTERM_SUCCESS": return { type: "success", message: unescape(rest) };
-        case "NEXTERM_SUMMARY": {
+        case "INFRAM_STEP": return { type: "step", description: rest.trim() };
+        case "INFRAM_WARN": return { type: "warning", message: unescape(rest) };
+        case "INFRAM_INFO": return { type: "info", message: unescape(rest) };
+        case "INFRAM_CONFIRM": return { type: "confirm", message: unescape(rest) };
+        case "INFRAM_PROGRESS": return { type: "progress", percentage: parseInt(rest.split(":")[0]) || 0 };
+        case "INFRAM_SUCCESS": return { type: "success", message: unescape(rest) };
+        case "INFRAM_SUMMARY": {
             const data = parseOptions(unescape(parts.slice(1).join(":")));
             return { type: "summary", title: unescape(parts[0] || ""), data };
         }
-        case "NEXTERM_TABLE": {
+        case "INFRAM_TABLE": {
             const data = parseOptions(unescape(parts.slice(1).join(":")));
             return { type: "table", title: unescape(parts[0] || ""), data };
         }
-        case "NEXTERM_MSGBOX": return { type: "msgbox", title: unescape(parts[0] || ""), message: unescape(parts.slice(1).join(":")) };
-        case "NEXTERM_END": return { type: "end", exitCode: parseInt(rest.trim()) || 0 };
+        case "INFRAM_MSGBOX": return { type: "msgbox", title: unescape(parts[0] || ""), message: unescape(parts.slice(1).join(":")) };
+        case "INFRAM_END": return { type: "end", exitCode: parseInt(rest.trim()) || 0 };
         default: return null;
     }
 };
 
-module.exports = { escapeColons, unescapeColons, parseOptions, checkSudoPrompt, transformScript, getScriptCommands, stripAnsi, findNextermCommand, processNextermLine };
+module.exports = { escapeColons, unescapeColons, parseOptions, checkSudoPrompt, transformScript, getScriptCommands, stripAnsi, findInframCommand, processInframLine };

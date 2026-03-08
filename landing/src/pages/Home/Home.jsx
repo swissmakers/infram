@@ -74,7 +74,7 @@ export const Home = () => {
                 </div>
 
                 <div className="hero-visual">
-                    <img ref={imageRef} src={ConnectionsImage} alt="Nexterm Interface" draggable={false}/>
+                    <img ref={imageRef} src={ConnectionsImage} alt="Infram Interface" draggable={false}/>
                 </div>
             </section>
 

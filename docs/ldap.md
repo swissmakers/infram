@@ -6,7 +6,7 @@ Authenticate users against your LDAP or Active Directory server.
 
 When a user logs in:
 
-1. Nexterm searches for the user in your directory
+1. Infram searches for the user in your directory
 2. Tries to bind with their credentials
 3. Creates/updates their local account with LDAP attributes
 4. Issues a session token
@@ -36,7 +36,7 @@ Go to **Settings** → **Authentication** → **Add LDAP**.
 ```text
 Host: dc01.corp.example.com
 Port: 636
-Bind DN: CN=svc_nexterm,CN=Users,DC=corp,DC=example,DC=com
+Bind DN: CN=svc_infram,CN=Users,DC=corp,DC=example,DC=com
 Base DN: CN=Users,DC=corp,DC=example,DC=com
 User Search Filter: (sAMAccountName={{username}})
 Use TLS: enabled

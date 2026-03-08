@@ -71,8 +71,8 @@ jobs:
             }
             
             const L = (label, file) => `[${label}](../../releases/download/v${v}/${file})`;
-            const apk = (arch) => L('APK', `nexterm-${v}-${arch}.apk`);
-            const ipa = () => L('IPA', `nexterm-${v}.ipa`);
+            const apk = (arch) => L('APK', `infram-${v}-${arch}.apk`);
+            const ipa = () => L('IPA', `infram-${v}.ipa`);
             
             let body = '';
             if (v.toUpperCase().includes('PREVIEW')) body += '![Preview](https://i.imgur.com/Qu3wnvw.png)\n\n';
@@ -81,8 +81,8 @@ jobs:
             body += `## 📦 Downloads\n\n`;
             body += `| Platform / Architecture | Windows | macOS | Linux | Android | iOS |\n`;
             body += `| :-- | :-- | :-- | :-- | :-- | :-- |\n`;
-            body += `| **x86-64** | ${L('EXE', 'nexterm-connector-windows-x64.exe')} · ${L('MSI', 'nexterm-connector-windows-x64.msi')} | ${L('DMG', 'nexterm-connector-macos-x64.dmg')} | ${L('DEB', 'nexterm-connector-linux-x64.deb')} · ${L('RPM', 'nexterm-connector-linux-x64.rpm')} · ${L('AppImage', 'nexterm-connector-linux-x64.AppImage')} | ${apk('x86_64')} | |\n`;
-            body += `| **ARM64** | ${L('EXE', 'nexterm-connector-windows-arm64.exe')} | ${L('DMG', 'nexterm-connector-macos-arm64.dmg')} | | ${apk('arm64-v8a')} | |\n`;
+            body += `| **x86-64** | ${L('EXE', 'infram-connector-windows-x64.exe')} · ${L('MSI', 'infram-connector-windows-x64.msi')} | ${L('DMG', 'infram-connector-macos-x64.dmg')} | ${L('DEB', 'infram-connector-linux-x64.deb')} · ${L('RPM', 'infram-connector-linux-x64.rpm')} · ${L('AppImage', 'infram-connector-linux-x64.AppImage')} | ${apk('x86_64')} | |\n`;
+            body += `| **ARM64** | ${L('EXE', 'infram-connector-windows-arm64.exe')} | ${L('DMG', 'infram-connector-macos-arm64.dmg')} | | ${apk('arm64-v8a')} | |\n`;
             body += `| **ARM32** | | | | ${apk('armeabi-v7a')} | |\n`;
             body += `| **Universal** | | | | ${apk('universal')} | ${ipa()} |\n`;
             

@@ -1,6 +1,6 @@
 # 🔗 Custom Sources
 
-Add your own scripts and snippets to Nexterm by connecting a Git repository. You can use public repositories from GitHub, GitLab, or any other Git hosting platform.
+Add your own scripts and snippets to Infram by connecting a Git repository. You can use public repositories from GitHub, GitLab, or any other Git hosting platform.
 
 ## Adding a Source
 
@@ -26,7 +26,7 @@ Switch to the **Scripts** tab to access your scripts.
 
 ## Syncing
 
-Your repository syncs automatically when Nexterm starts. Push updates to your repository and restart Nexterm to see the changes.
+Your repository syncs automatically when Infram starts. Push updates to your repository and restart Infram to see the changes.
 
 You can add multiple sources if you want to organize scripts by project or team.
 

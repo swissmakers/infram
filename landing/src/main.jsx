@@ -24,7 +24,7 @@ const router = createBrowserRouter([
     }
 ]);
 
-export const DOCUMENTATION_BASE = "https://docs.nexterm.dev";
+export const DOCUMENTATION_BASE = "https://github.com/swissmakers/infra-manager";
 export const GITHUB_LINK = "https://github.com/swissmakers/infra-manager";
 export const WEBSITE_LINK = "https://swissmakers.ch";
 

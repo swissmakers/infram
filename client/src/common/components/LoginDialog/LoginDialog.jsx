@@ -1,5 +1,5 @@
 import { DialogProvider } from "@/common/components/Dialog";
-import NextermLogo from "@/common/components/NextermLogo";
+import InframLogo from "@/common/components/InframLogo";
 import "./styles.sass";
 import Button from "@/common/components/Button";
 import Input from "@/common/components/IconInput";
@@ -163,7 +163,7 @@ export const LoginDialog = ({ open }) => {
         <DialogProvider disableClosing open={open}>
             <div className="login-dialog">
                 <div className="login-logo">
-                    <NextermLogo size={48} />
+                    <InframLogo size={48} />
                     <h1>{firstTimeSetup ? t('common.loginDialog.registrationTitle') : t('common.loginDialog.title')}</h1>
                 </div>
                 <form className="login-form" onSubmit={submit}>

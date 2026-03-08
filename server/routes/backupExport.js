@@ -24,9 +24,9 @@ const streamFile = (res, filePath, filename) => {
  * @return {object} 404 - Database not found
  */
 app.get("/database", authenticateDownload, (req, res) => {
-    const dbPath = path.join(DATA_DIR, "nexterm.db");
+    const dbPath = path.join(DATA_DIR, "infram.db");
     if (!fs.existsSync(dbPath)) return res.status(404).json({ message: "Database not found" });
-    streamFile(res, dbPath, `nexterm-${Date.now()}.db`);
+    streamFile(res, dbPath, `infram-${Date.now()}.db`);
 });
 
 /**

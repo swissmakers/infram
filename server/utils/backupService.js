@@ -8,7 +8,7 @@ const { createProvider } = require("./backupProviders");
 const logger = require("./logger");
 
 const DATA_DIR = path.join(__dirname, "../../data");
-const DB_PATH = path.join(DATA_DIR, "nexterm.db");
+const DB_PATH = path.join(DATA_DIR, "infram.db");
 const RECORDINGS_DIR = path.join(DATA_DIR, "recordings");
 const LOGS_DIR = path.join(DATA_DIR, "logs");
 const TEMP_DIR = path.join(DATA_DIR, ".backup-temp");
@@ -73,7 +73,7 @@ module.exports.createBackup = async (providerId) => {
         archive.pipe(output);
 
         if (settings.includeDatabase && fs.existsSync(DB_PATH)) {
-            archive.file(DB_PATH, { name: "nexterm.db" });
+            archive.file(DB_PATH, { name: "infram.db" });
         }
         if (settings.includeRecordings && fs.existsSync(RECORDINGS_DIR)) {
             archive.directory(RECORDINGS_DIR, "recordings");
@@ -127,7 +127,7 @@ module.exports.restoreBackup = async (providerId, backupName) => {
     await decompress(tempFile, restorePath);
     fs.unlinkSync(tempFile);
 
-    const restoredDb = path.join(restorePath, "nexterm.db");
+    const restoredDb = path.join(restorePath, "infram.db");
     const restoredRecordings = path.join(restorePath, "recordings");
     const restoredLogs = path.join(restorePath, "logs");
 

@@ -1,5 +1,5 @@
 import "./styles.sass";
-import NextermLogo from "@/common/components/NextermLogo";
+import InframLogo from "@/common/components/InframLogo";
 import { mdiCog, mdiLogout, mdiAccountCogOutline, mdiStarOutline, mdiLifebuoy } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -44,7 +44,7 @@ export const Sidebar = ({ onToggleCollapse }) => {
             <ActionConfirmDialog open={logoutDialogOpen} setOpen={setLogoutDialogOpen} text={t('common.sidebar.logoutConfirmText', { username: user?.username })} onConfirm={logout} />
             <div className="sidebar-top">
                 <Tooltip text={t('common.sidebar.collapseTitle')}>
-                    <div className="sidebar-logo nexterm-logo" onClick={onToggleCollapse} title={t('common.sidebar.collapseTitle')}><NextermLogo size={64} /></div>
+                    <div className="sidebar-logo infram-logo" onClick={onToggleCollapse} title={t('common.sidebar.collapseTitle')}><InframLogo size={64} /></div>
                 </Tooltip>
                 <hr />
                 <nav>

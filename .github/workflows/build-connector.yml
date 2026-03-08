@@ -25,17 +25,17 @@ jobs:
             target: x86_64-pc-windows-msvc
             format: msi
             artifact_path: connector/src-tauri/target/release/bundle/msi/*.msi
-            artifact_name: nexterm-connector-windows-x64.msi
+            artifact_name: infram-connector-windows-x64.msi
           - arch: x64
             target: x86_64-pc-windows-msvc
             format: exe
             artifact_path: connector/src-tauri/target/release/bundle/nsis/*.exe
-            artifact_name: nexterm-connector-windows-x64.exe
+            artifact_name: infram-connector-windows-x64.exe
           - arch: arm64
             target: aarch64-pc-windows-msvc
             format: exe
             artifact_path: connector/src-tauri/target/aarch64-pc-windows-msvc/release/bundle/nsis/*.exe
-            artifact_name: nexterm-connector-windows-arm64.exe
+            artifact_name: infram-connector-windows-arm64.exe
 
     steps:
       - name: Checkout project
@@ -110,11 +110,11 @@ jobs:
           - arch: x64
             target: x86_64-apple-darwin
             artifact_path: connector/src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
-            artifact_name: nexterm-connector-macos-x64.dmg
+            artifact_name: infram-connector-macos-x64.dmg
           - arch: arm64
             target: aarch64-apple-darwin
             artifact_path: connector/src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
-            artifact_name: nexterm-connector-macos-arm64.dmg
+            artifact_name: infram-connector-macos-arm64.dmg
 
     steps:
       - name: Checkout project
@@ -186,13 +186,13 @@ jobs:
         include:
           - format: deb
             artifact_path: connector/src-tauri/target/release/bundle/deb/*.deb
-            artifact_name: nexterm-connector-linux-x64.deb
+            artifact_name: infram-connector-linux-x64.deb
           - format: rpm
             artifact_path: connector/src-tauri/target/release/bundle/rpm/*.rpm
-            artifact_name: nexterm-connector-linux-x64.rpm
+            artifact_name: infram-connector-linux-x64.rpm
           - format: AppImage
             artifact_path: connector/src-tauri/target/release/bundle/appimage/*.AppImage
-            artifact_name: nexterm-connector-linux-x64.AppImage
+            artifact_name: infram-connector-linux-x64.AppImage
 
     steps:
       - name: Checkout project

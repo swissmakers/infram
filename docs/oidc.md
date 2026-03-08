@@ -22,7 +22,7 @@ Go to **Settings** → **Authentication** → **Add Provider**.
 ### Microsoft Entra ID (Azure AD)
 
 1. [Azure Portal](https://portal.azure.com) → **Microsoft Entra ID** → **App registrations** → **New registration**
-2. Add redirect URI: `https://nexterm.yourdomain.com/api/auth/oidc/callback`
+2. Add redirect URI: `https://infram.yourdomain.com/api/auth/oidc/callback`
 3. Copy **Application (client) ID** → Client ID
 4. **Certificates & secrets** → **New client secret** → copy value → Client Secret
 5. Issuer URL: `https://login.microsoftonline.com/{tenant-id}/v2.0`
@@ -31,7 +31,7 @@ Go to **Settings** → **Authentication** → **Add Provider**.
 
 1. [Google Cloud Console](https://console.cloud.google.com) → **APIs & Services** → **Credentials**
 2. **Create Credentials** → **OAuth client ID** → **Web application**
-3. Add redirect URI: `https://nexterm.yourdomain.com/api/auth/oidc/callback`
+3. Add redirect URI: `https://infram.yourdomain.com/api/auth/oidc/callback`
 4. Issuer URL: `https://accounts.google.com`
 
 > [!WARNING]
@@ -59,10 +59,10 @@ Go to **Settings** → **Authentication** → **Add Provider**.
 identity_providers:
   oidc:
     clients:
-      - client_id: nexterm
+      - client_id: infram
         client_secret: '$pbkdf2-sha512$your-hashed-secret'
         redirect_uris:
-          - https://nexterm.yourdomain.com/api/auth/oidc/callback
+          - https://infram.yourdomain.com/api/auth/oidc/callback
         scopes: [ openid, profile, email ]
 ```
 

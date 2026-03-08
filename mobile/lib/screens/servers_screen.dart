@@ -135,7 +135,7 @@ class _ServersScreenState extends State<ServersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Nexterm'), elevation: 0),
+      appBar: AppBar(title: const Text('Infram'), elevation: 0),
       body: Column(children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
