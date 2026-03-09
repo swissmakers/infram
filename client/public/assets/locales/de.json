@@ -915,7 +915,27 @@
           "firstNameAttribute": "Vorname Attribut",
           "firstNameAttributePlaceholder": "givenName",
           "lastNameAttribute": "Nachname Attribut",
-          "lastNameAttributePlaceholder": "sn"
+          "lastNameAttributePlaceholder": "sn",
+          "organizations": "Organisationen",
+          "organizationsPlaceholder": "Organisationen auswählen",
+          "adminGroupDNs": "Admin Gruppen-DNs",
+          "adminGroupDNsPlaceholder": "Eine DN pro Zeile, z.B. cn=admins,ou=groups,dc=company,dc=com",
+          "groupSearchBaseDN": "Gruppen-Suchbasis-DN",
+          "groupSearchBaseDNPlaceholder": "ou=groups,dc=company,dc=com",
+          "groupSearchFilter": "Gruppen-Suchfilter",
+          "groupSearchFilterPlaceholder": "(member={{dn}})",
+          "groupNameAttribute": "Gruppenname-Attribut",
+          "groupNameAttributePlaceholder": "cn",
+          "groupMemberAttribute": "Gruppenmitglied-Attribut",
+          "groupMemberAttributePlaceholder": "member",
+          "connectionTimeoutMs": "Verbindungs-Timeout (ms)",
+          "searchTimeoutMs": "Such-Timeout (ms)"
+        },
+        "summary": {
+          "organizations_one": "{{count}} Organisation verknüpft",
+          "organizations_other": "{{count}} Organisationen verknüpft",
+          "adminGroups_one": "{{count}} Admin-Gruppe",
+          "adminGroups_other": "{{count}} Admin-Gruppen"
         },
         "advanced": {
           "show": "Erweiterte Einstellungen anzeigen",

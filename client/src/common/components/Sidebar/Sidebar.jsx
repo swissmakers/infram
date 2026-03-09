@@ -34,6 +34,9 @@ export const Sidebar = ({ onToggleCollapse }) => {
     }, []);
 
     const navigation = getSidebarNavigation(t);
+    const userProviderLabel = user?.authProviderType === "ldap" && user?.authProviderName
+        ? user.authProviderName
+        : user?.username;
 
     return (<>
         <div className="sidebar">
@@ -61,7 +64,7 @@ export const Sidebar = ({ onToggleCollapse }) => {
                             <div className="user-avatar"><span>{getUserInitials()}</span></div>
                             <div className="user-info">
                                 <span className="user-name">{user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.username || t('common.sidebar.account')}</span>
-                                <span className="user-username">@{user?.username}</span>
+                                <span className="user-username">@{userProviderLabel}</span>
                             </div>
                         </div>
                         <div className="user-menu-separator" />

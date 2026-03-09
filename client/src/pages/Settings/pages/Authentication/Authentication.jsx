@@ -131,7 +131,13 @@ export const Authentication = () => {
                                     {provider.name}
                                     <span className="system-badge">LDAP</span>
                                 </h3>
-                                <p>{provider.host}:{provider.port}</p>
+                                <p>
+                                    {provider.host}:{provider.port}
+                                    {" \u00b7 "}
+                                    {t("settings.authentication.ldapDialog.summary.organizations", { count: provider.organizationIds?.length || 0 })}
+                                    {" \u00b7 "}
+                                    {t("settings.authentication.ldapDialog.summary.adminGroups", { count: provider.adminGroupDNs?.length || 0 })}
+                                </p>
                             </div>
                         </div>
 

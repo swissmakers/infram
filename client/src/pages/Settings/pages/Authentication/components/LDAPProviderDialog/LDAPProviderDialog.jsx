@@ -3,13 +3,20 @@ import "./styles.sass";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Input from "@/common/components/IconInput";
+import SelectBox from "@/common/components/SelectBox";
 import { mdiAccountMultiple, mdiCog, mdiFormTextbox, mdiKey, mdiServer, mdiNumeric, mdiFilter, mdiTestTube } from "@mdi/js";
 import Button from "@/common/components/Button";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
-import { patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
+import { getRequest, patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 
-const defaults = { name: "", host: "", port: "389", bindDN: "", bindPassword: "", baseDN: "", userSearchFilter: "(uid={{username}})", useTLS: false, usernameAttr: "uid", firstNameAttr: "givenName", lastNameAttr: "sn" };
+const defaults = {
+    name: "", host: "", port: "389", bindDN: "", bindPassword: "", baseDN: "",
+    userSearchFilter: "(uid={{username}})", useTLS: false, usernameAttr: "uid",
+    emailAttr: "mail", firstNameAttr: "givenName", lastNameAttr: "sn",
+    organizationIds: [], adminGroupDNsText: "", groupSearchBaseDN: "", groupSearchFilter: "(member={{dn}})",
+    groupNameAttribute: "cn", groupMemberAttribute: "member", connectionTimeoutMs: "10000", searchTimeoutMs: "10000",
+};
 
 export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
     const { t } = useTranslation();
@@ -17,9 +24,22 @@ export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
     const [form, setForm] = useState(defaults);
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [testing, setTesting] = useState(false);
+    const [organizations, setOrganizations] = useState([]);
 
     const set = (key) => (val) => setForm(f => ({ ...f, [key]: val }));
     const T = (key) => t(`settings.authentication.ldapDialog.${key}`);
+
+    useEffect(() => {
+        const loadOrganizations = async () => {
+            try {
+                const orgs = await getRequest("organizations");
+                setOrganizations(Array.isArray(orgs) ? orgs : []);
+            } catch (error) {
+                console.error("Failed to load organizations", error);
+            }
+        };
+        if (open) loadOrganizations();
+    }, [open]);
 
     useEffect(() => {
         if (provider) {
@@ -27,7 +47,16 @@ export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
                 name: provider.name, host: provider.host, port: String(provider.port), bindDN: provider.bindDN,
                 bindPassword: "********", baseDN: provider.baseDN, userSearchFilter: provider.userSearchFilter,
                 useTLS: Boolean(provider.useTLS), usernameAttr: provider.usernameAttribute,
+                emailAttr: provider.emailAttribute || "mail",
                 firstNameAttr: provider.firstNameAttribute, lastNameAttr: provider.lastNameAttribute,
+                organizationIds: provider.organizationIds || [],
+                adminGroupDNsText: Array.isArray(provider.adminGroupDNs) ? provider.adminGroupDNs.join("\n") : "",
+                groupSearchBaseDN: provider.groupSearchBaseDN || "",
+                groupSearchFilter: provider.groupSearchFilter || "(member={{dn}})",
+                groupNameAttribute: provider.groupNameAttribute || "cn",
+                groupMemberAttribute: provider.groupMemberAttribute || "member",
+                connectionTimeoutMs: String(provider.connectionTimeoutMs || 10000),
+                searchTimeoutMs: String(provider.searchTimeoutMs || 10000),
             });
         } else setForm(defaults);
         setShowAdvanced(false);
@@ -38,7 +67,15 @@ export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
             const data = {
                 name: form.name, host: form.host, port: parseInt(form.port), bindDN: form.bindDN, baseDN: form.baseDN,
                 userSearchFilter: form.userSearchFilter, useTLS: Boolean(form.useTLS), usernameAttribute: form.usernameAttr,
-                firstNameAttribute: form.firstNameAttr, lastNameAttribute: form.lastNameAttr,
+                emailAttribute: form.emailAttr, firstNameAttribute: form.firstNameAttr, lastNameAttribute: form.lastNameAttr,
+                organizationIds: form.organizationIds.map((id) => Number(id)).filter((id) => Number.isInteger(id)),
+                adminGroupDNs: String(form.adminGroupDNsText || "").split("\n").map((line) => line.trim()).filter(Boolean),
+                groupSearchBaseDN: form.groupSearchBaseDN || null,
+                groupSearchFilter: form.groupSearchFilter,
+                groupNameAttribute: form.groupNameAttribute,
+                groupMemberAttribute: form.groupMemberAttribute,
+                connectionTimeoutMs: parseInt(form.connectionTimeoutMs || "10000"),
+                searchTimeoutMs: parseInt(form.searchTimeoutMs || "10000"),
                 ...(form.bindPassword !== "********" && { bindPassword: form.bindPassword }),
             };
             await (provider ? patchRequest(`auth/providers/admin/ldap/${provider.id}`, data) : putRequest("auth/providers/admin/ldap", { ...data, enabled: true }));
@@ -102,16 +139,66 @@ export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
                     <ToggleSwitch checked={form.useTLS} onChange={set("useTLS")} id="useTLS" />
                 </div>
 
+                <div className="form-group">
+                    <label>{T("fields.organizations")}</label>
+                    <SelectBox
+                        multiple
+                        searchable
+                        options={organizations.map((org) => ({ value: org.id, label: org.name }))}
+                        selected={form.organizationIds}
+                        setSelected={set("organizationIds")}
+                        placeholder={T("fields.organizationsPlaceholder")}
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>{T("fields.adminGroupDNs")}</label>
+                    <textarea
+                        className="ldap-textarea"
+                        value={form.adminGroupDNsText}
+                        onChange={(event) => set("adminGroupDNsText")(event.target.value)}
+                        placeholder={T("fields.adminGroupDNsPlaceholder")}
+                    />
+                </div>
+
                 <div className="advanced-settings">
                     <Button type="secondary" icon={mdiCog} onClick={() => setShowAdvanced(!showAdvanced)} text={showAdvanced ? T("advanced.hide") : T("advanced.show")} />
                     {showAdvanced && (
                         <div className="advanced-form">
-                            {[["usernameAttr", "usernameAttribute", mdiAccountMultiple], ["firstNameAttr", "firstNameAttribute", mdiFormTextbox], ["lastNameAttr", "lastNameAttribute", mdiFormTextbox]].map(([key, field, icon]) => (
+                            {[["usernameAttr", "usernameAttribute", mdiAccountMultiple], ["emailAttr", "emailAttribute", mdiFormTextbox], ["firstNameAttr", "firstNameAttribute", mdiFormTextbox], ["lastNameAttr", "lastNameAttribute", mdiFormTextbox]].map(([key, field, icon]) => (
                                 <div className="form-group" key={key}>
                                     <label>{T(`fields.${field}`)}</label>
                                     <Input icon={icon} placeholder={T(`fields.${field}Placeholder`)} value={form[key]} setValue={set(key)} />
                                 </div>
                             ))}
+                            <div className="form-group">
+                                <label>{T("fields.groupSearchBaseDN")}</label>
+                                <Input icon={mdiFormTextbox} placeholder={T("fields.groupSearchBaseDNPlaceholder")} value={form.groupSearchBaseDN} setValue={set("groupSearchBaseDN")} />
+                            </div>
+                            <div className="form-group">
+                                <label>{T("fields.groupSearchFilter")}</label>
+                                <Input icon={mdiFilter} placeholder={T("fields.groupSearchFilterPlaceholder")} value={form.groupSearchFilter} setValue={set("groupSearchFilter")} />
+                            </div>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>{T("fields.groupNameAttribute")}</label>
+                                    <Input icon={mdiFormTextbox} placeholder={T("fields.groupNameAttributePlaceholder")} value={form.groupNameAttribute} setValue={set("groupNameAttribute")} />
+                                </div>
+                                <div className="form-group">
+                                    <label>{T("fields.groupMemberAttribute")}</label>
+                                    <Input icon={mdiFormTextbox} placeholder={T("fields.groupMemberAttributePlaceholder")} value={form.groupMemberAttribute} setValue={set("groupMemberAttribute")} />
+                                </div>
+                            </div>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>{T("fields.connectionTimeoutMs")}</label>
+                                    <Input icon={mdiNumeric} type="number" placeholder="10000" value={form.connectionTimeoutMs} setValue={set("connectionTimeoutMs")} />
+                                </div>
+                                <div className="form-group">
+                                    <label>{T("fields.searchTimeoutMs")}</label>
+                                    <Input icon={mdiNumeric} type="number" placeholder="10000" value={form.searchTimeoutMs} setValue={set("searchTimeoutMs")} />
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

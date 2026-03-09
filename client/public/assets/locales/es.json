@@ -915,7 +915,27 @@
           "firstNameAttribute": "Atributo del nombre",
           "firstNameAttributePlaceholder": "givenName",
           "lastNameAttribute": "Atributo Apellido",
-          "lastNameAttributePlaceholder": "sn"
+          "lastNameAttributePlaceholder": "sn",
+          "organizations": "Organizaciones",
+          "organizationsPlaceholder": "Seleccionar organizaciones",
+          "adminGroupDNs": "DNs de grupos admin",
+          "adminGroupDNsPlaceholder": "Una DN por línea, p. ej. cn=admins,ou=groups,dc=company,dc=com",
+          "groupSearchBaseDN": "DN base de búsqueda de grupos",
+          "groupSearchBaseDNPlaceholder": "ou=groups,dc=company,dc=com",
+          "groupSearchFilter": "Filtro de búsqueda de grupos",
+          "groupSearchFilterPlaceholder": "(member={{dn}})",
+          "groupNameAttribute": "Atributo de nombre de grupo",
+          "groupNameAttributePlaceholder": "cn",
+          "groupMemberAttribute": "Atributo de miembro de grupo",
+          "groupMemberAttributePlaceholder": "member",
+          "connectionTimeoutMs": "Tiempo de espera de conexión (ms)",
+          "searchTimeoutMs": "Tiempo de espera de búsqueda (ms)"
+        },
+        "summary": {
+          "organizations_one": "{{count}} organización vinculada",
+          "organizations_other": "{{count}} organizaciones vinculadas",
+          "adminGroups_one": "{{count}} grupo admin",
+          "adminGroups_other": "{{count}} grupos admin"
         },
         "advanced": {
           "show": "Mostrar ajustes avanzados",

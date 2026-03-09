@@ -27,6 +27,14 @@ module.exports = db.define("accounts", {
         type: Sequelize.STRING,
         defaultValue: "user",
     },
+    authProviderType: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
+    authProviderName: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
     totpSecret: {
         type: Sequelize.STRING,
         defaultValue: () => {
