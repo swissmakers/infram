@@ -1,15 +1,29 @@
-import { memo } from "react";
+import { memo, useLayoutEffect, useRef, useState } from "react";
 
 export const InframLogo = memo(({ size = 40, className = "" }) => {
+    const svgRef = useRef(null);
+    const [computedViewBox, setComputedViewBox] = useState("0 0 22000 22000");
+
+    useLayoutEffect(() => {
+        if (!svgRef.current) return;
+        const bbox = svgRef.current.getBBox();
+        if (!bbox?.width || !bbox?.height) return;
+
+        const pad = Math.max(bbox.width, bbox.height) * 0.04;
+        setComputedViewBox(`${bbox.x - pad} ${bbox.y - pad} ${bbox.width + pad * 2} ${bbox.height + pad * 2}`);
+    }, []);
+
     return (
         <svg
+            ref={svgRef}
             width={size}
             height={size}
-            viewBox="-20 -20 570 552"
+            viewBox={computedViewBox}
+            preserveAspectRatio="xMidYMid meet"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             className={className}
-            style={{ overflow: "visible" }}
+            style={{ display: "block", overflow: "hidden", maxWidth: "100%", maxHeight: "100%" }}
         >
             <defs>
                 <filter id="glow_infram" x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox">
