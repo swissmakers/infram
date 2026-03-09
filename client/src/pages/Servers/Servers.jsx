@@ -395,19 +395,25 @@ export const Servers = () => {
         setDirectConnectServer(null);
     };
 
-    const handleDirectConnect = (directIdentity) => {
+    const handleDirectConnect = ({ directIdentity = null, identityId = null } = {}) => {
         if (!directConnectServer) return;
 
         const requiresReason = checkConnectionReasonRequired(directConnectServer.id, servers);
         if (requiresReason) {
             setPendingConnection({
                 server: directConnectServer,
-                identity: null,
+                identity: identityId ? { id: identityId } : null,
                 directIdentity,
             });
             setConnectionReasonDialogOpen(true);
         } else {
-            performConnection(directConnectServer, null, null, null, directIdentity);
+            performConnection(
+                directConnectServer,
+                identityId ? { id: identityId } : null,
+                null,
+                null,
+                directIdentity
+            );
         }
     };
 

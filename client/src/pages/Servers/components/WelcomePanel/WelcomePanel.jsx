@@ -51,6 +51,9 @@ export const WelcomePanel = ({
 
     const server = contextItem ? getServerById(contextItem.entryId) : null;
     const getHibernated = (entryId) => hibernatedSessions.find(s => s.server?.id === entryId);
+    const greetingName = user?.firstName
+        ? `${user.firstName}${user?.lastName ? ` ${user.lastName}` : ""}`
+        : (user?.username || "User");
 
     const handleClick = (item) => {
         const hibernated = getHibernated(item.entryId);
@@ -86,7 +89,7 @@ export const WelcomePanel = ({
     return (
         <div className="welcome-panel">
             <div className="welcome-left">
-                <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || ""}</span>!</h1>
+                <h1>Hi, <span>{greetingName}</span>!</h1>
                 <p>{t("welcome.subtitle")}</p>
                 <div className="welcome-buttons">
                     {EXTERNAL_LINKS_ENABLED && (

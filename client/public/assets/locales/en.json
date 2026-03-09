@@ -1307,6 +1307,20 @@
       "stop": "Stop",
       "start": "Start"
     },
+    "directConnect": {
+      "identitySource": "Identity source",
+      "manual": "Manual credentials",
+      "savedIdentity": "Saved identity",
+      "identitySelection": "Select identity",
+      "identityPlaceholder": "Choose an identity",
+      "personalIdentity": "Personal",
+      "organizationIdentity": "Organization",
+      "usingIdentity": "Using identity: {{name}}",
+      "messages": {
+        "identityRequired": "Please select an identity",
+        "noIdentitiesAvailable": "No compatible identities available for this connection."
+      }
+    },
     "tabs": {
       "contextMenu": {
         "popOut": "Pop Out",

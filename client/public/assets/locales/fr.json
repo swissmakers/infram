@@ -1307,6 +1307,20 @@
       "stop": "Arrêter",
       "start": "Démarrer"
     },
+    "directConnect": {
+      "identitySource": "Source d'identité",
+      "manual": "Identifiants manuels",
+      "savedIdentity": "Identité enregistrée",
+      "identitySelection": "Sélectionner une identité",
+      "identityPlaceholder": "Choisir une identité",
+      "personalIdentity": "Personnelle",
+      "organizationIdentity": "Organisation",
+      "usingIdentity": "Identité utilisée : {{name}}",
+      "messages": {
+        "identityRequired": "Veuillez sélectionner une identité",
+        "noIdentitiesAvailable": "Aucune identité compatible n'est disponible pour cette connexion."
+      }
+    },
     "tabs": {
       "contextMenu": {
         "popOut": "Pop Out",
