@@ -88,6 +88,14 @@ RUN apk add --no-cache \
     ffmpeg-libavcodec ffmpeg-libavformat ffmpeg-libavutil ffmpeg-libswscale \
     util-linux samba-client
 
+RUN rm -rf /usr/local/lib/node_modules/npm \
+    /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm \
+    /usr/local/bin/npx \
+    /usr/local/bin/corepack \
+    /usr/local/bin/yarn \
+    /usr/local/bin/yarnpkg
+
 COPY --from=guacd-builder /install/usr/local/sbin/ /usr/local/sbin/
 COPY --from=guacd-builder /install/usr/local/lib/ /usr/local/lib/
 COPY --from=guacd-builder /install/usr/lib/freerdp2/ /usr/lib/freerdp2/
