@@ -4,6 +4,7 @@ const Entry = require("../models/Entry");
 const Integration = require("../models/Integration");
 const logger = require("./logger");
 const { fetchInventory } = require("./netboxClient");
+const stateBroadcaster = require("../lib/StateBroadcaster");
 
 const normalize = (value) => String(value || "").trim().toLowerCase();
 
@@ -196,6 +197,12 @@ const syncNetboxIntegration = async (integration, accountId) => {
     const summary = `NetBox sync complete: created ${created}, updated ${updated}, deleted ${deleted}.`;
     await markIntegrationStatus(integration.id, "ok", summary);
     logger.info(summary, { integrationId: integration.id, total: items.length });
+
+    // Push background update so connected clients refresh server lists without reload.
+    stateBroadcaster.broadcast("ENTRIES", {
+        accountId: integration.organizationId ? undefined : accountId,
+        organizationId: integration.organizationId || undefined,
+    });
 
     return {
         success: true,
