@@ -1,6 +1,7 @@
 FROM node:22-alpine AS client-builder
 
 WORKDIR /app
+RUN apk upgrade --no-cache
 
 COPY vendor/guacamole-client/guacamole-common-js/ ./vendor/guacamole-client/guacamole-common-js/
 
@@ -17,6 +18,7 @@ FROM node:22-alpine AS server-builder
 ARG VERSION
 
 WORKDIR /app
+RUN apk upgrade --no-cache
 
 RUN apk add --no-cache \
     python3 py3-pip py3-setuptools \
@@ -32,6 +34,7 @@ RUN for i in 1 2 3; do yarn install --production --frozen-lockfile --network-tim
 COPY server/ server/
 
 FROM node:22-alpine AS guacd-builder
+RUN apk upgrade --no-cache
 
 RUN apk add --no-cache \
     cairo-dev jpeg-dev libpng-dev ossp-uuid-dev \
@@ -56,6 +59,7 @@ RUN cd guacamole-server \
     && strip /install/usr/local/sbin/guacd /install/usr/local/lib/*.so.* 2>/dev/null || true
 
 FROM node:22-alpine
+RUN apk upgrade --no-cache
 
 RUN apk add --no-cache \
     cairo jpeg libpng ossp-uuid \

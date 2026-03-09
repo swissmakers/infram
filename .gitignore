@@ -1,3 +1,6 @@
+.pnpm-store
+.tools
+
 # Logs
 data/logs
 logs

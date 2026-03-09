@@ -6,20 +6,22 @@
   "author": "Swissmakers GmbH",
   "license": "MIT",
   "dependencies": {
-    "@simplewebauthn/server": "^13.2.2",
+    "@simplewebauthn/server": "^13.2.3",
     "archiver": "^7.0.1",
-    "axios": "^1.13.5",
+    "axios": "^1.13.6",
     "bcrypt": "^6.0.0",
     "decompress": "^4.2.1",
+    "esbuild": "^0.27.3",
     "express": "^5.2.1",
     "express-jsdoc-swagger": "^1.8.0",
-    "express-rate-limit": "^8.2.1",
+    "express-rate-limit": "^8.3.0",
     "express-ws": "^5.0.2",
+    "glob": "^13.0.6",
     "joi": "^18.0.2",
     "js-yaml": "^4.1.1",
     "ldapts": "^8.1.7",
     "openid-client": "^6.8.2",
-    "sequelize": "^6.37.7",
+    "sequelize": "^6.37.8",
     "sharp": "^0.34.5",
     "speakeasy": "^2.0.0",
     "sqlite3": "^5.1.7",
@@ -34,7 +36,7 @@
     "dotenv": "^17.3.1",
     "nodemon": "^3.1.14",
     "vitepress": "^1.6.4",
-    "vitepress-openapi": "^0.1.15"
+    "vitepress-openapi": "^0.1.17"
   },
   "scripts": {
     "dev:server": "nodemon --ignore docs --ignore vendor --ignore client --ignore mobile --ignore data server/index.js",
@@ -44,6 +46,22 @@
     "docs:openapi": "node scripts/generate-openapi.js",
     "docs:dev": "yarn docs:openapi && vitepress dev docs",
     "docs:build": "yarn docs:openapi && vitepress build docs",
-    "docs:preview": "vitepress preview docs"
-  }
+    "docs:preview": "vitepress preview docs",
+    "security:update": "./scripts/ci-security.sh update",
+    "security:audit": "./scripts/ci-security.sh audit",
+    "security:all": "./scripts/ci-security.sh all",
+    "security:sbom": "SECURITY_GENERATE_SBOM=1 ./scripts/ci-security.sh audit"
+  },
+  "resolutions": {
+    "tar": "^7.5.10",
+    "@tootallnate/once": "^3.0.1",
+    "esbuild": "^0.25.0",
+    "glob": "^11.1.0",
+    "minimatch": "^10.2.3",
+    "qs": "^6.14.2",
+    "lodash": "^4.17.23",
+    "dottie": "^2.0.7",
+    "fast-xml-parser": "^5.3.8"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

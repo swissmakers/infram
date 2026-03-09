@@ -105,6 +105,42 @@ The server listens on port 6989 by default. You can modify this behavior using e
 -   Docker container isolation
 -   Oauth 2.0 OpenID Connect SSO
 
+### Container-Only Security Pipeline
+
+You can run dependency updates and vulnerability audits without installing Node.js, Yarn, pnpm, Flutter or Cargo on your host.
+Only Docker or Podman is required.
+
+```sh
+# Update dependency locks (root/client/landing/connector) in containers
+make security-update
+
+# Run vulnerability audits with fail-on threshold (default: high)
+make security-audit
+
+# Update + audit in one run
+make security-all
+
+# Audit + SBOM generation
+make security-sbom
+```
+
+Equivalent npm scripts are available:
+
+```sh
+yarn security:update
+yarn security:audit
+yarn security:all
+yarn security:sbom
+```
+
+Useful environment variables:
+
+- `SECURITY_FAIL_ON` (`none|critical|high|moderate|low|info`, default: `high`)
+- `SECURITY_GENERATE_SBOM` (`1` to enable SBOM output under `artifacts/security/`)
+- `SECURITY_NODE_IMAGE` (override Node image, default: `node:22-bookworm-slim`)
+- `SECURITY_SYFT_IMAGE` (override Syft image, default: `anchore/syft:latest`)
+- `SECURITY_DRY_RUN` (`1` to print container commands without executing)
+
 ## Contributing
 
 Contributions are welcome! Please feel free to:

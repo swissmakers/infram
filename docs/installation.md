@@ -93,3 +93,16 @@ services:
 +  infram-net:
 +    enable_ipv6: true
 ```
+
+## Security Maintenance (Container-Only)
+
+For dependency updates and vulnerability scans, you can run the built-in container pipeline:
+
+```sh
+make security-update
+make security-audit
+make security-all
+make security-sbom
+```
+
+This only requires Docker or Podman on the host. The required Node/Yarn/pnpm tooling is executed inside ephemeral containers.
