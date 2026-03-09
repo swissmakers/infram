@@ -12,6 +12,8 @@ import Button from "@/common/components/Button";
 import DownloadAppsDialog from "@/common/components/DownloadAppsDialog";
 import { DeviceLinkDialog } from "@/common/components/DeviceLinkDialog/DeviceLinkDialog.jsx";
 
+const EXTERNAL_LINKS_ENABLED = String(import.meta.env.VITE_ENABLE_EXTERNAL_LINKS || "false").toLowerCase() === "true";
+
 const formatTimeAgo = (timestamp) => {
     const diffMins = Math.floor((Date.now() - new Date(timestamp)) / 60000);
     if (diffMins < 1) return "Just now";
@@ -87,7 +89,9 @@ export const WelcomePanel = ({
                 <h1>Hi, <span>{user?.firstName || "User"} {user?.lastName || ""}</span>!</h1>
                 <p>{t("welcome.subtitle")}</p>
                 <div className="welcome-buttons">
-                    <Button icon={mdiDownload} text={t("welcome.downloadApps")} onClick={() => setDownloadDialogOpen(true)} />
+                    {EXTERNAL_LINKS_ENABLED && (
+                        <Button icon={mdiDownload} text={t("welcome.downloadApps")} onClick={() => setDownloadDialogOpen(true)} />
+                    )}
                     <Button icon={mdiLinkVariant} text={t("welcome.connectDevice")} onClick={() => setDeviceLinkDialogOpen(true)} />
                 </div>
             </div>
@@ -156,7 +160,9 @@ export const WelcomePanel = ({
                 )}
             </ContextMenu>
 
-            <DownloadAppsDialog open={downloadDialogOpen} onClose={() => setDownloadDialogOpen(false)} />
+            {EXTERNAL_LINKS_ENABLED && (
+                <DownloadAppsDialog open={downloadDialogOpen} onClose={() => setDownloadDialogOpen(false)} />
+            )}
             <DeviceLinkDialog open={deviceLinkDialogOpen} onClose={() => setDeviceLinkDialogOpen(false)} />
         </div>
     );
