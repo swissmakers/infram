@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import WelcomePanel from "@/pages/Servers/components/WelcomePanel";
 import ServerDialog from "@/pages/Servers/components/ServerDialog";
 import ViewContainer from "@/pages/Servers/components/ViewContainer";
-import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog";
+import IntegrationDialog from "@/pages/Servers/components/IntegrationDialog";
 import SSHConfigImportDialog from "@/pages/Servers/components/SSHConfigImportDialog";
 import ConnectionReasonDialog from "@/pages/Servers/components/ConnectionReasonDialog";
 import DirectConnectDialog from "@/pages/Servers/components/DirectConnectDialog";
@@ -23,7 +23,7 @@ export const Servers = () => {
 
     const [serverDialogOpen, setServerDialogOpen] = useState(false);
     const [serverDialogProtocol, setServerDialogProtocol] = useState(null);
-    const [proxmoxDialogOpen, setProxmoxDialogOpen] = useState(false);
+    const [integrationDialogOpen, setIntegrationDialogOpen] = useState(false);
     const [integrationDialogType, setIntegrationDialogType] = useState("proxmox");
     const [sshConfigImportDialogOpen, setSSHConfigImportDialogOpen] = useState(false);
     const [connectionReasonDialogOpen, setConnectionReasonDialogOpen] = useState(false);
@@ -361,7 +361,7 @@ export const Servers = () => {
     };
 
     const closePVEDialog = () => {
-        setProxmoxDialogOpen(false);
+        setIntegrationDialogOpen(false);
         setIntegrationDialogType("proxmox");
         setCurrentFolderId(null);
         setEditServerId(null);
@@ -456,7 +456,7 @@ export const Servers = () => {
             <ServerDialog open={serverDialogOpen} onClose={closeDialog} currentFolderId={currentFolderId}
                           currentOrganizationId={currentOrganizationId} editServerId={editServerId}
                           initialProtocol={serverDialogProtocol} />
-            <ProxmoxDialog open={proxmoxDialogOpen} onClose={closePVEDialog}
+            <IntegrationDialog open={integrationDialogOpen} onClose={closePVEDialog}
                            currentFolderId={currentFolderId}
                            currentOrganizationId={currentOrganizationId}
                            initialType={integrationDialogType}
@@ -482,9 +482,9 @@ export const Servers = () => {
                     setServerDialogOpen(true);
                 }}
                             connectToServer={connectToServer}
-                            setProxmoxDialogOpen={(type = "proxmox") => {
+                            setIntegrationDialogOpen={(type = "proxmox") => {
                                 setIntegrationDialogType(type);
-                                setProxmoxDialogOpen(true);
+                                setIntegrationDialogOpen(true);
                             }}
                             setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
                             setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}

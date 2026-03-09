@@ -1501,6 +1501,10 @@
       }
     },
     "netboxDialog": {
+      "title": {
+        "import": "Importer NetBox",
+        "edit": "Modifier NetBox"
+      },
       "fields": {
         "apiUrl": "URL API NetBox",
         "apiToken": "Jeton API",
@@ -1516,8 +1520,23 @@
         "defaultPort": "Port par défaut",
         "protocolRules": "Règles de protocole (de haut en bas)",
         "targetType": "Type de cible",
+        "conditionType": "Type de condition",
+        "conditionValue": "Valeur de condition",
+        "customFieldKey": "Clé du champ personnalisé",
+        "customFieldValue": "Valeur du champ personnalisé",
         "protocol": "Protocole",
         "port": "Port"
+      },
+      "tlsEnabled": "Activé",
+      "tlsDisabled": "Désactivé",
+      "rulesHelper": "Les règles sont évaluées de haut en bas. Exemple : type de condition \"Label/Tag\", valeur \"rdp\", protocole d'action \"RDP\". Le protocole par défaut est utilisé seulement si aucune règle ne correspond.",
+      "matchTypes": {
+        "label": "Label/Tag",
+        "deviceRole": "Rôle d'appareil",
+        "vmRole": "Rôle VM",
+        "platform": "Plateforme",
+        "nameIncludes": "Le nom contient",
+        "customField": "Champ personnalisé"
       },
       "placeholders": {
         "apiUrl": "https://netbox.example.com",
@@ -1528,6 +1547,7 @@
         "vmRolesAny": "Rôles VM de règle (séparés par des virgules)",
         "platformsAny": "Plateformes de règle (séparées par des virgules)",
         "nameIncludes": "Le nom de la règle contient",
+        "matchValue": "ex. rdp",
         "customFieldKey": "Clé du champ personnalisé",
         "customFieldValue": "Valeur du champ personnalisé"
       },

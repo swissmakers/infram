@@ -82,7 +82,7 @@ const applyRenameState = folderId => entry =>
 export const ServerList = ({
     setServerDialogOpen,
     setCurrentFolderId,
-    setProxmoxDialogOpen,
+    setIntegrationDialogOpen,
     setSSHConfigImportDialogOpen,
     setEditServerId,
     connectToServer,
@@ -303,8 +303,8 @@ export const ServerList = ({
     };
 
     const createServer = (protocol) => { setFolderContext(); setServerDialogOpen(protocol); };
-    const createPVEServer = () => { setFolderContext(); setProxmoxDialogOpen("proxmox"); };
-    const createNetboxIntegration = () => { setFolderContext(); setProxmoxDialogOpen("netbox"); };
+    const createPVEServer = () => { setFolderContext(); setIntegrationDialogOpen("proxmox"); };
+    const createNetboxIntegration = () => { setFolderContext(); setIntegrationDialogOpen("netbox"); };
     const openSSHConfigImport = () => { setFolderContext(); setSSHConfigImportDialogOpen(); };
 
     const getIdentity = (id = null) => identities?.find(i => i.id === (id || server?.identities[0]));
@@ -327,7 +327,7 @@ export const ServerList = ({
         const integrationId = server?.integrationId;
         if (integrationId) {
             setEditServerId(integrationId);
-            setProxmoxDialogOpen();
+            setIntegrationDialogOpen();
         }
     };
 
@@ -335,7 +335,7 @@ export const ServerList = ({
         const integrationId = server?.integrationId;
         if (!integrationId) return;
         setEditServerId(integrationId);
-        setProxmoxDialogOpen(server?.managedBy === "netbox" ? "netbox" : "proxmox");
+        setIntegrationDialogOpen(server?.managedBy === "netbox" ? "netbox" : "proxmox");
     };
 
     const postPVEAction = (type) => {

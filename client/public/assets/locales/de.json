@@ -1501,6 +1501,10 @@
       }
     },
     "netboxDialog": {
+      "title": {
+        "import": "NetBox importieren",
+        "edit": "NetBox bearbeiten"
+      },
       "fields": {
         "apiUrl": "NetBox API URL",
         "apiToken": "API Token",
@@ -1516,8 +1520,23 @@
         "defaultPort": "Standardport",
         "protocolRules": "Protokollregeln (oben nach unten)",
         "targetType": "Zieltyp",
+        "conditionType": "Bedingungstyp",
+        "conditionValue": "Bedingungswert",
+        "customFieldKey": "Custom-Field Schlüssel",
+        "customFieldValue": "Custom-Field Wert",
         "protocol": "Protokoll",
         "port": "Port"
+      },
+      "tlsEnabled": "Aktiv",
+      "tlsDisabled": "Deaktiviert",
+      "rulesHelper": "Regeln werden von oben nach unten ausgewertet. Beispiel: Bedingungstyp \"Label/Tag\", Bedingungswert \"rdp\", Aktionsprotokoll \"RDP\". Das Standardprotokoll wird nur verwendet, wenn keine Regel passt.",
+      "matchTypes": {
+        "label": "Label/Tag",
+        "deviceRole": "Geräterolle",
+        "vmRole": "VM-Rolle",
+        "platform": "Plattform",
+        "nameIncludes": "Name enthält",
+        "customField": "Custom-Field"
       },
       "placeholders": {
         "apiUrl": "https://netbox.example.com",
@@ -1528,6 +1547,7 @@
         "vmRolesAny": "Regel-VM-Rollen (kommagetrennt)",
         "platformsAny": "Regel-Plattformen (kommagetrennt)",
         "nameIncludes": "Regel Name enthält",
+        "matchValue": "z. B. rdp",
         "customFieldKey": "Custom-Field Schlüssel",
         "customFieldValue": "Custom-Field Wert"
       },

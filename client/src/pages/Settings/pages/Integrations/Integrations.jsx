@@ -5,7 +5,7 @@ import { deleteRequest, getRequest, postRequest } from "@/common/utils/RequestUt
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import Button from "@/common/components/Button";
 import ActionConfirmDialog from "@/common/components/ActionConfirmDialog";
-import ProxmoxDialog from "@/pages/Servers/components/ProxmoxDialog";
+import IntegrationDialog from "@/pages/Servers/components/IntegrationDialog";
 import Icon from "@mdi/react";
 import { mdiCloudSyncOutline, mdiDeleteOutline, mdiLanConnect, mdiPencilOutline, mdiPlus, mdiSync, mdiTestTube } from "@mdi/js";
 
@@ -165,7 +165,7 @@ export const Integrations = () => {
                 <div className="integrations-grid">{cards}</div>
             )}
 
-            <ProxmoxDialog
+            <IntegrationDialog
                 open={dialogOpen}
                 onClose={closeDialog}
                 currentFolderId={null}

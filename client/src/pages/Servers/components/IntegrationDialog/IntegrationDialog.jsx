@@ -12,10 +12,20 @@ import { useToast } from "@/common/contexts/ToastContext.jsx";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 import Icon from "@mdi/react";
 
+const DEFAULT_PROTOCOL_PORTS = {
+    ssh: 22,
+    rdp: 3389,
+    vnc: 5900,
+};
+
+const getDefaultPortForProtocol = (protocol) => DEFAULT_PROTOCOL_PORTS[protocol] || 22;
+
 const createDefaultRule = (index) => ({
     id: `rule-${Date.now()}-${index}`,
     enabled: true,
     targetType: "any",
+    matchType: "label",
+    matchValue: "",
     tagsAny: "",
     deviceRolesAny: "",
     vmRolesAny: "",
@@ -23,7 +33,7 @@ const createDefaultRule = (index) => ({
     nameIncludes: "",
     customFieldKey: "",
     customFieldValue: "",
-    action: { protocol: "ssh", port: 22, renderer: "terminal" },
+    action: { protocol: "ssh", port: String(getDefaultPortForProtocol("ssh")), renderer: "terminal" },
 });
 
 const csvToArray = (value) => String(value || "")
@@ -32,11 +42,86 @@ const csvToArray = (value) => String(value || "")
     .filter(Boolean);
 
 const arrayToCsv = (items) => (Array.isArray(items) ? items.join(", ") : "");
+
+const getRuleConditionFromServerRule = (rule = {}) => {
+    if (rule.customFieldKey || rule.customFieldValue) {
+        return {
+            matchType: "customField",
+            matchValue: "",
+            customFieldKey: rule.customFieldKey || "",
+            customFieldValue: rule.customFieldValue || "",
+        };
+    }
+    if ((rule.tagsAny || []).length) return { matchType: "label", matchValue: arrayToCsv(rule.tagsAny) };
+    if ((rule.deviceRolesAny || []).length) return { matchType: "deviceRole", matchValue: arrayToCsv(rule.deviceRolesAny) };
+    if ((rule.vmRolesAny || []).length) return { matchType: "vmRole", matchValue: arrayToCsv(rule.vmRolesAny) };
+    if ((rule.platformsAny || []).length) return { matchType: "platform", matchValue: arrayToCsv(rule.platformsAny) };
+    if (rule.nameIncludes) return { matchType: "nameIncludes", matchValue: rule.nameIncludes };
+    return { matchType: "label", matchValue: "" };
+};
+
+const mapRuleConditionToPayload = (rule = {}) => {
+    const condition = {
+        tagsAny: [],
+        deviceRolesAny: [],
+        vmRolesAny: [],
+        platformsAny: [],
+        nameIncludes: "",
+        customFieldKey: "",
+        customFieldValue: "",
+    };
+
+    switch (rule.matchType) {
+        case "deviceRole":
+            condition.deviceRolesAny = csvToArray(rule.matchValue);
+            break;
+        case "vmRole":
+            condition.vmRolesAny = csvToArray(rule.matchValue);
+            break;
+        case "platform":
+            condition.platformsAny = csvToArray(rule.matchValue);
+            break;
+        case "nameIncludes":
+            condition.nameIncludes = String(rule.matchValue || "").trim();
+            break;
+        case "customField":
+            condition.customFieldKey = String(rule.customFieldKey || "").trim();
+            condition.customFieldValue = String(rule.customFieldValue || "").trim();
+            break;
+        case "label":
+        default:
+            condition.tagsAny = csvToArray(rule.matchValue);
+            break;
+    }
+
+    return condition;
+};
+
+const hasRuleCondition = (rule = {}) => {
+    const matchType = rule.matchType || "label";
+    if (matchType === "customField") {
+        return Boolean(String(rule.customFieldKey || "").trim() && String(rule.customFieldValue || "").trim());
+    }
+    if (matchType === "nameIncludes") {
+        return Boolean(String(rule.matchValue || "").trim());
+    }
+    return csvToArray(rule.matchValue).length > 0;
+};
+
+const mapServerRuleToUiRule = (rule, index) => ({
+    ...createDefaultRule(index),
+    ...rule,
+    ...getRuleConditionFromServerRule(rule),
+    action: {
+        protocol: rule?.action?.protocol || "ssh",
+        port: String(rule?.action?.port || getDefaultPortForProtocol(rule?.action?.protocol || "ssh")),
+    },
+});
 const isErrorResponse = (response) => Boolean(
     response?.success === false || (typeof response?.code === "number" && response.code >= 400)
 );
 
-export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizationId, editServerId, initialType = "proxmox" }) => {
+export const IntegrationDialog = ({ open, onClose, currentFolderId, currentOrganizationId, editServerId, initialType = "proxmox" }) => {
     const { t } = useTranslation();
     const { sendToast } = useToast();
     const { loadServers } = useContext(ServerContext);
@@ -66,6 +151,7 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
     const [actionLoading, setActionLoading] = useState(false);
 
     const initialValues = useRef({});
+    const rulesListRef = useRef(null);
 
     const buildPayload = () => {
         if (type === "netbox") {
@@ -86,19 +172,20 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
                 excludeTags: csvToArray(excludeTags),
                 defaultAction: {
                     protocol: defaultProtocol,
-                    port: Number(defaultPort || (defaultProtocol === "rdp" ? 3389 : 22)),
+                    port: Number(defaultPort || getDefaultPortForProtocol(defaultProtocol)),
                     renderer: defaultProtocol === "rdp" || defaultProtocol === "vnc" ? "guac" : "terminal",
                 },
-                protocolRules: protocolRules.map((rule) => ({
-                    ...rule,
-                    tagsAny: csvToArray(rule.tagsAny),
-                    deviceRolesAny: csvToArray(rule.deviceRolesAny),
-                    vmRolesAny: csvToArray(rule.vmRolesAny),
-                    platformsAny: csvToArray(rule.platformsAny),
+                protocolRules: protocolRules
+                    .filter((rule) => hasRuleCondition(rule))
+                    .map((rule) => ({
+                    id: rule.id,
+                    enabled: rule.enabled !== false,
+                    targetType: rule.targetType || "any",
+                    ...mapRuleConditionToPayload(rule),
                     action: {
-                        protocol: rule.action.protocol,
-                        port: Number(rule.action.port || 22),
-                        renderer: rule.action.protocol === "rdp" || rule.action.protocol === "vnc" ? "guac" : "terminal",
+                        protocol: rule.action?.protocol || "ssh",
+                        port: Number(rule.action?.port || getDefaultPortForProtocol(rule.action?.protocol || "ssh")),
+                        renderer: (rule.action?.protocol === "rdp" || rule.action?.protocol === "vnc") ? "guac" : "terminal",
                     },
                 })),
             };
@@ -213,19 +300,11 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
                     setIncludeTags(arrayToCsv(server.includeTags));
                     setExcludeTags(arrayToCsv(server.excludeTags));
                     setDefaultProtocol(server.defaultAction?.protocol || "ssh");
-                    setDefaultPort(String(server.defaultAction?.port || 22));
-                    setProtocolRules((server.protocolRules || []).map((rule, index) => ({
-                        ...createDefaultRule(index),
-                        ...rule,
-                        tagsAny: arrayToCsv(rule.tagsAny),
-                        deviceRolesAny: arrayToCsv(rule.deviceRolesAny),
-                        vmRolesAny: arrayToCsv(rule.vmRolesAny),
-                        platformsAny: arrayToCsv(rule.platformsAny),
-                        action: {
-                            protocol: rule?.action?.protocol || "ssh",
-                            port: String(rule?.action?.port || 22),
-                        },
-                    })));
+                    setDefaultPort(String(server.defaultAction?.port || getDefaultPortForProtocol(server.defaultAction?.protocol || "ssh")));
+                    const sanitizedRules = (server.protocolRules || [])
+                        .map((rule, index) => mapServerRuleToUiRule(rule, index))
+                        .filter((rule) => hasRuleCondition(rule));
+                    setProtocolRules(sanitizedRules);
                 } else {
                     setIp(server.ip || "");
                     setPort(String(server.port || "8006"));
@@ -256,6 +335,15 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
 
     const updateRule = (index, updates) => {
         setProtocolRules((prev) => prev.map((rule, idx) => idx === index ? { ...rule, ...updates } : rule));
+    };
+
+    const addProtocolRule = () => {
+        setProtocolRules((prev) => [...prev, createDefaultRule(prev.length)]);
+        // New rules are appended; scroll so the user sees it immediately.
+        setTimeout(() => {
+            if (!rulesListRef.current) return;
+            rulesListRef.current.scrollTop = rulesListRef.current.scrollHeight;
+        }, 0);
     };
 
     const runIntegrationAction = async (action) => {
@@ -289,14 +377,17 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
         }
     };
 
+    const titleScope = type === "netbox" ? "servers.netboxDialog.title" : "servers.proxmoxDialog.title";
+    const titleKey = editServerId ? `${titleScope}.edit` : `${titleScope}.import`;
+
     return (
         <DialogProvider open={open} onClose={onClose} isDirty={isDirty}>
-            <div className="proxmox-dialog">
-                <h2>{editServerId ? t("servers.proxmoxDialog.title.edit") : t("servers.proxmoxDialog.title.import")}</h2>
+            <div className="integration-dialog">
+                <h2>{t(titleKey)}</h2>
                 {!editServerId && (
                     <div className="form-group">
                         <label htmlFor="type">{t("servers.contextMenu.import")}</label>
-                        <select className="small-input select-input" value={type} onChange={(e) => setType(e.target.value)}>
+                        <select id="type" className="small-input select-input" value={type} onChange={(e) => setType(e.target.value)}>
                             <option value="proxmox">Proxmox</option>
                             <option value="netbox">NetBox</option>
                         </select>
@@ -362,7 +453,7 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
                             <IconInput icon={mdiLockOutline} value={apiToken} setValue={setApiToken} placeholder={t("servers.netboxDialog.placeholders.apiToken")}
                                 type="password" id="apiToken" />
                         </div>
-                        <div className="ip-row">
+                        <div className="ip-row netbox-sync-row">
                             <div className="form-group">
                                 <label htmlFor="syncIntervalMinutes">{t("servers.netboxDialog.fields.syncIntervalMinutes")}</label>
                                 <div className="icon-input">
@@ -370,92 +461,132 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
                                     <input className="small-input" id="syncIntervalMinutes" value={syncIntervalMinutes} onChange={(e) => setSyncIntervalMinutes(e.target.value)} />
                                 </div>
                             </div>
-                            <div className="settings-toggle">
-                                <div className="settings-toggle-info">
-                                    <span className="settings-toggle-label">
-                                        <Icon path={mdiShieldCheckOutline} size={0.8} style={{ marginRight: "8px", verticalAlign: "middle" }} />
-                                        {t("servers.netboxDialog.fields.verifyTls")}
+                            <div className="form-group netbox-toggle-group">
+                                <label htmlFor="netbox-tls-toggle">{t("servers.netboxDialog.fields.verifyTls")}</label>
+                                <div className="inline-toggle-input">
+                                    <span className="inline-toggle-label">
+                                        <Icon path={mdiShieldCheckOutline} size={0.8} />
+                                        {verifyTls ? t("servers.netboxDialog.tlsEnabled") : t("servers.netboxDialog.tlsDisabled")}
                                     </span>
+                                    <ToggleSwitch checked={verifyTls} onChange={setVerifyTls} id="netbox-tls-toggle" />
                                 </div>
-                                <ToggleSwitch checked={verifyTls} onChange={setVerifyTls} id="netbox-tls-toggle" />
                             </div>
                         </div>
                         <div className="form-group">
-                            <label>{t("servers.netboxDialog.fields.includeDeviceRoles")}</label>
-                            <input className="small-input wide-input" value={includeDeviceRoles} onChange={(e) => setIncludeDeviceRoles(e.target.value)} placeholder={t("servers.netboxDialog.placeholders.csv")} />
+                            <label htmlFor="includeDeviceRoles">{t("servers.netboxDialog.fields.includeDeviceRoles")}</label>
+                            <input id="includeDeviceRoles" className="small-input wide-input" value={includeDeviceRoles} onChange={(e) => setIncludeDeviceRoles(e.target.value)} placeholder={t("servers.netboxDialog.placeholders.csv")} />
                         </div>
                         <div className="form-group">
-                            <label>{t("servers.netboxDialog.fields.excludeDeviceRoles")}</label>
-                            <input className="small-input wide-input" value={excludeDeviceRoles} onChange={(e) => setExcludeDeviceRoles(e.target.value)} placeholder={t("servers.netboxDialog.placeholders.csv")} />
+                            <label htmlFor="excludeDeviceRoles">{t("servers.netboxDialog.fields.excludeDeviceRoles")}</label>
+                            <input id="excludeDeviceRoles" className="small-input wide-input" value={excludeDeviceRoles} onChange={(e) => setExcludeDeviceRoles(e.target.value)} placeholder={t("servers.netboxDialog.placeholders.csv")} />
                         </div>
                         <div className="form-group">
-                            <label>{t("servers.netboxDialog.fields.includeVmRoles")}</label>
-                            <input className="small-input wide-input" value={includeVmRoles} onChange={(e) => setIncludeVmRoles(e.target.value)} placeholder={t("servers.netboxDialog.placeholders.csv")} />
+                            <label htmlFor="includeVmRoles">{t("servers.netboxDialog.fields.includeVmRoles")}</label>
+                            <input id="includeVmRoles" className="small-input wide-input" value={includeVmRoles} onChange={(e) => setIncludeVmRoles(e.target.value)} placeholder={t("servers.netboxDialog.placeholders.csv")} />
                         </div>
                         <div className="form-group">
-                            <label>{t("servers.netboxDialog.fields.excludeVmRoles")}</label>
-                            <input className="small-input wide-input" value={excludeVmRoles} onChange={(e) => setExcludeVmRoles(e.target.value)} placeholder={t("servers.netboxDialog.placeholders.csv")} />
+                            <label htmlFor="excludeVmRoles">{t("servers.netboxDialog.fields.excludeVmRoles")}</label>
+                            <input id="excludeVmRoles" className="small-input wide-input" value={excludeVmRoles} onChange={(e) => setExcludeVmRoles(e.target.value)} placeholder={t("servers.netboxDialog.placeholders.csv")} />
                         </div>
                         <div className="form-group">
-                            <label>{t("servers.netboxDialog.fields.includeTags")}</label>
-                            <input className="small-input wide-input" value={includeTags} onChange={(e) => setIncludeTags(e.target.value)} placeholder={t("servers.netboxDialog.placeholders.csv")} />
+                            <label htmlFor="includeTags">{t("servers.netboxDialog.fields.includeTags")}</label>
+                            <input id="includeTags" className="small-input wide-input" value={includeTags} onChange={(e) => setIncludeTags(e.target.value)} placeholder={t("servers.netboxDialog.placeholders.csv")} />
                         </div>
                         <div className="form-group">
-                            <label>{t("servers.netboxDialog.fields.excludeTags")}</label>
-                            <input className="small-input wide-input" value={excludeTags} onChange={(e) => setExcludeTags(e.target.value)} placeholder={t("servers.netboxDialog.placeholders.csv")} />
+                            <label htmlFor="excludeTags">{t("servers.netboxDialog.fields.excludeTags")}</label>
+                            <input id="excludeTags" className="small-input wide-input" value={excludeTags} onChange={(e) => setExcludeTags(e.target.value)} placeholder={t("servers.netboxDialog.placeholders.csv")} />
                         </div>
                         <div className="ip-row">
                             <div className="form-group">
-                                <label>{t("servers.netboxDialog.fields.defaultProtocol")}</label>
-                                <select className="small-input select-input" value={defaultProtocol} onChange={(e) => setDefaultProtocol(e.target.value)}>
+                                <label htmlFor="defaultProtocol">{t("servers.netboxDialog.fields.defaultProtocol")}</label>
+                                <select id="defaultProtocol" className="small-input select-input" value={defaultProtocol} onChange={(e) => {
+                                    const protocol = e.target.value;
+                                    setDefaultProtocol(protocol);
+                                    setDefaultPort(String(getDefaultPortForProtocol(protocol)));
+                                }}>
                                     <option value="ssh">SSH</option>
                                     <option value="rdp">RDP</option>
                                     <option value="vnc">VNC</option>
                                 </select>
                             </div>
                             <div className="form-group">
-                                <label>{t("servers.netboxDialog.fields.defaultPort")}</label>
-                                <input className="small-input" value={defaultPort} onChange={(e) => setDefaultPort(e.target.value)} />
+                                <label htmlFor="defaultPort">{t("servers.netboxDialog.fields.defaultPort")}</label>
+                                <input id="defaultPort" className="small-input" value={defaultPort} onChange={(e) => setDefaultPort(e.target.value)} />
                             </div>
                         </div>
                         <div className="rules-header">
                             <p>{t("servers.netboxDialog.fields.protocolRules")}</p>
-                            <Button text={t("servers.netboxDialog.actions.addRule")} onClick={() => setProtocolRules((prev) => [...prev, createDefaultRule(prev.length)])} />
+                            <Button text={t("servers.netboxDialog.actions.addRule")} onClick={addProtocolRule} />
                         </div>
-                        <div className="rules-list">
+                        <p className="rules-helper">{t("servers.netboxDialog.rulesHelper")}</p>
+                        <div className="rules-list" ref={rulesListRef}>
+                            {protocolRules.length === 0 && (
+                                <div className="rules-empty">
+                                    {t("servers.netboxDialog.actions.addRule")}
+                                </div>
+                            )}
                             {protocolRules.map((rule, index) => (
                                 <div className="rule-card" key={rule.id || index}>
-                                    <div className="ip-row">
+                                    <div className="ip-row rule-grid">
                                         <div className="form-group">
-                                            <label>{t("servers.netboxDialog.fields.targetType")}</label>
-                                            <select className="small-input select-input" value={rule.targetType} onChange={(e) => updateRule(index, { targetType: e.target.value })}>
+                                            <label htmlFor={`rule-${index}-targetType`}>{t("servers.netboxDialog.fields.targetType")}</label>
+                                            <select id={`rule-${index}-targetType`} className="small-input select-input" value={rule.targetType} onChange={(e) => updateRule(index, { targetType: e.target.value })}>
                                                 <option value="any">Any</option>
                                                 <option value="device">Device</option>
                                                 <option value="vm">VM</option>
                                             </select>
                                         </div>
                                         <div className="form-group">
-                                            <label>{t("servers.netboxDialog.fields.protocol")}</label>
-                                            <select className="small-input select-input" value={rule.action.protocol} onChange={(e) => updateRule(index, { action: { ...rule.action, protocol: e.target.value } })}>
+                                            <label htmlFor={`rule-${index}-matchType`}>{t("servers.netboxDialog.fields.conditionType")}</label>
+                                            <select id={`rule-${index}-matchType`} className="small-input select-input" value={rule.matchType || "label"} onChange={(e) => updateRule(index, { matchType: e.target.value })}>
+                                                <option value="label">{t("servers.netboxDialog.matchTypes.label")}</option>
+                                                <option value="deviceRole">{t("servers.netboxDialog.matchTypes.deviceRole")}</option>
+                                                <option value="vmRole">{t("servers.netboxDialog.matchTypes.vmRole")}</option>
+                                                <option value="platform">{t("servers.netboxDialog.matchTypes.platform")}</option>
+                                                <option value="nameIncludes">{t("servers.netboxDialog.matchTypes.nameIncludes")}</option>
+                                                <option value="customField">{t("servers.netboxDialog.matchTypes.customField")}</option>
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor={`rule-${index}-protocol`}>{t("servers.netboxDialog.fields.protocol")}</label>
+                                            <select id={`rule-${index}-protocol`} className="small-input select-input" value={rule.action.protocol} onChange={(e) => {
+                                                const protocol = e.target.value;
+                                                updateRule(index, { action: { ...rule.action, protocol, port: String(getDefaultPortForProtocol(protocol)) } });
+                                            }}>
                                                 <option value="ssh">SSH</option>
                                                 <option value="rdp">RDP</option>
                                                 <option value="vnc">VNC</option>
                                             </select>
                                         </div>
                                         <div className="form-group">
-                                            <label>{t("servers.netboxDialog.fields.port")}</label>
-                                            <input className="small-input" value={rule.action.port} onChange={(e) => updateRule(index, { action: { ...rule.action, port: e.target.value } })} />
+                                            <label htmlFor={`rule-${index}-port`}>{t("servers.netboxDialog.fields.port")}</label>
+                                            <input id={`rule-${index}-port`} className="small-input" value={rule.action.port} onChange={(e) => updateRule(index, { action: { ...rule.action, port: e.target.value } })} />
                                         </div>
                                     </div>
-                                    <input className="small-input wide-input" value={rule.tagsAny} onChange={(e) => updateRule(index, { tagsAny: e.target.value })} placeholder={t("servers.netboxDialog.placeholders.tagsAny")} />
-                                    <input className="small-input wide-input" value={rule.deviceRolesAny} onChange={(e) => updateRule(index, { deviceRolesAny: e.target.value })} placeholder={t("servers.netboxDialog.placeholders.deviceRolesAny")} />
-                                    <input className="small-input wide-input" value={rule.vmRolesAny} onChange={(e) => updateRule(index, { vmRolesAny: e.target.value })} placeholder={t("servers.netboxDialog.placeholders.vmRolesAny")} />
-                                    <input className="small-input wide-input" value={rule.platformsAny} onChange={(e) => updateRule(index, { platformsAny: e.target.value })} placeholder={t("servers.netboxDialog.placeholders.platformsAny")} />
-                                    <input className="small-input wide-input" value={rule.nameIncludes} onChange={(e) => updateRule(index, { nameIncludes: e.target.value })} placeholder={t("servers.netboxDialog.placeholders.nameIncludes")} />
-                                    <div className="ip-row">
-                                        <input className="small-input wide-input" value={rule.customFieldKey || ""} onChange={(e) => updateRule(index, { customFieldKey: e.target.value })} placeholder={t("servers.netboxDialog.placeholders.customFieldKey")} />
-                                        <input className="small-input wide-input" value={rule.customFieldValue || ""} onChange={(e) => updateRule(index, { customFieldValue: e.target.value })} placeholder={t("servers.netboxDialog.placeholders.customFieldValue")} />
-                                    </div>
+                                    {rule.matchType !== "customField" && (
+                                        <div className="form-group">
+                                            <label htmlFor={`rule-${index}-matchValue`}>{t("servers.netboxDialog.fields.conditionValue")}</label>
+                                            <input
+                                                id={`rule-${index}-matchValue`}
+                                                className="small-input wide-input"
+                                                value={rule.matchValue || ""}
+                                                onChange={(e) => updateRule(index, { matchValue: e.target.value })}
+                                                placeholder={t("servers.netboxDialog.placeholders.matchValue")}
+                                            />
+                                        </div>
+                                    )}
+                                    {rule.matchType === "customField" && (
+                                        <div className="ip-row rule-custom-field-row">
+                                            <div className="form-group">
+                                                <label htmlFor={`rule-${index}-customFieldKey`}>{t("servers.netboxDialog.fields.customFieldKey")}</label>
+                                                <input id={`rule-${index}-customFieldKey`} className="small-input wide-input" value={rule.customFieldKey || ""} onChange={(e) => updateRule(index, { customFieldKey: e.target.value })} placeholder={t("servers.netboxDialog.placeholders.customFieldKey")} />
+                                            </div>
+                                            <div className="form-group">
+                                                <label htmlFor={`rule-${index}-customFieldValue`}>{t("servers.netboxDialog.fields.customFieldValue")}</label>
+                                                <input id={`rule-${index}-customFieldValue`} className="small-input wide-input" value={rule.customFieldValue || ""} onChange={(e) => updateRule(index, { customFieldValue: e.target.value })} placeholder={t("servers.netboxDialog.placeholders.customFieldValue")} />
+                                            </div>
+                                        </div>
+                                    )}
                                     <div className="rule-actions">
                                         <Button text={t("servers.netboxDialog.actions.removeRule")} onClick={() => setProtocolRules((prev) => prev.filter((_, idx) => idx !== index))} />
                                     </div>
@@ -486,3 +617,5 @@ export const ProxmoxDialog = ({ open, onClose, currentFolderId, currentOrganizat
         </DialogProvider>
     );
 };
+
+export default IntegrationDialog;
