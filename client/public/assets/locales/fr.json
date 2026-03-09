@@ -48,7 +48,9 @@
       "title": "Es-tu sûre ?",
       "defaultText": "Cette action ne peut pas être annulée.",
       "unsavedChangesTitle": "Changements non enregistrés",
-      "unsavedChangesText": "Vous avez des changements non enregistrés. Êtes-vous sûr de vouloir quitter?"
+      "unsavedChangesText": "Vous avez des changements non enregistrés. Êtes-vous sûr de vouloir quitter?",
+      "keepEditing": "Continuer la modification",
+      "closeWithoutSaving": "Fermer sans enregistrer"
     },
     "loginDialog": {
       "title": "Infram",
@@ -549,6 +551,7 @@
       "organizations": "Organisations",
       "users": "Utilisateurs",
       "authentication": "Authentification",
+      "integrations": "Intégrations",
       "sources": "Sources",
       "monitoring": "Surveillance",
       "backup": "Stockage"
@@ -1086,6 +1089,31 @@
         "requiredFields": "Le nom et l'URL sont obligatoires"
       }
     },
+    "integrations": {
+      "title": "Intégrations",
+      "description": "Gérez les intégrations NetBox et Proxmox, testez les connexions et lancez des synchronisations.",
+      "empty": "Aucune intégration configurée pour le moment.",
+      "lastSync": "Dernière synchronisation",
+      "lastMessage": "Dernier message",
+      "confirmDelete": "Es-tu sûr de vouloir supprimer l'intégration \"{{name}}\" ?",
+      "actions": {
+        "edit": "Modifier",
+        "test": "Tester",
+        "sync": "Synchroniser maintenant",
+        "delete": "Supprimer",
+        "addProxmox": "Ajouter Proxmox",
+        "addNetbox": "Ajouter NetBox"
+      },
+      "messages": {
+        "deleted": "Intégration supprimée avec succès",
+        "actionSuccess": "Action d'intégration terminée avec succès"
+      },
+      "errors": {
+        "loadFailed": "Échec du chargement des intégrations",
+        "actionFailed": "Échec de l'action d'intégration",
+        "deleteFailed": "Échec de la suppression de l'intégration"
+      }
+    },
     "backup": {
       "loading": "Chargement des paramètres de stockage...",
       "storage": {
@@ -1240,6 +1268,7 @@
       "createServer": "Créer un serveur",
       "import": "Importation",
       "pve": "PVE",
+      "netbox": "NetBox",
       "sshConfig": "SSH-Config",
       "connect": "Connecte-toi",
       "quickConnect": "Connexion rapide",
@@ -1428,7 +1457,7 @@
       },
       "actions": {
         "import": "Importation",
-        "edit": "Éditer"
+        "edit": "Enregistrer"
       },
       "messages": {
         "created": "Intégration de Proxmox créée avec succès",
@@ -1436,6 +1465,51 @@
         "createFailed": "Échec de la création de l'intégration Proxmox",
         "updateFailed": "Échec de la mise à jour de l'intégration Proxmox"
       }
+    },
+    "netboxDialog": {
+      "fields": {
+        "apiUrl": "URL API NetBox",
+        "apiToken": "Jeton API",
+        "verifyTls": "Vérifier les certificats TLS",
+        "syncIntervalMinutes": "Intervalle de synchronisation (minutes)",
+        "includeDeviceRoles": "Inclure les rôles d'appareils",
+        "excludeDeviceRoles": "Exclure les rôles d'appareils",
+        "includeVmRoles": "Inclure les rôles VM",
+        "excludeVmRoles": "Exclure les rôles VM",
+        "includeTags": "Inclure les tags",
+        "excludeTags": "Exclure les tags",
+        "defaultProtocol": "Protocole par défaut",
+        "defaultPort": "Port par défaut",
+        "protocolRules": "Règles de protocole (de haut en bas)",
+        "targetType": "Type de cible",
+        "protocol": "Protocole",
+        "port": "Port"
+      },
+      "placeholders": {
+        "apiUrl": "https://netbox.example.com",
+        "apiToken": "Jeton API NetBox",
+        "csv": "Valeurs séparées par des virgules",
+        "tagsAny": "Tags de règle (séparés par des virgules)",
+        "deviceRolesAny": "Rôles d'appareils de règle (séparés par des virgules)",
+        "vmRolesAny": "Rôles VM de règle (séparés par des virgules)",
+        "platformsAny": "Plateformes de règle (séparées par des virgules)",
+        "nameIncludes": "Le nom de la règle contient",
+        "customFieldKey": "Clé du champ personnalisé",
+        "customFieldValue": "Valeur du champ personnalisé"
+      },
+      "actions": {
+        "addRule": "Ajouter une règle",
+        "removeRule": "Supprimer la règle"
+      }
+    },
+    "integrationMessages": {
+      "loadFailed": "Impossible de charger les détails d'intégration",
+      "syncFailed": "La synchronisation d'intégration a échoué",
+      "operationFailed": "L'opération d'intégration a échoué",
+      "operationSucceeded": "Opération d'intégration réussie",
+      "testConnection": "Tester la connexion",
+      "syncNow": "Synchroniser maintenant",
+      "saveFirst": "Veuillez d'abord enregistrer l'intégration."
     },
     "connectionReasonDialog": {
       "title": "Raison de la connexion requise",

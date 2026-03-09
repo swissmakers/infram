@@ -1,11 +1,28 @@
 const { Router } = require("express");
 const { validateSchema } = require("../utils/schema");
-const { getIntegration, createIntegration, deleteIntegration, editIntegration, getIntegrationUnsafe, syncIntegration } = require("../controllers/integration");
+const {
+    getIntegration,
+    createIntegration,
+    deleteIntegration,
+    editIntegration,
+    getIntegrationUnsafe,
+    listIntegrations,
+    syncIntegration,
+    testIntegration,
+    getIntegrationSyncStatus,
+} = require("../controllers/integration");
 const { createPVEServerValidation, updatePVEServerValidation } = require("../validations/pveServer");
 const { startPVEServer, shutdownPVEServer, stopPVEServer } = require("../controllers/pve");
 const Entry = require("../models/Entry");
 
 const app = Router();
+
+app.get("/list", async (req, res) => {
+    const integrations = await listIntegrations(req.user.id);
+    if (integrations?.code) return res.json(integrations);
+
+    res.json(integrations);
+});
 
 /**
  * GET /integration/{integrationId}
@@ -42,7 +59,11 @@ app.put("/", async (req, res) => {
     const integration = await createIntegration(req.user.id, req.body);
     if (integration?.code) return res.json(integration);
 
-    res.json({ message: "Integration got successfully created", id: integration.id });
+    res.json({
+        message: "Integration got successfully created",
+        id: integration.id,
+        sync: integration.sync || null,
+    });
 });
 
 /**
@@ -81,7 +102,10 @@ app.patch("/:integrationId", async (req, res) => {
     const integration = await editIntegration(req.user.id, req.params.integrationId, req.body);
     if (integration?.code) return res.json(integration);
 
-    res.json({ message: "Integration got successfully edited" });
+    res.json({
+        message: "Integration got successfully edited",
+        sync: integration.sync || null,
+    });
 });
 
 /**
@@ -99,6 +123,20 @@ app.patch("/:integrationId", async (req, res) => {
  */
 app.post("/:integrationId/sync", async (req, res) => {
     const result = await syncIntegration(req.user.id, req.params.integrationId);
+    if (result?.code) return res.json(result);
+
+    res.json(result);
+});
+
+app.post("/:integrationId/test", async (req, res) => {
+    const result = await testIntegration(req.user.id, req.params.integrationId);
+    if (result?.code) return res.json(result);
+
+    res.json(result);
+});
+
+app.get("/:integrationId/sync-status", async (req, res) => {
+    const result = await getIntegrationSyncStatus(req.user.id, req.params.integrationId);
     if (result?.code) return res.json(result);
 
     res.json(result);

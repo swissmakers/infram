@@ -1,4 +1,4 @@
-import { mdiServerOutline, mdiCodeBraces, mdiChartBoxOutline, mdiShieldCheckOutline, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiKeyVariant, mdiConsole, mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiHarddisk, mdiFolderOutline } from "@mdi/js";
+import { mdiServerOutline, mdiCodeBraces, mdiChartBoxOutline, mdiShieldCheckOutline, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiKeyVariant, mdiConsole, mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiHarddisk, mdiFolderOutline, mdiLanConnect } from "@mdi/js";
 import Account from "@/pages/Settings/pages/Account";
 import Terminal from "@/pages/Settings/pages/Terminal";
 import FileManager from "@/pages/Settings/pages/FileManager";
@@ -11,6 +11,7 @@ import Authentication from "@/pages/Settings/pages/Authentication";
 import Sources from "@/pages/Settings/pages/Sources";
 import Monitoring from "@/pages/Settings/pages/Monitoring";
 import Backup from "@/pages/Settings/pages/Backup";
+import Integrations from "@/pages/Settings/pages/Integrations";
 
 export const getSidebarNavigation = t => [
     { title: t('common.sidebar.servers'), key: "servers", path: "/servers", icon: mdiServerOutline, toggleEvent: "toggleServerList" },
@@ -32,6 +33,7 @@ export const getSettingsUserPages = t => [
 export const getSettingsAdminPages = t => [
     { title: t("settings.pages.users"), key: "users", icon: mdiAccountGroup, content: <Users /> },
     { title: t("settings.pages.authentication"), key: "authentication", icon: mdiShieldAccountOutline, content: <Authentication /> },
+    { title: t("settings.pages.integrations"), key: "integrations", icon: mdiLanConnect, content: <Integrations /> },
     { title: t("settings.pages.sources"), key: "sources", icon: mdiCloudDownloadOutline, content: <Sources /> },
     { title: t("settings.pages.monitoring"), key: "monitoring", icon: mdiChartLine, content: <Monitoring /> },
     { title: t("settings.pages.backup"), key: "backup", icon: mdiHarddisk, content: <Backup /> },

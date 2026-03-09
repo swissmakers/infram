@@ -48,7 +48,9 @@
       "title": "¿Estás seguro?",
       "defaultText": "Esta acción no se puede deshacer.",
       "unsavedChangesTitle": "Cambios no guardados",
-      "unsavedChangesText": "Tienes cambios sin guardar. ¿Estás seguro de que quieres cerrar?"
+      "unsavedChangesText": "Tienes cambios sin guardar. ¿Estás seguro de que quieres cerrar?",
+      "keepEditing": "Seguir editando",
+      "closeWithoutSaving": "Cerrar sin guardar"
     },
     "loginDialog": {
       "title": "Infram",
@@ -549,6 +551,7 @@
       "organizations": "Organizaciones",
       "users": "Usuarios",
       "authentication": "Autenticación",
+      "integrations": "Integraciones",
       "sources": "Fuentes",
       "monitoring": "Supervisión",
       "backup": "Almacenamiento"
@@ -1086,6 +1089,31 @@
         "requiredFields": "El nombre y la URL son obligatorios"
       }
     },
+    "integrations": {
+      "title": "Integraciones",
+      "description": "Gestiona integraciones de NetBox y Proxmox, prueba conexiones y ejecuta sincronizaciones.",
+      "empty": "No hay integraciones configuradas todavía.",
+      "lastSync": "Última sincronización",
+      "lastMessage": "Último mensaje",
+      "confirmDelete": "¿Seguro que quieres eliminar la integración \"{{name}}\"?",
+      "actions": {
+        "edit": "Editar",
+        "test": "Probar",
+        "sync": "Sincronizar ahora",
+        "delete": "Eliminar",
+        "addProxmox": "Agregar Proxmox",
+        "addNetbox": "Agregar NetBox"
+      },
+      "messages": {
+        "deleted": "Integración eliminada correctamente",
+        "actionSuccess": "Acción de integración completada correctamente"
+      },
+      "errors": {
+        "loadFailed": "Error al cargar integraciones",
+        "actionFailed": "Error en la acción de integración",
+        "deleteFailed": "Error al eliminar la integración"
+      }
+    },
     "backup": {
       "loading": "Cargando ajustes de almacenamiento...",
       "storage": {
@@ -1240,6 +1268,7 @@
       "createServer": "Crear servidor",
       "import": "Importa",
       "pve": "PVE",
+      "netbox": "NetBox",
       "sshConfig": "SSH-Config",
       "connect": "Conecta",
       "quickConnect": "Conexión rápida",
@@ -1428,7 +1457,7 @@
       },
       "actions": {
         "import": "Importa",
-        "edit": "Edita"
+        "edit": "Guardar"
       },
       "messages": {
         "created": "Integración Proxmox creada con éxito",
@@ -1436,6 +1465,51 @@
         "createFailed": "Error al crear la integración Proxmox",
         "updateFailed": "Error al actualizar la integración de Proxmox"
       }
+    },
+    "netboxDialog": {
+      "fields": {
+        "apiUrl": "URL API de NetBox",
+        "apiToken": "Token API",
+        "verifyTls": "Verificar certificados TLS",
+        "syncIntervalMinutes": "Intervalo de sincronización (minutos)",
+        "includeDeviceRoles": "Incluir roles de dispositivo",
+        "excludeDeviceRoles": "Excluir roles de dispositivo",
+        "includeVmRoles": "Incluir roles de VM",
+        "excludeVmRoles": "Excluir roles de VM",
+        "includeTags": "Incluir etiquetas",
+        "excludeTags": "Excluir etiquetas",
+        "defaultProtocol": "Protocolo por defecto",
+        "defaultPort": "Puerto por defecto",
+        "protocolRules": "Reglas de protocolo (de arriba a abajo)",
+        "targetType": "Tipo de destino",
+        "protocol": "Protocolo",
+        "port": "Puerto"
+      },
+      "placeholders": {
+        "apiUrl": "https://netbox.example.com",
+        "apiToken": "Token API de NetBox",
+        "csv": "Valores separados por comas",
+        "tagsAny": "Etiquetas de regla (separadas por comas)",
+        "deviceRolesAny": "Roles de dispositivo de regla (separados por comas)",
+        "vmRolesAny": "Roles de VM de regla (separados por comas)",
+        "platformsAny": "Plataformas de regla (separadas por comas)",
+        "nameIncludes": "El nombre de la regla contiene",
+        "customFieldKey": "Clave de campo personalizado",
+        "customFieldValue": "Valor de campo personalizado"
+      },
+      "actions": {
+        "addRule": "Agregar regla",
+        "removeRule": "Eliminar regla"
+      }
+    },
+    "integrationMessages": {
+      "loadFailed": "No se pudieron cargar los detalles de integración",
+      "syncFailed": "Falló la sincronización de integración",
+      "operationFailed": "Falló la operación de integración",
+      "operationSucceeded": "Operación de integración completada",
+      "testConnection": "Probar conexión",
+      "syncNow": "Sincronizar ahora",
+      "saveFirst": "Primero guarda la integración."
     },
     "connectionReasonDialog": {
       "title": "Razón de conexión requerida",

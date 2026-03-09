@@ -24,6 +24,7 @@ Infram (short form) is an open-source server management software that allows you
 -   Manage files through SFTP
 -   Deploy applications via Docker
 -   Manage Proxmox LXC and QEMU containers
+-   Sync NetBox device and VM inventory into organizations
 -   Secure access with two-factor authentication and OIDC SSO
 -   Separate users and servers into Organizations
 
@@ -104,6 +105,14 @@ The server listens on port 6989 by default. You can modify this behavior using e
 - External source synchronization is disabled by default (`ENABLE_SOURCE_SYNC=false`).
 - External link opening in the web client is disabled by default (`VITE_ENABLE_EXTERNAL_LINKS=false`).
 - GitHub version check remains available through `/api/service/version/check` and can be disabled with `ENABLE_VERSION_CHECK=false`.
+
+### NetBox Inventory Sync
+
+- Add a NetBox integration in the Servers import menu (folder or organization scope).
+- Initial sync imports all matching devices/VMs and auto-creates missing entries.
+- Ongoing sync applies configurable filters (roles/tags) and protocol mapping rules.
+- Default protocol is SSH; rules can switch matching entries to RDP/VNC.
+- Entries removed from NetBox (or filtered out later) are not deleted; they are marked as managed-disabled.
 
 ## Security
 

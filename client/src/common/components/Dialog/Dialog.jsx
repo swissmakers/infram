@@ -117,10 +117,10 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
                         <p>{t('common.confirmDialog.unsavedChangesText')}</p>
                         <div className="dialog-confirm-actions">
                             <button className="dialog-confirm-btn secondary" onClick={handleCancelClose}>
-                                {t('common.actions.cancel')}
+                                {t('common.confirmDialog.keepEditing')}
                             </button>
                             <button className="dialog-confirm-btn primary" onClick={handleConfirmClose}>
-                                {t('common.actions.discard')}
+                                {t('common.confirmDialog.closeWithoutSaving')}
                             </button>
                         </div>
                     </div>

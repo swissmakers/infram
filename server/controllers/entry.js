@@ -376,6 +376,9 @@ module.exports.listEntries = async (accountId) => {
                 ip: entry.config?.ip,
                 macAddress: entry.config?.macAddress,
                 wakeOnLanEnabled: entry.config?.wakeOnLanEnabled,
+                integrationId: entry.integrationId || null,
+                managedBy: entry.managedBy || null,
+                managedDisabled: !!entry.isManagedDisabled,
             };
         }
 

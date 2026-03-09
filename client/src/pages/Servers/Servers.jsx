@@ -24,6 +24,7 @@ export const Servers = () => {
     const [serverDialogOpen, setServerDialogOpen] = useState(false);
     const [serverDialogProtocol, setServerDialogProtocol] = useState(null);
     const [proxmoxDialogOpen, setProxmoxDialogOpen] = useState(false);
+    const [integrationDialogType, setIntegrationDialogType] = useState("proxmox");
     const [sshConfigImportDialogOpen, setSSHConfigImportDialogOpen] = useState(false);
     const [connectionReasonDialogOpen, setConnectionReasonDialogOpen] = useState(false);
     const [directConnectDialogOpen, setDirectConnectDialogOpen] = useState(false);
@@ -361,6 +362,7 @@ export const Servers = () => {
 
     const closePVEDialog = () => {
         setProxmoxDialogOpen(false);
+        setIntegrationDialogType("proxmox");
         setCurrentFolderId(null);
         setEditServerId(null);
     };
@@ -451,6 +453,7 @@ export const Servers = () => {
             <ProxmoxDialog open={proxmoxDialogOpen} onClose={closePVEDialog}
                            currentFolderId={currentFolderId}
                            currentOrganizationId={currentOrganizationId}
+                           initialType={integrationDialogType}
                            editServerId={editServerId} />
             <SSHConfigImportDialog open={sshConfigImportDialogOpen} onClose={closeSSHConfigImportDialog}
                                    currentFolderId={currentFolderId}
@@ -473,7 +476,10 @@ export const Servers = () => {
                     setServerDialogOpen(true);
                 }}
                             connectToServer={connectToServer}
-                            setProxmoxDialogOpen={() => setProxmoxDialogOpen(true)}
+                            setProxmoxDialogOpen={(type = "proxmox") => {
+                                setIntegrationDialogType(type);
+                                setProxmoxDialogOpen(true);
+                            }}
                             setSSHConfigImportDialogOpen={() => setSSHConfigImportDialogOpen(true)}
                             setCurrentFolderId={setCurrentFolderId} setCurrentOrganizationId={setCurrentOrganizationId}
                             setEditServerId={setEditServerId} openSFTP={openSFTP}

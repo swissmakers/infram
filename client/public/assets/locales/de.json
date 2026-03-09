@@ -48,7 +48,9 @@
       "title": "Bist du dir sicher?",
       "defaultText": "Diese Aktion kann nicht rückgängig gemacht werden.",
       "unsavedChangesTitle": "Nicht gespeicherte Änderungen",
-      "unsavedChangesText": "Du hast ungespeicherte Änderungen. Bist du sicher, dass du schliessen willst?"
+      "unsavedChangesText": "Du hast ungespeicherte Änderungen. Bist du sicher, dass du schliessen willst?",
+      "keepEditing": "Weiter bearbeiten",
+      "closeWithoutSaving": "Ohne Speichern schliessen"
     },
     "loginDialog": {
       "title": "Infram",
@@ -549,6 +551,7 @@
       "organizations": "Organisationen",
       "users": "Benutzer",
       "authentication": "Authentifizierung",
+      "integrations": "Integrationen",
       "sources": "Quellen",
       "monitoring": "Überwachung",
       "backup": "Lagerung"
@@ -1086,6 +1089,31 @@
         "requiredFields": "Name und URL sind erforderlich"
       }
     },
+    "integrations": {
+      "title": "Integrationen",
+      "description": "NetBox- und Proxmox-Integrationen verwalten, Verbindungen testen und Synchronisationen ausführen.",
+      "empty": "Noch keine Integrationen konfiguriert.",
+      "lastSync": "Letzte Synchronisierung",
+      "lastMessage": "Letzte Meldung",
+      "confirmDelete": "Möchtest du die Integration \"{{name}}\" wirklich löschen?",
+      "actions": {
+        "edit": "Bearbeiten",
+        "test": "Testen",
+        "sync": "Jetzt synchronisieren",
+        "delete": "Löschen",
+        "addProxmox": "Proxmox hinzufügen",
+        "addNetbox": "NetBox hinzufügen"
+      },
+      "messages": {
+        "deleted": "Integration erfolgreich gelöscht",
+        "actionSuccess": "Integrationsaktion erfolgreich abgeschlossen"
+      },
+      "errors": {
+        "loadFailed": "Integrationen konnten nicht geladen werden",
+        "actionFailed": "Integrationsaktion fehlgeschlagen",
+        "deleteFailed": "Integration konnte nicht gelöscht werden"
+      }
+    },
     "backup": {
       "loading": "Laden der Speichereinstellungen...",
       "storage": {
@@ -1240,6 +1268,7 @@
       "createServer": "Server erstellen",
       "import": "Importieren",
       "pve": "PVE",
+      "netbox": "NetBox",
       "sshConfig": "SSH-Konfiguration",
       "connect": "Verbinden",
       "quickConnect": "Schnellverbindung",
@@ -1428,7 +1457,7 @@
       },
       "actions": {
         "import": "Importieren",
-        "edit": "Bearbeiten"
+        "edit": "Speichern"
       },
       "messages": {
         "created": "Proxmox-Integration erfolgreich erstellt",
@@ -1436,6 +1465,51 @@
         "createFailed": "Die Proxmox-Integration konnte nicht erstellt werden",
         "updateFailed": "Aktualisierung der Proxmox-Integration fehlgeschlagen"
       }
+    },
+    "netboxDialog": {
+      "fields": {
+        "apiUrl": "NetBox API URL",
+        "apiToken": "API Token",
+        "verifyTls": "TLS-Zertifikate prüfen",
+        "syncIntervalMinutes": "Sync-Intervall (Minuten)",
+        "includeDeviceRoles": "Geräterollen einschliessen",
+        "excludeDeviceRoles": "Geräterollen ausschliessen",
+        "includeVmRoles": "VM-Rollen einschliessen",
+        "excludeVmRoles": "VM-Rollen ausschliessen",
+        "includeTags": "Tags einschliessen",
+        "excludeTags": "Tags ausschliessen",
+        "defaultProtocol": "Standardprotokoll",
+        "defaultPort": "Standardport",
+        "protocolRules": "Protokollregeln (oben nach unten)",
+        "targetType": "Zieltyp",
+        "protocol": "Protokoll",
+        "port": "Port"
+      },
+      "placeholders": {
+        "apiUrl": "https://netbox.example.com",
+        "apiToken": "NetBox API Token",
+        "csv": "Kommagetrennte Werte",
+        "tagsAny": "Regel-Tags (kommagetrennt)",
+        "deviceRolesAny": "Regel-Geräterollen (kommagetrennt)",
+        "vmRolesAny": "Regel-VM-Rollen (kommagetrennt)",
+        "platformsAny": "Regel-Plattformen (kommagetrennt)",
+        "nameIncludes": "Regel Name enthält",
+        "customFieldKey": "Custom-Field Schlüssel",
+        "customFieldValue": "Custom-Field Wert"
+      },
+      "actions": {
+        "addRule": "Regel hinzufügen",
+        "removeRule": "Regel entfernen"
+      }
+    },
+    "integrationMessages": {
+      "loadFailed": "Integrationsdetails konnten nicht geladen werden",
+      "syncFailed": "Synchronisation der Integration fehlgeschlagen",
+      "operationFailed": "Integrationsaktion fehlgeschlagen",
+      "operationSucceeded": "Integrationsaktion erfolgreich",
+      "testConnection": "Verbindung testen",
+      "syncNow": "Jetzt synchronisieren",
+      "saveFirst": "Bitte speichere die Integration zuerst."
     },
     "connectionReasonDialog": {
       "title": "Grund für Verbindungsaufbau erforderlich",

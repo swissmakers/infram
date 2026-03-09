@@ -3,8 +3,16 @@ const logger = require("../utils/logger");
 const Folder = require("../models/Folder");
 const Credential = require("../models/Credential");
 const Entry = require("../models/Entry");
+const OrganizationMember = require("../models/OrganizationMember");
 const { hasOrganizationAccess, validateFolderAccess } = require("../utils/permission");
 const { getAllResources } = require("./pve");
+const { testConnection } = require("../utils/netboxClient");
+const { syncNetboxIntegration } = require("../utils/netboxSyncService");
+const https = require("https");
+const { Op } = require("sequelize");
+
+const asPlainObject = (value) => (value && typeof value.toJSON === "function" ? value.toJSON() : value);
+const CREDENTIAL_DECRYPT_ERROR = "Integration credential could not be decrypted. Verify ENCRYPTION_KEY and re-enter credentials.";
 
 const validateIntegrationAccess = async (accountId, integration) => {
     if (!integration) return { valid: false, error: { code: 401, message: "Integration does not exist" } };
@@ -22,6 +30,8 @@ const validateIntegrationAccess = async (accountId, integration) => {
 };
 
 module.exports.createIntegration = async (accountId, configuration) => {
+    const integrationType = configuration.type || "proxmox";
+
     if (configuration.organizationId) {
         const hasAccess = await hasOrganizationAccess(accountId, configuration.organizationId);
         if (!hasAccess) {
@@ -42,14 +52,32 @@ module.exports.createIntegration = async (accountId, configuration) => {
         }
     }
 
-    const integrationConfig = {
-        ip: configuration.ip,
-        port: configuration.port,
-        username: configuration.username,
-        monitoringEnabled: configuration.monitoringEnabled || false,
-    };
+    const integrationConfig = integrationType === "netbox"
+        ? {
+            apiUrl: configuration.apiUrl,
+            verifyTls: configuration.verifyTls !== false,
+            syncIntervalMinutes: configuration.syncIntervalMinutes || 15,
+            includeDeviceRoles: configuration.includeDeviceRoles || [],
+            excludeDeviceRoles: configuration.excludeDeviceRoles || [],
+            includeVmRoles: configuration.includeVmRoles || [],
+            excludeVmRoles: configuration.excludeVmRoles || [],
+            includeTags: configuration.includeTags || [],
+            excludeTags: configuration.excludeTags || [],
+            defaultAction: configuration.defaultAction || { protocol: "ssh", port: 22, renderer: "terminal" },
+            protocolRules: configuration.protocolRules || [],
+            folderId: configuration.folderId || null,
+            ownerAccountId: configuration.organizationId ? null : accountId,
+        }
+        : {
+            ip: configuration.ip,
+            port: configuration.port,
+            username: configuration.username,
+            monitoringEnabled: configuration.monitoringEnabled || false,
+            folderId: configuration.folderId || null,
+            ownerAccountId: configuration.organizationId ? null : accountId,
+        };
 
-    if (configuration.type === 'proxmox' || !configuration.type) {
+    if (integrationType === "proxmox") {
         const { createTicket, getAllNodes } = require("./pve");
         try {
             const serverConfig = {
@@ -83,35 +111,52 @@ module.exports.createIntegration = async (accountId, configuration) => {
             
             return { code: 500, message: `Failed to connect to Proxmox cluster: ${error.message}` };
         }
+    } else if (integrationType === "netbox") {
+        try {
+            const httpsAgent = new https.Agent({ rejectUnauthorized: configuration.verifyTls !== false });
+            await testConnection({ apiUrl: configuration.apiUrl, apiToken: configuration.apiToken, httpsAgent });
+        } catch (error) {
+            logger.error("Failed to connect to NetBox", { apiUrl: configuration.apiUrl, error: error.message });
+            return { code: 500, message: `Failed to connect to NetBox API: ${error.message}` };
+        }
     }
 
     const integration = await Integration.create({
         organizationId: configuration.organizationId || null,
-        type: configuration.type || 'proxmox',
+        type: integrationType,
         name: configuration.name,
         config: integrationConfig,
-        status: 'online',
+        status: "online",
     });
 
     logger.info(`Integration created`, { integrationId: integration.id, name: integration.name, type: integration.type });
 
-    if (configuration.password) {
+    if (integrationType === "proxmox" && configuration.password) {
         await Credential.create({
             integrationId: integration.id,
-            type: 'password',
+            type: "password",
             secret: configuration.password,
+        });
+    } else if (integrationType === "netbox" && configuration.apiToken) {
+        await Credential.create({
+            integrationId: integration.id,
+            type: "api-token",
+            secret: configuration.apiToken,
         });
     }
 
-    if (integration.type === 'proxmox') {
-        try {
-            await this.syncIntegration(accountId, integration.id);
-        } catch (error) {
-            logger.error('Error during integration sync on creation', { integrationId: integration.id, error: error.message });
-        }
+    let syncResult = null;
+    try {
+        syncResult = await this.syncIntegration(accountId, integration.id);
+    } catch (error) {
+        logger.error("Error during integration sync on creation", { integrationId: integration.id, error: error.message });
+        syncResult = { code: 500, success: false, message: error.message };
     }
 
-    return integration;
+    return {
+        ...asPlainObject(integration),
+        sync: syncResult,
+    };
 };
 
 module.exports.deleteIntegration = async (accountId, integrationId) => {
@@ -156,24 +201,44 @@ module.exports.editIntegration = async (accountId, integrationId, configuration)
         }
     }
 
-    if (configuration.password) {
-        await Credential.destroy({ where: { integrationId, type: 'password' } });
-
-        await Credential.create({
-            integrationId,
-            type: 'password',
-            secret: configuration.password,
-        });
+    if (integration.type === "proxmox" && configuration.password) {
+        await Credential.destroy({ where: { integrationId, type: "password" } });
+        await Credential.create({ integrationId, type: "password", secret: configuration.password });
         delete configuration.password;
     }
 
-    const integrationConfig = {
-        ...integration.config,
-        ip: configuration.ip !== undefined ? configuration.ip : integration.config.ip,
-        port: configuration.port !== undefined ? configuration.port : integration.config.port,
-        username: configuration.username !== undefined ? configuration.username : integration.config.username,
-        monitoringEnabled: configuration.monitoringEnabled !== undefined ? configuration.monitoringEnabled : integration.config.monitoringEnabled,
-    };
+    if (integration.type === "netbox" && configuration.apiToken) {
+        await Credential.destroy({ where: { integrationId, type: "api-token" } });
+        await Credential.create({ integrationId, type: "api-token", secret: configuration.apiToken });
+        delete configuration.apiToken;
+    }
+
+    const integrationConfig = integration.type === "netbox"
+        ? {
+            ...integration.config,
+            apiUrl: configuration.apiUrl !== undefined ? configuration.apiUrl : integration.config.apiUrl,
+            verifyTls: configuration.verifyTls !== undefined ? configuration.verifyTls : integration.config.verifyTls,
+            syncIntervalMinutes: configuration.syncIntervalMinutes !== undefined ? configuration.syncIntervalMinutes : integration.config.syncIntervalMinutes,
+            includeDeviceRoles: configuration.includeDeviceRoles !== undefined ? configuration.includeDeviceRoles : (integration.config.includeDeviceRoles || []),
+            excludeDeviceRoles: configuration.excludeDeviceRoles !== undefined ? configuration.excludeDeviceRoles : (integration.config.excludeDeviceRoles || []),
+            includeVmRoles: configuration.includeVmRoles !== undefined ? configuration.includeVmRoles : (integration.config.includeVmRoles || []),
+            excludeVmRoles: configuration.excludeVmRoles !== undefined ? configuration.excludeVmRoles : (integration.config.excludeVmRoles || []),
+            includeTags: configuration.includeTags !== undefined ? configuration.includeTags : (integration.config.includeTags || []),
+            excludeTags: configuration.excludeTags !== undefined ? configuration.excludeTags : (integration.config.excludeTags || []),
+            defaultAction: configuration.defaultAction !== undefined ? configuration.defaultAction : integration.config.defaultAction,
+            protocolRules: configuration.protocolRules !== undefined ? configuration.protocolRules : (integration.config.protocolRules || []),
+            folderId: configuration.folderId !== undefined ? configuration.folderId : integration.config.folderId,
+            ownerAccountId: integration.config.ownerAccountId || (integration.organizationId ? null : accountId),
+        }
+        : {
+            ...integration.config,
+            ip: configuration.ip !== undefined ? configuration.ip : integration.config.ip,
+            port: configuration.port !== undefined ? configuration.port : integration.config.port,
+            username: configuration.username !== undefined ? configuration.username : integration.config.username,
+            monitoringEnabled: configuration.monitoringEnabled !== undefined ? configuration.monitoringEnabled : integration.config.monitoringEnabled,
+            folderId: configuration.folderId !== undefined ? configuration.folderId : integration.config.folderId,
+            ownerAccountId: integration.config.ownerAccountId || (integration.organizationId ? null : accountId),
+        };
 
     delete configuration.organizationId;
     delete configuration.ip;
@@ -181,6 +246,17 @@ module.exports.editIntegration = async (accountId, integrationId, configuration)
     delete configuration.username;
     delete configuration.folderId;
     delete configuration.monitoringEnabled;
+    delete configuration.apiUrl;
+    delete configuration.verifyTls;
+    delete configuration.syncIntervalMinutes;
+    delete configuration.includeDeviceRoles;
+    delete configuration.excludeDeviceRoles;
+    delete configuration.includeVmRoles;
+    delete configuration.excludeVmRoles;
+    delete configuration.includeTags;
+    delete configuration.excludeTags;
+    delete configuration.defaultAction;
+    delete configuration.protocolRules;
 
     await Integration.update({
         ...configuration,
@@ -190,7 +266,15 @@ module.exports.editIntegration = async (accountId, integrationId, configuration)
 
     logger.info(`Integration updated`, { integrationId, name: integration.name });
 
-    return { success: true };
+    let syncResult = null;
+    try {
+        syncResult = await this.syncIntegration(accountId, integrationId);
+    } catch (error) {
+        logger.error("Error during integration sync on update", { integrationId, error: error.message });
+        syncResult = { code: 500, success: false, message: error.message };
+    }
+
+    return { success: true, sync: syncResult };
 };
 
 module.exports.getIntegrationCredentials = async (integrationId) => {
@@ -206,16 +290,31 @@ module.exports.getIntegrationUnsafe = async (accountId, integrationId) => {
 
     if (!accessCheck.valid) return accessCheck.error;
 
-    const credential = await Credential.findOne({ where: { integrationId, type: 'password' } });
+    const passwordCredential = await Credential.findOne({ where: { integrationId, type: "password" } });
+    const netboxTokenCredential = await Credential.findOne({ where: { integrationId, type: "api-token" } });
+    const payload = asPlainObject(integration);
 
     return {
-        ...integration,
-        ip: integration.config.ip,
-        port: integration.config.port,
-        username: integration.config.username,
-        monitoringEnabled: integration.config.monitoringEnabled || false,
-        password: credential ? credential.secret : null,
-        online: integration.status === 'online',
+        ...payload,
+        ip: payload.config?.ip,
+        port: payload.config?.port,
+        username: payload.config?.username,
+        monitoringEnabled: payload.config?.monitoringEnabled || false,
+        apiUrl: payload.config?.apiUrl,
+        verifyTls: payload.config?.verifyTls !== false,
+        syncIntervalMinutes: payload.config?.syncIntervalMinutes || 15,
+        includeDeviceRoles: payload.config?.includeDeviceRoles || [],
+        excludeDeviceRoles: payload.config?.excludeDeviceRoles || [],
+        includeVmRoles: payload.config?.includeVmRoles || [],
+        excludeVmRoles: payload.config?.excludeVmRoles || [],
+        includeTags: payload.config?.includeTags || [],
+        excludeTags: payload.config?.excludeTags || [],
+        defaultAction: payload.config?.defaultAction || { protocol: "ssh", port: 22, renderer: "terminal" },
+        protocolRules: payload.config?.protocolRules || [],
+        folderId: payload.config?.folderId || null,
+        password: passwordCredential ? passwordCredential.secret : null,
+        apiToken: netboxTokenCredential ? netboxTokenCredential.secret : null,
+        online: payload.status === "online",
     };
 };
 
@@ -223,7 +322,33 @@ module.exports.getIntegration = async (accountId, integrationId) => {
     const integration = await this.getIntegrationUnsafe(accountId, integrationId);
     if (integration.code) return integration;
     
-    return { ...integration, password: undefined };
+    return { ...integration, password: undefined, apiToken: undefined };
+};
+
+module.exports.listIntegrations = async (accountId) => {
+    const memberships = await OrganizationMember.findAll({ where: { accountId, status: "active" } });
+    const organizationIds = memberships.map((m) => m.organizationId);
+
+    const integrations = await Integration.findAll({
+        where: {
+            [Op.or]: [
+                { organizationId: null },
+                { organizationId: { [Op.in]: organizationIds } },
+            ],
+        },
+        order: [["updatedAt", "DESC"]],
+    });
+
+    return integrations
+        .map((integration) => asPlainObject(integration))
+        .filter((integration) => {
+            if (integration.organizationId) return true;
+            return integration.config?.ownerAccountId === accountId;
+        })
+        .map((integration) => ({
+            ...integration,
+            config: undefined,
+        }));
 };
 
 module.exports.syncIntegration = async (accountId, integrationId) => {
@@ -232,13 +357,32 @@ module.exports.syncIntegration = async (accountId, integrationId) => {
 
     if (!accessCheck.valid) return accessCheck.error;
 
-    if (integration.type !== 'proxmox') {
-        return { code: 400, message: 'Only Proxmox integrations can be synced' };
+    if (integration.type === "netbox") {
+        const credential = await Credential.findOne({ where: { integrationId, type: "api-token" } });
+        if (!credential) return { code: 400, message: "Integration credentials not found" };
+        if (!credential.secret) return { code: 500, success: false, message: CREDENTIAL_DECRYPT_ERROR };
+
+        const integrationPayload = asPlainObject(integration);
+        const ownerAccountId = integrationPayload.config?.ownerAccountId || accountId;
+        return syncNetboxIntegration({
+            ...integrationPayload,
+            config: {
+                ...integrationPayload.config,
+                apiToken: credential.secret,
+            },
+        }, ownerAccountId);
+    }
+
+    if (integration.type !== "proxmox") {
+        return { code: 400, message: "Unsupported integration type" };
     }
 
     const credential = await Credential.findOne({ where: { integrationId, type: 'password' } });
     if (!credential) {
         return { code: 400, message: 'Integration credentials not found' };
+    }
+    if (!credential.secret) {
+        return { code: 500, success: false, message: CREDENTIAL_DECRYPT_ERROR };
     }
 
     const serverConfig = {
@@ -319,7 +463,7 @@ module.exports.syncIntegration = async (accountId, integrationId) => {
         }
 
         await Integration.update(
-            { lastSyncAt: new Date(), status: 'online' },
+            { lastSyncAt: new Date(), status: 'online', lastSyncStatus: "ok", lastSyncMessage: "Proxmox sync completed" },
             { where: { id: integrationId } }
         );
 
@@ -327,6 +471,7 @@ module.exports.syncIntegration = async (accountId, integrationId) => {
 
         return { 
             success: true, 
+            code: 200,
             message: `Integration synced successfully: ${syncedNodes} nodes, ${totalResources} resources` 
         };
     } catch (error) {
@@ -338,8 +483,55 @@ module.exports.syncIntegration = async (accountId, integrationId) => {
         );
 
         const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
-        return { code: 500, message: 'Failed to sync integration: ' + errorMessage };
+        return { code: 500, success: false, message: 'Failed to sync integration: ' + errorMessage };
     }
+};
+
+module.exports.testIntegration = async (accountId, integrationId) => {
+    const integration = await Integration.findByPk(integrationId);
+    const accessCheck = await validateIntegrationAccess(accountId, integration);
+    if (!accessCheck.valid) return accessCheck.error;
+
+    try {
+        if (integration.type === "proxmox") {
+            const credential = await Credential.findOne({ where: { integrationId, type: "password" } });
+            if (!credential) return { code: 400, message: "Integration credentials not found" };
+            if (!credential.secret) return { code: 500, success: false, message: CREDENTIAL_DECRYPT_ERROR };
+            const { createTicket, getAllNodes } = require("./pve");
+            const ticket = await createTicket({ ip: integration.config.ip, port: integration.config.port }, integration.config.username, credential.secret);
+            await getAllNodes({ ip: integration.config.ip, port: integration.config.port }, ticket);
+            return { success: true, code: 200, message: "Proxmox connection successful" };
+        }
+
+        if (integration.type === "netbox") {
+            const credential = await Credential.findOne({ where: { integrationId, type: "api-token" } });
+            if (!credential) return { code: 400, message: "Integration credentials not found" };
+            if (!credential.secret) return { code: 500, success: false, message: CREDENTIAL_DECRYPT_ERROR };
+            const httpsAgent = new https.Agent({ rejectUnauthorized: integration.config?.verifyTls !== false });
+            await testConnection({ apiUrl: integration.config?.apiUrl, apiToken: credential.secret, httpsAgent });
+            return { success: true, code: 200, message: "NetBox connection successful" };
+        }
+
+        return { code: 400, message: "Unsupported integration type" };
+    } catch (error) {
+        return { code: 500, message: error.message };
+    }
+};
+
+module.exports.getIntegrationSyncStatus = async (accountId, integrationId) => {
+    const integration = await Integration.findByPk(integrationId);
+    const accessCheck = await validateIntegrationAccess(accountId, integration);
+    if (!accessCheck.valid) return accessCheck.error;
+
+    return {
+        success: true,
+        integrationId: integration.id,
+        type: integration.type,
+        status: integration.status,
+        lastSyncAt: integration.lastSyncAt,
+        lastSyncStatus: integration.lastSyncStatus,
+        lastSyncMessage: integration.lastSyncMessage,
+    };
 };
 
 module.exports.validateIntegrationAccess = validateIntegrationAccess;

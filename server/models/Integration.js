@@ -32,6 +32,14 @@ module.exports = db.define("integrations", {
         type: Sequelize.DATE,
         allowNull: true,
     },
+    lastSyncStatus: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
+    lastSyncMessage: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+    },
 }, { 
     freezeTableName: true,
     timestamps: true,

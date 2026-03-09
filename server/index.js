@@ -20,6 +20,7 @@ const { isAdmin } = require("./middlewares/permission");
 const logger = require("./utils/logger");
 const { startSourceSyncService, stopSourceSyncService } = require("./utils/sourceSyncService");
 const backupService = require("./utils/backupService");
+const { startNetboxIntegrationService, stopNetboxIntegrationService } = require("./utils/netboxIntegrationService");
 require("./utils/folder");
 
 process.on("uncaughtException", (err) => require("./utils/errorHandling")(err));
@@ -116,6 +117,7 @@ db.authenticate()
         startSourceSyncService();
 
         backupService.start();
+        startNetboxIntegrationService();
 
         app.listen(APP_PORT, () =>
             logger.system(`Server listening on port ${APP_PORT}`)
@@ -149,6 +151,7 @@ process.on("SIGINT", async () => {
     stopStatusChecker();
     stopSourceSyncService();
     backupService.stop();
+    stopNetboxIntegrationService();
 
     await db.close();
 

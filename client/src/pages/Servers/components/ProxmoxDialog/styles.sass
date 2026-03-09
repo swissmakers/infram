@@ -4,7 +4,10 @@
   display: flex
   flex-direction: column
   gap: 1rem
-  width: 20rem
+  width: min(52rem, 88vw)
+  max-height: calc(92vh - 3rem)
+  overflow-y: auto
+  padding-right: 0.2rem
 
   h2, p
     margin: 0
@@ -28,11 +31,15 @@
   .ip-row
     display: flex
     gap: 1rem
+    align-items: flex-start
+
+    @media (max-width: 900px)
+      flex-direction: column
 
   .small-input
     padding: 0.8rem
     border: 1px solid colors.$gray
-    width: 3rem
+    width: 100%
     background-color: colors.$lighter-background
     color: colors.$white
     border-radius: 0.7rem
@@ -43,6 +50,12 @@
       border: 1px solid colors.$primary
       background-color: colors.$dark-gray
 
+  .select-input
+    appearance: none
+
+  .wide-input
+    width: 100%
+
   .settings-toggle
     display: flex
     justify-content: space-between
@@ -51,6 +64,11 @@
     background-color: colors.$lighter-background
     border: 1px solid colors.$gray
     border-radius: 0.7rem
+
+    @media (max-width: 900px)
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.75rem
 
     .settings-toggle-info
       display: flex
@@ -67,3 +85,40 @@
       .settings-toggle-description
         color: colors.$subtext
         font-size: 0.8rem
+
+  .rules-header
+    display: flex
+    justify-content: space-between
+    align-items: center
+
+    p
+      margin: 0
+
+  .rules-list
+    display: flex
+    flex-direction: column
+    gap: 0.75rem
+    max-height: 16rem
+    overflow-y: auto
+
+  @media (max-width: 900px)
+    max-height: calc(94vh - 2.5rem)
+
+  .rule-card
+    border: 1px solid colors.$gray
+    border-radius: 0.7rem
+    padding: 0.7rem
+    display: flex
+    flex-direction: column
+    gap: 0.5rem
+
+  .rule-actions
+    display: flex
+    justify-content: flex-end
+
+  .integration-actions
+    display: flex
+    gap: 0.6rem
+
+    @media (max-width: 900px)
+      flex-direction: column

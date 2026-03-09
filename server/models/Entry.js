@@ -68,6 +68,19 @@ module.exports = db.define("entries", {
         type: Sequelize.JSON,
         allowNull: true,
     },
+    managedBy: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
+    externalId: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
+    isManagedDisabled: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    },
 }, { 
     freezeTableName: true,
     timestamps: true,

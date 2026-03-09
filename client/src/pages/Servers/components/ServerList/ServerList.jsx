@@ -31,6 +31,7 @@ import {
     mdiPlay,
     mdiScript,
     mdiTunnel,
+    mdiLanConnect,
 } from "@mdi/js";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
 import { useDrop, useDragLayer } from "react-dnd";
@@ -302,7 +303,8 @@ export const ServerList = ({
     };
 
     const createServer = (protocol) => { setFolderContext(); setServerDialogOpen(protocol); };
-    const createPVEServer = () => { setFolderContext(); setProxmoxDialogOpen(); };
+    const createPVEServer = () => { setFolderContext(); setProxmoxDialogOpen("proxmox"); };
+    const createNetboxIntegration = () => { setFolderContext(); setProxmoxDialogOpen("netbox"); };
     const openSSHConfigImport = () => { setFolderContext(); setSSHConfigImportDialogOpen(); };
 
     const getIdentity = (id = null) => identities?.find(i => i.id === (id || server?.identities[0]));
@@ -327,6 +329,13 @@ export const ServerList = ({
             setEditServerId(integrationId);
             setProxmoxDialogOpen();
         }
+    };
+
+    const editLinkedIntegration = () => {
+        const integrationId = server?.integrationId;
+        if (!integrationId) return;
+        setEditServerId(integrationId);
+        setProxmoxDialogOpen(server?.managedBy === "netbox" ? "netbox" : "proxmox");
     };
 
     const postPVEAction = (type) => {
@@ -529,7 +538,7 @@ export const ServerList = ({
                                         />
                                     </ContextMenuItem>
                                 )}
-                                {contextClickedType === "folder-object" && !isOrgFolder && (
+                                {(contextClickedType === "folder-object" || isOrgFolder) && (
                                     <ContextMenuItem
                                         icon={mdiImport}
                                         label={t("servers.contextMenu.import")}
@@ -540,10 +549,17 @@ export const ServerList = ({
                                             onClick={createPVEServer}
                                         />
                                         <ContextMenuItem
-                                            icon={mdiFileDocumentOutline}
-                                            label={t("servers.contextMenu.sshConfig")}
-                                            onClick={openSSHConfigImport}
+                                            icon={mdiLanConnect}
+                                            label={t("servers.contextMenu.netbox")}
+                                            onClick={createNetboxIntegration}
                                         />
+                                        {!isOrgFolder && (
+                                            <ContextMenuItem
+                                                icon={mdiFileDocumentOutline}
+                                                label={t("servers.contextMenu.sshConfig")}
+                                                onClick={openSSHConfigImport}
+                                            />
+                                        )}
                                     </ContextMenuItem>
                                 )}
                             </>
@@ -705,6 +721,13 @@ export const ServerList = ({
                                     label={t("servers.contextMenu.editServer")}
                                     onClick={editServer}
                                 />
+                                {server?.integrationId && (
+                                    <ContextMenuItem
+                                        icon={mdiCog}
+                                        label={t("servers.contextMenu.editIntegration")}
+                                        onClick={editLinkedIntegration}
+                                    />
+                                )}
 
                                 <ContextMenuItem
                                     icon={mdiContentCopy}

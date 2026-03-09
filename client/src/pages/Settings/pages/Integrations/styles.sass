@@ -1,0 +1,96 @@
+@use "@/common/styles/colors"
+
+.integrations-page
+  display: flex
+  flex-direction: column
+  gap: 1rem
+
+.integrations-header
+  display: flex
+  justify-content: space-between
+  align-items: center
+  gap: 1rem
+
+  h2
+    margin: 0
+
+  p
+    margin: 0.25rem 0 0
+    color: colors.$subtext
+
+.integrations-header__actions
+  display: flex
+  gap: 0.5rem
+
+  @media (max-width: 900px)
+    flex-direction: column
+
+.integrations-grid
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr))
+  gap: 0.8rem
+
+.integration-card
+  border: 1px solid colors.$gray
+  border-radius: 0.7rem
+  background: colors.$lighter-background
+  padding: 0.8rem
+  display: flex
+  flex-direction: column
+  gap: 0.8rem
+
+.integration-card__head
+  display: flex
+  justify-content: space-between
+  gap: 0.5rem
+
+.integration-title
+  display: flex
+  align-items: center
+  gap: 0.5rem
+
+  svg
+    width: 1.1rem
+    height: 1.1rem
+    color: colors.$primary
+
+  h3
+    margin: 0
+    font-size: 0.95rem
+
+  p
+    margin: 0.15rem 0 0
+    color: colors.$subtext
+    font-size: 0.8rem
+
+.integration-status
+  font-size: 0.75rem
+  padding: 0.2rem 0.45rem
+  border-radius: 0.4rem
+  border: 1px solid colors.$gray
+  text-transform: uppercase
+
+  &.online
+    color: colors.$success
+    border-color: colors.$success
+
+  &.offline
+    color: colors.$error
+    border-color: colors.$error
+
+.integration-meta
+  p
+    margin: 0.2rem 0
+    font-size: 0.82rem
+    color: colors.$subtext
+
+.integration-actions
+  display: flex
+  flex-wrap: wrap
+  gap: 0.45rem
+
+.integrations-empty
+  border: 1px dashed colors.$gray
+  border-radius: 0.7rem
+  padding: 1rem
+  color: colors.$subtext
