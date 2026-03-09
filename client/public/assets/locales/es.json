@@ -134,9 +134,7 @@
       "account": "Cuenta",
       "logout": "Cerrar sesión",
       "collapseTitle": "Contraer la barra lateral",
-      "logoutConfirmText": "Esto te desconectará de la cuenta {{username}} . ¿Estás seguro?",
-      "starOnGitHub": "Estrella en GitHub",
-      "support": "Ayuda"
+      "logoutConfirmText": "Esto te desconectará de la cuenta {{username}} . ¿Estás seguro?"
     },
     "quickAction": {
       "placeholder": "Busca servidores, fragmentos o navega...",
@@ -1617,23 +1615,6 @@
       "fullScreen": "Pantalla completa",
       "exitFullScreen": "Salir del Modo Pantalla Completa",
       "badgeOn": "EN"
-    }
-  },
-  "support": {
-    "title": "Conseguir ayuda",
-    "subtitle": "¿Necesitas ayuda o quieres contribuir?",
-    "footer": "¡Gracias por utilizar Infram!",
-    "issues": {
-      "title": "Informar de un problema",
-      "description": "¿Has encontrado un error o tienes una petición de función?"
-    },
-    "discord": {
-      "title": "Únete a Discord",
-      "description": "Chatea con la comunidad y obtén ayuda."
-    },
-    "github": {
-      "title": "Ver en GitHub",
-      "description": "Navega por el código fuente y contribuye."
     }
   },
   "welcome": {
