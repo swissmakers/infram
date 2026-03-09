@@ -11,6 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Free disk before multi-arch build
+        run: |
+          podman system prune -af --volumes || true
+          df -h
+
       - name: Enable binfmt/QEMU for cross-arch RUN steps
         run: |
           podman run --privileged --rm docker.io/tonistiigi/binfmt --install all

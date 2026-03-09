@@ -2,13 +2,23 @@ FROM node:22-alpine AS client-builder
 
 WORKDIR /app
 RUN apk upgrade --no-cache
+ENV YARN_CACHE_FOLDER=/tmp/yarn-cache
 
 COPY vendor/guacamole-client/guacamole-common-js/ ./vendor/guacamole-client/guacamole-common-js/
 
 WORKDIR /app/client
 
 COPY client/package.json client/yarn.lock ./
-RUN for i in 1 2 3; do yarn install --frozen-lockfile --network-timeout 500000 && break || sleep 15; done
+RUN install_ok=0; \
+    for i in 1 2 3; do \
+      yarn install --frozen-lockfile --network-timeout 500000 && install_ok=1 && break; \
+      yarn cache clean --all || true; \
+      rm -rf "${YARN_CACHE_FOLDER}" || true; \
+      sleep 15; \
+    done; \
+    [ "${install_ok}" -eq 1 ]; \
+    yarn cache clean --all || true; \
+    rm -rf "${YARN_CACHE_FOLDER}" || true
 
 COPY client/ .
 RUN yarn build
@@ -19,6 +29,7 @@ ARG VERSION
 
 WORKDIR /app
 RUN apk upgrade --no-cache
+ENV YARN_CACHE_FOLDER=/tmp/yarn-cache
 
 RUN apk add --no-cache \
     python3 py3-pip py3-setuptools \
@@ -29,7 +40,16 @@ COPY package.json yarn.lock ./
 RUN if [ -n "$VERSION" ]; then \
         jq --arg v "$VERSION" '.version = $v' package.json > tmp.json && mv tmp.json package.json; \
     fi
-RUN for i in 1 2 3; do yarn install --production --frozen-lockfile --network-timeout 500000 && break || sleep 15; done
+RUN install_ok=0; \
+    for i in 1 2 3; do \
+      yarn install --production --frozen-lockfile --network-timeout 500000 && install_ok=1 && break; \
+      yarn cache clean --all || true; \
+      rm -rf "${YARN_CACHE_FOLDER}" || true; \
+      sleep 15; \
+    done; \
+    [ "${install_ok}" -eq 1 ]; \
+    yarn cache clean --all || true; \
+    rm -rf "${YARN_CACHE_FOLDER}" || true
 
 COPY server/ server/
 
