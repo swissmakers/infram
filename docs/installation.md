@@ -106,3 +106,11 @@ make security-sbom
 ```
 
 This only requires Docker or Podman on the host. The required Node/Yarn/pnpm tooling is executed inside ephemeral containers.
+
+## Offline Runtime Controls
+
+For production environments without internet access:
+
+- Keep `ENABLE_SOURCE_SYNC=false` (default) to prevent outbound source synchronization.
+- Keep `VITE_ENABLE_EXTERNAL_LINKS=false` in the client build (default) to block opening external links from the UI.
+- Version checks are controlled by `ENABLE_VERSION_CHECK` (default: `true`) and can be disabled with `ENABLE_VERSION_CHECK=false`.

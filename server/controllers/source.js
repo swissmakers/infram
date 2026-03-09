@@ -3,8 +3,13 @@ const Snippet = require("../models/Snippet");
 const Script = require("../models/Script");
 const crypto = require("crypto");
 const logger = require("../utils/logger");
+const { isSourceSyncEnabled } = require("../utils/security");
 
 module.exports.validateSourceUrl = async (url) => {
+    if (!isSourceSyncEnabled()) {
+        return { valid: false, error: "Source synchronization is disabled by configuration." };
+    }
+
     try {
         const baseUrl = url.replace(/\/$/, "");
         const indexUrl = `${baseUrl}/NTINDEX`;
@@ -166,6 +171,10 @@ module.exports.deleteSource = async (sourceId) => {
 };
 
 module.exports.syncSource = async (sourceId) => {
+    if (!isSourceSyncEnabled()) {
+        return { success: false, error: "Source synchronization is disabled by configuration." };
+    }
+
     const source = await Source.findByPk(sourceId);
     if (!source) {
         return { success: false, error: "Source not found" };
@@ -329,6 +338,10 @@ module.exports.syncSource = async (sourceId) => {
 };
 
 module.exports.syncAllSources = async () => {
+    if (!isSourceSyncEnabled()) {
+        return;
+    }
+
     const sources = await Source.findAll({ where: { enabled: true } });
 
     for (const source of sources) {
@@ -430,6 +443,10 @@ const parseScriptContent = (content, defaultName) => {
 };
 
 module.exports.ensureDefaultSource = async () => {
+    if (!isSourceSyncEnabled()) {
+        return;
+    }
+
     const DEFAULT_SOURCE_URL = "https://github.com/swissmakers/infra-manager";
     const DEFAULT_SOURCE_NAME = "Official";
 

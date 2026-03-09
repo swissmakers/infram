@@ -1,5 +1,6 @@
 let _isTauri = null;
 let _tauriPromise = null;
+const EXTERNAL_LINKS_ENABLED = String(import.meta.env.VITE_ENABLE_EXTERNAL_LINKS || "false").toLowerCase() === "true";
 
 const checkTauri = () => typeof window !== "undefined" && !!(window.__TAURI_INTERNALS__ || window.__TAURI__);
 
@@ -46,6 +47,11 @@ export const setActiveServerUrl = (url) => {
 };
 
 export const openExternalUrl = async (url) => {
+    if (!EXTERNAL_LINKS_ENABLED) {
+        console.warn("External URL opening is disabled by VITE_ENABLE_EXTERNAL_LINKS.");
+        return;
+    }
+
     if (!isTauri()) {
         window.open(url, "_blank");
         return;

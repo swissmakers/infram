@@ -274,9 +274,7 @@
       "actions": {
         "cancel": "Zrušit",
         "create": "Vytvořit",
-        "save": "Uložit",
-        "generateAI": "Generovat pomocí AI",
-        "generating": "Generuji..."
+        "save": "Uložit"
       }
     },
     "messages": {
@@ -549,7 +547,6 @@
       "users": "Uživatelé",
       "authentication": "Ověření",
       "sources": "Zdroje",
-      "ai": "AI",
       "monitoring": "Monitorování",
       "backup": "Úložiště"
     },
@@ -724,10 +721,6 @@
         "quickaction": {
           "title": "Rychlá akce",
           "description": "Otevřít menu rychlých akcí"
-        },
-        "aimenu": {
-          "title": "Nabídka AI",
-          "description": "Otevřít menu AI příkazů"
         },
         "snippets": {
           "title": "Snippety",
@@ -933,48 +926,6 @@
           "testSuccess": "Test připojení proběhl úspěšně",
           "testFailed": "Test připojení se nezdařil"
         }
-      }
-    },
-    "ai": {
-      "title": "Konfigurace AI asistenta",
-      "description": "Nakonfigurujte generování příkazů pomocí AI pro terminálové relace a tvorbu snippetů.",
-      "loading": "Načítání nastavení AI...",
-      "enable": {
-        "title": "Povolit AI asistenta",
-        "description": "Umožnit uživatelům generovat příkazy pomocí AI"
-      },
-      "provider": {
-        "title": "Poskytovatel AI",
-        "description": "Vyberte poskytovatele AI služby"
-      },
-      "model": {
-        "title": "Model",
-        "description": "Vyberte AI model pro generování příkazů"
-      },
-      "apiKey": {
-        "title": "API klíč",
-        "description": "Váš OpenAI API klíč pro ověření",
-        "placeholder": "Zadejte svůj OpenAI API klíč",
-        "setPlaceholder": "API klíč je nastaven (ponechte prázdné pro zachování)"
-      },
-      "ollamaUrl": {
-        "title": "Adresa URL společnosti Ollama",
-        "description": "URL, kde běží vaše instance Ollama",
-        "placeholder": "http://localhost:11434"
-      },
-      "selectProvider": "Vyberte poskytovatele...",
-      "selectModel": "Vyberte model...",
-      "loadingModels": "Načítání modelů...",
-      "noModels": "Žádné modely k dispozici",
-      "saveSettings": "Uložit nastavení",
-      "testConnection": "Otestovat připojení",
-      "testing": "Testuji...",
-      "saveSuccess": "Nastavení AI úspěšně uloženo",
-      "testSuccess": "Test připojení AI úspěšný",
-      "errors": {
-        "loadSettings": "Nepodařilo se načíst nastavení AI",
-        "saveSettings": "Nepodařilo se uložit nastavení AI",
-        "testConnection": "Test připojení AI selhal"
       }
     },
     "monitoring": {
@@ -1631,20 +1582,6 @@
         "connectionLost": "Ztráta připojení SFTP. Znovu se připojte.",
         "error": "Došlo k chybě"
       }
-    },
-    "aiAssistant": {
-      "title": "AI asistent",
-      "placeholder": "Popište, co chcete udělat...",
-      "hint": "Stiskněte Enter pro generování, Esc pro zavření",
-      "hintUse": "Stiskněte Enter pro použití příkazu, Esc pro zavření",
-      "closeLabel": "Zavřít AI asistenta",
-      "generate": "Generovat příkaz",
-      "generating": "Generuji příkaz...",
-      "generatedCommand": "Vygenerovaný příkaz",
-      "useCommand": "Použít příkaz",
-      "tryAgain": "Zkusit znovu",
-      "copy": "Kopírovat do schránky",
-      "error": "Nepodařilo se vygenerovat příkaz. Prosím zkuste to znovu."
     },
     "snippets": {
       "title": "Snippety",

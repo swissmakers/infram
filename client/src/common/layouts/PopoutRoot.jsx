@@ -5,7 +5,6 @@ import { ServerProvider } from "@/common/contexts/ServerContext.jsx";
 import { IdentityProvider } from "@/common/contexts/IdentityContext.jsx";
 import { ToastProvider } from "@/common/contexts/ToastContext.jsx";
 import { PreferencesProvider } from "@/common/contexts/PreferencesContext.jsx";
-import { AIProvider } from "@/common/contexts/AIContext.jsx";
 import { KeymapProvider } from "@/common/contexts/KeymapContext.jsx";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -35,21 +34,19 @@ export default () => {
                         <PreferencesWrapper>
                             <StateStreamProvider>
                                 <KeymapProvider>
-                                    <AIProvider>
-                                        <ServerProvider>
-                                            <IdentityProvider>
-                                                <SnippetProvider>
-                                                    <ScriptProvider>
-                                                        <SessionProvider>
-                                                            <Suspense fallback={<Loading />}>
-                                                                <Outlet />
-                                                            </Suspense>
-                                                        </SessionProvider>
-                                                    </ScriptProvider>
-                                                </SnippetProvider>
-                                            </IdentityProvider>
-                                        </ServerProvider>
-                                    </AIProvider>
+                                    <ServerProvider>
+                                        <IdentityProvider>
+                                            <SnippetProvider>
+                                                <ScriptProvider>
+                                                    <SessionProvider>
+                                                        <Suspense fallback={<Loading />}>
+                                                            <Outlet />
+                                                        </Suspense>
+                                                    </SessionProvider>
+                                                </ScriptProvider>
+                                            </SnippetProvider>
+                                        </IdentityProvider>
+                                    </ServerProvider>
                                 </KeymapProvider>
                             </StateStreamProvider>
                         </PreferencesWrapper>

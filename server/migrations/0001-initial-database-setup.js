@@ -349,46 +349,6 @@ module.exports = {
             logger.info("Created app_sources table");
         }
 
-        if (!tableNames.includes("ai_settings")) {
-            await queryInterface.createTable("ai_settings", {
-                id: {
-                    type: DataTypes.INTEGER,
-                    primaryKey: true,
-                    autoIncrement: true,
-                },
-                enabled: {
-                    type: DataTypes.BOOLEAN,
-                    defaultValue: false,
-                    allowNull: false,
-                },
-                provider: {
-                    type: DataTypes.ENUM("ollama", "openai"),
-                    allowNull: true,
-                },
-                model: {
-                    type: DataTypes.STRING,
-                    allowNull: true,
-                },
-                apiKey: {
-                    type: DataTypes.TEXT,
-                    allowNull: true,
-                },
-                apiUrl: {
-                    type: DataTypes.STRING,
-                    allowNull: true,
-                },
-                createdAt: {
-                    type: DataTypes.DATE,
-                    defaultValue: DataTypes.NOW,
-                },
-                updatedAt: {
-                    type: DataTypes.DATE,
-                    defaultValue: DataTypes.NOW,
-                },
-            });
-            logger.info("Created ai_settings table");
-        }
-
         if (!tableNames.includes("server_monitoring")) {
             await queryInterface.createTable("server_monitoring", {
                 id: {

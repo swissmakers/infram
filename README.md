@@ -92,10 +92,18 @@ The server listens on port 6989 by default. You can modify this behavior using e
 -   `SERVER_PORT`: Server listening port (default: 6989)
 -   `NODE_ENV`: Runtime environment (development/production)
 -   `ENCRYPTION_KEY`: Encryption key for passwords, SSH keys and passphrases. Supports Docker secrets via /run/secrets/encryption_key`
--   `AI_SYSTEM_PROMPT`: System prompt for AI features (example: You are a Linux command generator assistant.)
 -   `LOG_LEVEL`: Logging level for application and guacd (system/info/verbose/debug/warn/error, default: system)
 -   `STRICT_TLS`: Enforce TLS certificate validation for outbound integrations like Proxmox and LDAP (default: true)
--   `ENABLE_SOURCE_SYNC`: Enable automatic external source synchronization and default official source creation (default: false)
+-   `ENABLE_SOURCE_SYNC`: Enable source synchronization requests and default official source creation (default: false)
+-   `ENABLE_VERSION_CHECK`: Allow GitHub version check endpoint (`/api/service/version/check`) (default: true)
+-   `VITE_ENABLE_EXTERNAL_LINKS`: Allow opening external links from the web UI (default: false)
+
+### Offline Runtime Defaults
+
+- AI assistant features are removed from the productive app runtime.
+- External source synchronization is disabled by default (`ENABLE_SOURCE_SYNC=false`).
+- External link opening in the web client is disabled by default (`VITE_ENABLE_EXTERNAL_LINKS=false`).
+- GitHub version check remains available through `/api/service/version/check` and can be disabled with `ENABLE_VERSION_CHECK=false`.
 
 ## Security
 

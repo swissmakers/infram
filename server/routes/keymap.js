@@ -31,7 +31,7 @@ app.get("/", authenticate, async (req, res) => {
  * @tags Keymaps
  * @produces application/json
  * @security BearerAuth
- * @param {string} action.path.required - The action identifier (e.g., 'search', 'ai-menu', 'snippets', 'keyboard-shortcuts')
+ * @param {string} action.path.required - The action identifier (e.g., 'search', 'snippets', 'keyboard-shortcuts')
  * @param {object} request.body.required - Updates to apply (key and/or enabled)
  * @return {object} 200 - Keymap successfully updated
  * @return {object} 400 - Key combination already in use or invalid request

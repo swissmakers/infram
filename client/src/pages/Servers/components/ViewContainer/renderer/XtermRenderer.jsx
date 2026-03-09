@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { IdentityContext } from "@/common/contexts/IdentityContext.jsx";
-import { AIContext } from "@/common/contexts/AIContext.jsx";
 import { useKeymaps, matchesKeybind } from "@/common/contexts/KeymapContext.jsx";
 import { Terminal as Xterm } from "@xterm/xterm";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
 import { FitAddon } from "@xterm/addon-fit";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
-import AICommandPopover from "./components/AICommandPopover";
 import SnippetsMenu from "./components/SnippetsMenu";
 import { createProgressParser } from "../utils/progressParser";
 import { mdiContentCopy, mdiContentPaste, mdiCodeBrackets, mdiSelectAll, mdiDelete, mdiKeyboard, mdiKey } from "@mdi/js";
@@ -33,11 +31,8 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
     const userContext = useContext(UserContext);
     const sessionToken = userContext?.sessionToken;
     const { theme, getCurrentTheme, selectedFont, fontSize, cursorStyle, cursorBlink, selectedTheme } = usePreferences();
-    const aiContext = useContext(AIContext);
-    const isAIAvailable = aiContext?.isAIAvailable || (() => false);
     const { getParsedKeybind } = useKeymaps();
     const { t } = useTranslation();
-    const [showAIPopover, setShowAIPopover] = useState(false);
     const contextMenu = useContextMenu();
     const { identities } = useContext(IdentityContext);
     const [showSnippetsMenu, setShowSnippetsMenu] = useState(false);
@@ -70,19 +65,6 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
             };
         }
     }, [session.id, updateProgress]);
-
-    const toggleAIPopover = () => {
-        if (showAIPopover) {
-            setTimeout(() => termRef.current?.focus(), 0);
-        }
-        setShowAIPopover(!showAIPopover);
-    };
-
-    const handleAICommandGenerated = (command) => {
-        if (termRef.current && wsRef.current) {
-            wsRef.current.send(command);
-        }
-    };
 
     const handleContextMenu = (e) => {
         e.preventDefault();
@@ -328,14 +310,6 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
                     }
                 }
 
-                const aiKeybind = getParsedKeybind("ai-menu");
-                if (aiKeybind && isAIAvailable() && matchesKeybind(event, aiKeybind)) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    toggleAIPopover();
-                    return false;
-                }
-
                 const snippetsKeybind = getParsedKeybind("snippets");
                 if (snippetsKeybind && matchesKeybind(event, snippetsKeybind)) {
                     event.preventDefault();
@@ -401,17 +375,6 @@ const XtermRenderer = ({ session, disconnectFromServer, registerTerminalRef, bro
         <div className="xterm-container" onContextMenu={!isShared ? handleContextMenu : undefined}>
             <ConnectionLoader onReady={(loader) => { connectionLoaderRef.current = loader; }} />
             <div ref={ref} className="xterm-wrapper" />
-            {!isShared && isAIAvailable() && (
-                <AICommandPopover visible={showAIPopover} onClose={() => setShowAIPopover(false)}
-                    onCommandGenerated={handleAICommandGenerated} focusTerminal={() => termRef.current?.focus()}
-                    entryId={session.server?.id}
-                    recentOutput={terminalBufferRef.current.join('')
-                        .replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '')
-                        .replace(/[\x00-\x1F\x7F]/g, ' ')
-                        .replace(/\s+/g, ' ')
-                        .trim()
-                        .slice(-1500)} />
-            )}
             {!isShared && (
                 <ContextMenu
                     isOpen={contextMenu.isOpen}

@@ -9,6 +9,7 @@ const parseBooleanEnv = (name, defaultValue) => {
 const isStrictTlsEnabled = () => parseBooleanEnv("STRICT_TLS", true);
 
 const isSourceSyncEnabled = () => parseBooleanEnv("ENABLE_SOURCE_SYNC", false);
+const isVersionCheckEnabled = () => parseBooleanEnv("ENABLE_VERSION_CHECK", true);
 
 const createHttpsAgent = () => new https.Agent({
     rejectUnauthorized: isStrictTlsEnabled(),
@@ -22,6 +23,7 @@ module.exports = {
     parseBooleanEnv,
     isStrictTlsEnabled,
     isSourceSyncEnabled,
+    isVersionCheckEnabled,
     createHttpsAgent,
     getLdapTlsOptions,
 };

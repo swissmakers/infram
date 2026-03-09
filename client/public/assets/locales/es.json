@@ -274,9 +274,7 @@
       "actions": {
         "cancel": "Cancelar",
         "create": "Crea",
-        "save": "Guarda",
-        "generateAI": "Generar con IA",
-        "generating": "Generar..."
+        "save": "Guarda"
       }
     },
     "messages": {
@@ -549,7 +547,6 @@
       "users": "Usuarios",
       "authentication": "Autenticación",
       "sources": "Fuentes",
-      "ai": "AI",
       "monitoring": "Supervisión",
       "backup": "Almacenamiento"
     },
@@ -724,10 +721,6 @@
         "quickaction": {
           "title": "Acción rápida",
           "description": "Abre el menú de acción rápida"
-        },
-        "aimenu": {
-          "title": "Menú AI",
-          "description": "Abre el menú de comandos AI"
         },
         "snippets": {
           "title": "Fragmentos",
@@ -933,48 +926,6 @@
           "testSuccess": "Prueba de conexión correcta",
           "testFailed": "Error en la prueba de conexión"
         }
-      }
-    },
-    "ai": {
-      "title": "Configuración del Asistente AI",
-      "description": "Configura la generación de comandos asistida por IA para las sesiones de terminal y la creación de fragmentos.",
-      "loading": "Cargando ajustes de IA...",
-      "enable": {
-        "title": "Activar el Asistente de IA",
-        "description": "Permitir a los usuarios generar comandos utilizando IA"
-      },
-      "provider": {
-        "title": "Proveedor de IA",
-        "description": "Elige tu proveedor de servicios de IA"
-      },
-      "model": {
-        "title": "Modelo",
-        "description": "Selecciona el modelo de IA que se utilizará para la generación de órdenes"
-      },
-      "apiKey": {
-        "title": "Clave API",
-        "description": "Tu clave API de OpenAI para la autenticación",
-        "placeholder": "Introduce tu clave API de OpenAI",
-        "setPlaceholder": "La clave API está configurada (déjala en blanco para mantenerla actualizada)"
-      },
-      "ollamaUrl": {
-        "title": "URL de Ollama",
-        "description": "La URL donde se ejecuta tu instancia de Ollama",
-        "placeholder": "http://localhost:11434"
-      },
-      "selectProvider": "Selecciona un proveedor...",
-      "selectModel": "Selecciona un modelo...",
-      "loadingModels": "Cargando modelos...",
-      "noModels": "No hay modelos disponibles",
-      "saveSettings": "Guardar ajustes",
-      "testConnection": "Conexión de prueba",
-      "testing": "Probando...",
-      "saveSuccess": "Ajustes de IA guardados correctamente",
-      "testSuccess": "Prueba de conexión AI realizada con éxito",
-      "errors": {
-        "loadSettings": "Error al cargar la configuración de la IA",
-        "saveSettings": "No se ha podido guardar la configuración de la IA",
-        "testConnection": "Fallo en la prueba de conexión a la IA"
       }
     },
     "monitoring": {
@@ -1631,20 +1582,6 @@
         "connectionLost": "Se ha perdido la conexión SFTP. Por favor, vuelve a conectarte.",
         "error": "Se ha producido un error"
       }
-    },
-    "aiAssistant": {
-      "title": "Asistente de IA",
-      "placeholder": "Describe lo que quieres hacer...",
-      "hint": "Pulsa Intro para generar - Esc para cerrar",
-      "hintUse": "Pulsa Intro para usar el comando - Esc para cerrar",
-      "closeLabel": "Cerrar Asistente AI",
-      "generate": "Generar comando",
-      "generating": "Generar comando...",
-      "generatedCommand": "Comando generado",
-      "useCommand": "Utiliza el comando",
-      "tryAgain": "Inténtalo de nuevo",
-      "copy": "Copiar al portapapeles",
-      "error": "No se ha podido generar el comando. Inténtalo de nuevo."
     },
     "snippets": {
       "title": "Fragmentos",

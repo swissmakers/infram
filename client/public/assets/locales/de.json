@@ -274,9 +274,7 @@
       "actions": {
         "cancel": "Abbrechen",
         "create": "erstellen",
-        "save": "Speichern",
-        "generateAI": "Mit KI generieren",
-        "generating": "Wird generiert..."
+        "save": "Speichern"
       }
     },
     "messages": {
@@ -549,7 +547,6 @@
       "users": "Benutzer",
       "authentication": "Authentifizierung",
       "sources": "Quellen",
-      "ai": "AI",
       "monitoring": "Überwachung",
       "backup": "Lagerung"
     },
@@ -724,10 +721,6 @@
         "quickaction": {
           "title": "Schnelle Aktion",
           "description": "Öffne das Schnellaktionsmenü"
-        },
-        "aimenu": {
-          "title": "AI-Menü",
-          "description": "Öffne das AI-Befehlsmenü"
         },
         "snippets": {
           "title": "Schnipsel",
@@ -933,48 +926,6 @@
           "testSuccess": "Verbindungstest erfolgreich",
           "testFailed": "Verbindungstest fehlgeschlagen"
         }
-      }
-    },
-    "ai": {
-      "title": "KI-Assistent Konfiguration",
-      "description": "Konfiguriere die KI-gestützte Befehlsgenerierung für Terminalsitzungen und die Erstellung von Snippets.",
-      "loading": "AI-Einstellungen laden...",
-      "enable": {
-        "title": "KI-Assistent aktivieren",
-        "description": "Erlaube den Nutzern, Befehle mithilfe von KI zu generieren"
-      },
-      "provider": {
-        "title": "KI-Anbieter",
-        "description": "Wähle deinen KI-Anbieter"
-      },
-      "model": {
-        "title": "Modell",
-        "description": "Wähle das KI-Modell aus, das für die Befehlsgenerierung verwendet werden soll"
-      },
-      "apiKey": {
-        "title": "API-Schlüssel",
-        "description": "Dein OpenAI API-Schlüssel für die Authentifizierung",
-        "placeholder": "Gib deinen OpenAI API Schlüssel ein",
-        "setPlaceholder": "API-Schlüssel ist gesetzt (leer lassen, um aktuell zu bleiben)"
-      },
-      "ollamaUrl": {
-        "title": "Ollama URL",
-        "description": "Die URL, unter der deine Ollama-Instanz läuft",
-        "placeholder": "http://localhost:11434"
-      },
-      "selectProvider": "Wähle einen Anbieter...",
-      "selectModel": "Wähle ein Modell...",
-      "loadingModels": "Modelle werden geladen...",
-      "noModels": "Keine Modelle verfügbar",
-      "saveSettings": "Einstellungen speichern",
-      "testConnection": "Verbindung testen",
-      "testing": "Test läuft...",
-      "saveSuccess": "AI-Einstellungen erfolgreich gespeichert",
-      "testSuccess": "AI-Verbindungstest erfolgreich",
-      "errors": {
-        "loadSettings": "KI-Einstellungen konnten nicht geladen werden",
-        "saveSettings": "KI-Einstellungen konnten nicht gespeichert werden",
-        "testConnection": "AI-Verbindungstest fehlgeschlagen"
       }
     },
     "monitoring": {
@@ -1631,20 +1582,6 @@
         "connectionLost": "SFTP-Verbindung verloren. Bitte stelle die Verbindung wieder her.",
         "error": "Ein Fehler ist aufgetreten"
       }
-    },
-    "aiAssistant": {
-      "title": "KI-Assistent",
-      "placeholder": "Beschreibe, was du tun möchtest...",
-      "hint": "Drücke Enter zum Erstellen - Esc zum Schließen",
-      "hintUse": "Drücke Enter, um den Befehl zu verwenden - Esc zum Schließen",
-      "closeLabel": "KI-Assistent schließen",
-      "generate": "Befehl generieren",
-      "generating": "Befehl generieren...",
-      "generatedCommand": "Generierter Befehl",
-      "useCommand": "Befehl verwenden",
-      "tryAgain": "Nochmal versuchen",
-      "copy": "In die Zwischenablage kopieren",
-      "error": "Der Befehl konnte nicht erstellt werden. Bitte versuche es erneut."
     },
     "snippets": {
       "title": "Snippets",

@@ -274,9 +274,7 @@
       "actions": {
         "cancel": "取消",
         "create": "创建",
-        "save": "保存",
-        "generateAI": "用 AI 生成",
-        "generating": "生成中..."
+        "save": "保存"
       }
     },
     "messages": {
@@ -549,7 +547,6 @@
       "users": "用户",
       "authentication": "身份验证",
       "sources": "来源",
-      "ai": "AI",
       "monitoring": "监控",
       "backup": "存储"
     },
@@ -724,10 +721,6 @@
         "quickaction": {
           "title": "快速行动",
           "description": "打开快速操作菜单"
-        },
-        "aimenu": {
-          "title": "AI 菜单",
-          "description": "打开 AI 命令菜单"
         },
         "snippets": {
           "title": "代码片段",
@@ -933,48 +926,6 @@
           "testSuccess": "连接测试成功",
           "testFailed": "连接测试失败"
         }
-      }
-    },
-    "ai": {
-      "title": "AI 助手配置",
-      "description": "配置 AI 驱动的命令生成功能，用于终端会话和代码片段。",
-      "loading": "加载 AI 设置中...",
-      "enable": {
-        "title": "启用 AI 助手",
-        "description": "允许用户使用 AI 生成命令"
-      },
-      "provider": {
-        "title": "AI 提供商",
-        "description": "选择 AI 服务提供商"
-      },
-      "model": {
-        "title": "AI 模型",
-        "description": "选择用于生成命令的 AI 模型"
-      },
-      "apiKey": {
-        "title": "API 密钥",
-        "description": "您的 OpenAI API 密钥（用于身份验证）",
-        "placeholder": "输入您的 OpenAI API 密钥",
-        "setPlaceholder": "API 密钥已设置（留空表示保留当前值）"
-      },
-      "ollamaUrl": {
-        "title": "Ollama 地址",
-        "description": "Ollama 实例的访问地址",
-        "placeholder": "http://localhost:11434"
-      },
-      "selectProvider": "选择服务提供商...",
-      "selectModel": "选择模型...",
-      "loadingModels": "加载模型中...",
-      "noModels": "无可用模型",
-      "saveSettings": "保存设置",
-      "testConnection": "测试连接",
-      "testing": "测试中...",
-      "saveSuccess": "AI 设置保存成功",
-      "testSuccess": "AI 连接测试成功",
-      "errors": {
-        "loadSettings": "加载 AI 设置失败",
-        "saveSettings": "保存 AI 设置失败",
-        "testConnection": "AI 连接测试失败"
       }
     },
     "monitoring": {
@@ -1631,20 +1582,6 @@
         "connectionLost": "SFTP 连接丢失。请重新连接。",
         "error": "发生错误"
       }
-    },
-    "aiAssistant": {
-      "title": "AI 助手",
-      "placeholder": "描述您想要执行的操作...",
-      "hint": "按 Enter 生成 • 按 Esc 关闭",
-      "hintUse": "按 Enter 使用命令 - 按 Esc 关闭",
-      "closeLabel": "关闭 AI 助手",
-      "generate": "生成命令",
-      "generating": "生成命令...",
-      "generatedCommand": "生成命令",
-      "useCommand": "使用命令",
-      "tryAgain": "再试一次",
-      "copy": "复制到剪贴板",
-      "error": "生成命令失败。请重试。"
     },
     "snippets": {
       "title": "代码片段",

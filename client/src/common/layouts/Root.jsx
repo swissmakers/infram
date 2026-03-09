@@ -5,7 +5,6 @@ import { ServerProvider } from "@/common/contexts/ServerContext.jsx";
 import { IdentityProvider } from "@/common/contexts/IdentityContext.jsx";
 import { ToastProvider } from "@/common/contexts/ToastContext.jsx";
 import { PreferencesProvider } from "@/common/contexts/PreferencesContext.jsx";
-import { AIProvider } from "@/common/contexts/AIContext.jsx";
 import { KeymapProvider } from "@/common/contexts/KeymapContext.jsx";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -85,45 +84,43 @@ const AppContent = () => {
             <PreferencesWrapper>
                 <StateStreamProvider>
                     <KeymapProvider>
-                        <AIProvider>
-                            <ServerProvider>
-                                <IdentityProvider>
-                                    <SnippetProvider>
-                                        <ScriptProvider>
-                                            <SessionProvider>
-                                                <QuickActionProvider>
-                                                    <div className="app-wrapper">
-                                                        <TitleBar />
-                                                        <ConnectionErrorBanner />
-                                                        <div className="content-wrapper">
-                                                            <div
-                                                                className={`left-pane${isLeftPaneCollapsed ? " collapsed" : ""}${isLeftPaneVisible ? " open" : ""}`}
-                                                                ref={leftPaneRef}
-                                                            >
-                                                                <Suspense fallback={<Loading />}>
-                                                                    <Sidebar onToggleCollapse={() => setIsLeftPaneCollapsed(prev => !prev)} />
-                                                                </Suspense>
-                                                                <div className="left-pane-slot" id="left-pane-slot" />
-                                                            </div>
-                                                            <div
-                                                                className={`left-pane-hover-bar${isLeftPaneCollapsed ? " active" : ""}`}
-                                                                ref={hoverBarRef}
-                                                            />
-                                                            <div className="main-content">
-                                                                <Suspense fallback={<Loading />}>
-                                                                    <Outlet />
-                                                                </Suspense>
-                                                            </div>
+                        <ServerProvider>
+                            <IdentityProvider>
+                                <SnippetProvider>
+                                    <ScriptProvider>
+                                        <SessionProvider>
+                                            <QuickActionProvider>
+                                                <div className="app-wrapper">
+                                                    <TitleBar />
+                                                    <ConnectionErrorBanner />
+                                                    <div className="content-wrapper">
+                                                        <div
+                                                            className={`left-pane${isLeftPaneCollapsed ? " collapsed" : ""}${isLeftPaneVisible ? " open" : ""}`}
+                                                            ref={leftPaneRef}
+                                                        >
+                                                            <Suspense fallback={<Loading />}>
+                                                                <Sidebar onToggleCollapse={() => setIsLeftPaneCollapsed(prev => !prev)} />
+                                                            </Suspense>
+                                                            <div className="left-pane-slot" id="left-pane-slot" />
                                                         </div>
-                                                        <MobileNav />
+                                                        <div
+                                                            className={`left-pane-hover-bar${isLeftPaneCollapsed ? " active" : ""}`}
+                                                            ref={hoverBarRef}
+                                                        />
+                                                        <div className="main-content">
+                                                            <Suspense fallback={<Loading />}>
+                                                                <Outlet />
+                                                            </Suspense>
+                                                        </div>
                                                     </div>
-                                                </QuickActionProvider>
-                                            </SessionProvider>
-                                        </ScriptProvider>
-                                    </SnippetProvider>
-                                </IdentityProvider>
-                            </ServerProvider>
-                        </AIProvider>
+                                                    <MobileNav />
+                                                </div>
+                                            </QuickActionProvider>
+                                        </SessionProvider>
+                                    </ScriptProvider>
+                                </SnippetProvider>
+                            </IdentityProvider>
+                        </ServerProvider>
                     </KeymapProvider>
                 </StateStreamProvider>
             </PreferencesWrapper>

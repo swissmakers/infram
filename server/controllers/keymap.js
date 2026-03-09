@@ -3,7 +3,6 @@ const Keymap = require("../models/Keymap");
 const DEFAULT_KEYMAPS = [
     { action: "search", key: "ctrl+s" },
     { action: "quick-action", key: "ctrl+p" },
-    { action: "ai-menu", key: "ctrl+k" },
     { action: "snippets", key: "ctrl+shift+s" },
     { action: "keyboard-shortcuts", key: "ctrl+shift+k" },
     { action: "broadcast", key: "ctrl+b" },
