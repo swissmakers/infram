@@ -4,7 +4,7 @@
     "success": "Erfolg",
     "loading": "Laden...",
     "saving": "Sparen...",
-    "close": "Schließen",
+    "close": "Schliessen",
     "cancel": "Abbrechen",
     "save": "Speichern",
     "download": "Herunterladen",
@@ -18,7 +18,7 @@
       "register": "Registrieren",
       "save": "Speichern",
       "download": "Herunterladen",
-      "close": "Schließen",
+      "close": "Schliessen",
       "maximize": "Maximiere",
       "restore": "Wiederherstellen",
       "back": "Zurück"
@@ -48,7 +48,7 @@
       "title": "Bist du dir sicher?",
       "defaultText": "Diese Aktion kann nicht rückgängig gemacht werden.",
       "unsavedChangesTitle": "Nicht gespeicherte Änderungen",
-      "unsavedChangesText": "Du hast ungespeicherte Änderungen. Bist du sicher, dass du schließen willst?"
+      "unsavedChangesText": "Du hast ungespeicherte Änderungen. Bist du sicher, dass du schliessen willst?"
     },
     "loginDialog": {
       "title": "Infram",
@@ -77,7 +77,7 @@
       "authorizationFailed": "Autorisierung fehlgeschlagen",
       "deviceAuthorized": "Gerät erfolgreich autorisiert",
       "successTitle": "Gerät autorisiert",
-      "successMessage": "Du kannst diese Registerkarte schließen und zur App zurückkehren.",
+      "successMessage": "Du kannst diese Registerkarte schliessen und zur App zurückkehren.",
       "clientTypes": {
         "mobile": "Mobile App",
         "connector": "Desktop Connector"
@@ -145,7 +145,7 @@
       "settings": "Einstellungen",
       "navigate": "Navigiere",
       "select": "Wähle",
-      "close": "Schließen",
+      "close": "Schliessen",
       "types": {
         "server": "Server",
         "snippet": "Schnipsel",
@@ -323,7 +323,7 @@
         "copyCell": "Zelle kopieren",
         "copyRow": "Zeile kopieren",
         "copyTable": "Tabelle kopieren",
-        "close": "Schließen"
+        "close": "Schliessen"
       },
       "status": {
         "running": "Laufen",
@@ -620,7 +620,7 @@
     },
     "passwordChange": {
       "title": "Passwort ändern",
-      "description": "Ein sicheres Passwort enthält Sonderzeichen, Zahlen und große bzw. kleine Buchstaben.",
+      "description": "Ein sicheres Passwort enthält Sonderzeichen, Zahlen und grosse bzw. kleine Buchstaben.",
       "newPassword": "Neues Passwort",
       "confirmPassword": "Bestätige das neue Passwort",
       "changePasswordButton": "Passwort ändern"
@@ -763,9 +763,9 @@
       "syncLoginRequired": "Bitte logge dich ein, um die Terminaleinstellungen zu synchronisieren",
       "font": {
         "title": "Schriftart",
-        "description": "Passe die Schriftart und -größe für dein Terminal an.",
+        "description": "Passe die Schriftart und -grösse für dein Terminal an.",
         "fontFamily": "Schriftart",
-        "fontSize": "Schriftgröße",
+        "fontSize": "Schriftgrösse",
         "syncEnabled": "Die Schrifteinstellungen werden jetzt mit deinem Konto synchronisiert",
         "syncDisabled": "Die Schrifteinstellungen werden nicht mehr synchronisiert"
       },
@@ -799,7 +799,7 @@
         "title": "Standard-Ansichtsmodus",
         "description": "Wähle das Standardlayout beim Öffnen des Dateimanagers.",
         "list": "Listenansicht",
-        "listDescription": "Dateien in einer detaillierten Liste mit Spalten für Größe und Datum anzeigen",
+        "listDescription": "Dateien in einer detaillierten Liste mit Spalten für Grösse und Datum anzeigen",
         "grid": "Rasteransicht",
         "gridDescription": "Dateien als Icons in einem Rasterlayout mit Miniaturansichten anzeigen"
       },
@@ -815,7 +815,7 @@
         "title": "Versteckte Dateien",
         "description": "Kontrolliere die Sichtbarkeit von versteckten Dateien und Ordnern (Namen, die mit einem Punkt beginnen).",
         "show": "Versteckte Dateien anzeigen",
-        "showDescription": "Alle Dateien einschließlich .dotfiles und Systemverzeichnisse anzeigen",
+        "showDescription": "Alle Dateien einschliesslich .dotfiles und Systemverzeichnisse anzeigen",
         "hide": "Versteckte Dateien ausblenden",
         "hideDescription": "Nur reguläre Dateien und Ordner anzeigen"
       },
@@ -971,7 +971,7 @@
           "description": "Maximale Wartezeit für eine Serverantwort (5-120 Sekunden)"
         },
         "batchSize": {
-          "title": "Chargengröße",
+          "title": "Chargengrösse",
           "description": "Anzahl der gleichzeitig zu prüfenden Server (1-50)"
         }
       },
@@ -1326,9 +1326,9 @@
         },
         "display": {
           "title": "Einstellungen anzeigen",
-          "description": "Konfiguriere die Farbtiefe und das Größenänderungsverhalten für die Fernanzeige",
+          "description": "Konfiguriere die Farbtiefe und das Grössenänderungsverhalten für die Fernanzeige",
           "colorDepth": "Farbtiefe",
-          "resizeMethod": "Methode zur Größenänderung"
+          "resizeMethod": "Methode zur Grössenänderung"
         },
         "performance": {
           "title": "Leistungseinstellungen",
@@ -1344,7 +1344,7 @@
           "enableDesktopComposition": "Desktop-Zusammenstellung aktivieren",
           "enableDesktopCompositionDesc": "Aktiviere transparente Fenster und visuelle Effekte",
           "enableMenuAnimations": "Menüanimationen aktivieren",
-          "enableMenuAnimationsDesc": "Aktiviere Animationen zum Öffnen und Schließen des Menüs"
+          "enableMenuAnimationsDesc": "Aktiviere Animationen zum Öffnen und Schliessen des Menüs"
         },
         "audio": {
           "enableAudio": "Audio aktivieren",
@@ -1479,7 +1479,7 @@
         "saveSuccess": "Datei erfolgreich gespeichert",
         "saveFailed": "Datei kann nicht gespeichert werden",
         "loadFailed": "Datei konnte nicht geladen werden",
-        "unsavedChanges": "Du hast ungespeicherte Änderungen. Bist du sicher, dass du diese Datei schließen möchtest?"
+        "unsavedChanges": "Du hast ungespeicherte Änderungen. Bist du sicher, dass du diese Datei schliessen möchtest?"
       },
       "contextMenu": {
         "open": "Öffnen",
@@ -1495,7 +1495,7 @@
         "preview": "Vorschau",
         "moveHere": "Hierher ziehen",
         "copyHere": "Hier kopieren",
-        "bigFileConfirm": "Diese Datei ist {{size}} MB groß. Bist du sicher, dass du sie bearbeiten willst?",
+        "bigFileConfirm": "Diese Datei ist {{size}} MB gross. Bist du sicher, dass du sie bearbeiten willst?",
         "deleteConfirm": "Bist du sicher, dass du \"{{name}}\" löschen willst? Diese Aktion kann nicht rückgängig gemacht werden.",
         "selectAll": "Alle auswählen",
         "insertSnippet": "Snippet einfügen",
@@ -1512,7 +1512,7 @@
         "folder": "Mappe",
         "file": "Datei",
         "path": "Standort",
-        "size": "Größe",
+        "size": "Grösse",
         "calculateSize": "Berechne",
         "owner": "Besitzer",
         "group": "Gruppe",
@@ -1540,7 +1540,7 @@
         "videoNotSupported": "Dein Browser unterstützt keine Videowiedergabe",
         "audioNotSupported": "Dein Browser unterstützt keine Audiowiedergabe",
         "download": "Herunterladen",
-        "close": "Schließen"
+        "close": "Schliessen"
       },
       "selection": {
         "itemsSelected": "{{count}} ausgewählte Artikel",
@@ -1555,7 +1555,7 @@
       },
       "header": {
         "name": "Name",
-        "size": "Größe",
+        "size": "Grösse",
         "permissions": "Erlaubnisse",
         "modified": "Geändert"
       },
