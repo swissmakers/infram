@@ -170,7 +170,10 @@ const getAuditLogsInternal = async (accountId, filters = {}) => {
             .then(rows => [type, new Map(rows.map(r => [r.id, r.name]))])
     );
     const [accounts, orgs, ...resources] = await Promise.all([
-        Account.findAll({ where: { id: { [Op.in]: [...accountIds] } }, attributes: ["id", "firstName", "lastName"] }),
+        Account.findAll({
+            where: { id: { [Op.in]: [...accountIds] } },
+            attributes: ["id", "username", "firstName", "lastName", "authProviderType", "authProviderName"],
+        }),
         orgIds.size ? Organization.findAll({ where: { id: { [Op.in]: [...orgIds] } }, attributes: ["id", "name"] }) : [],
         ...resourceQueries,
     ]);
@@ -196,8 +199,11 @@ const getAuditLogsInternal = async (accountId, filters = {}) => {
             timestamp: log.timestamp,
             details: log.details,
             reason: log.reason,
+            actorUsername: actor?.username || null,
             actorFirstName: actor?.firstName || null,
             actorLastName: actor?.lastName || null,
+            actorAuthProviderType: actor?.authProviderType || "internal",
+            actorAuthProviderName: actor?.authProviderName || null,
             organizationName: orgMap.get(log.organizationId) || null,
         };
     });

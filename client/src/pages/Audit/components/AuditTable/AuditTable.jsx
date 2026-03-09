@@ -57,10 +57,17 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
 
     const renderDetails = useCallback((details) => {
         if (!details) return null;
+        const visibleEntries = Object.entries(details).filter(([key, value]) => {
+            if (key === "connectionReason") {
+                return value !== null && value !== undefined && String(value).trim() !== "";
+            }
+            return value !== null && value !== undefined && String(value) !== "null";
+        });
+        if (!visibleEntries.length) return null;
 
         return (
             <div className="audit-details">
-                {Object.entries(details).map(([key, value]) => (
+                {visibleEntries.map(([key, value]) => (
                     <div key={key} className="detail-item">
                         <span className="detail-key">
                             {key.replace(/([A-Z])/g, " $1").toLowerCase()}:
@@ -158,6 +165,10 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
                             <span className="actor-name">
                                 {log.actorFirstName && log.actorLastName
                                     ? `${log.actorFirstName} ${log.actorLastName}`
+                                    : log.actorUsername
+                                        ? log.actorAuthProviderType === "ldap" && log.actorAuthProviderName
+                                            ? `${log.actorUsername}@${log.actorAuthProviderName}`
+                                            : log.actorUsername
                                     : t('audit.table.badges.user', { id: log.accountId })
                                 }
                             </span>

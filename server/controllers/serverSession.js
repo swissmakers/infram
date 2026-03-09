@@ -65,7 +65,10 @@ const createSession = async (accountId, entryId, identityId, connectionReason, t
         action: getAuditAction(entry, scriptId),
         resource: scriptId ? RESOURCE_TYPES.SCRIPT : RESOURCE_TYPES.ENTRY,
         resourceId: scriptId || entry.id,
-        details: { connectionReason, ...(scriptId && { serverId: entry.id }) },
+        details: {
+            ...(connectionReason ? { connectionReason } : {}),
+            ...(scriptId && { serverId: entry.id }),
+        },
         ipAddress,
         userAgent,
     });
