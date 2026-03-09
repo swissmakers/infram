@@ -2,7 +2,6 @@ const SessionManager = require("../lib/SessionManager");
 const { createConnectionForSession } = require("../lib/ConnectionService");
 const Entry = require("../models/Entry");
 const Account = require("../models/Account");
-const MonitoringSnapshot = require("../models/MonitoringSnapshot");
 const { validateEntryAccess } = require("./entry");
 const { getIdentityCredentials, getIdentity } = require("./identity");
 const { getOrganizationAuditSettingsInternal, createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("./audit");
@@ -113,13 +112,9 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
     if (!sessions.length) return [];
 
     const entryIds = [...new Set(sessions.map(s => s.entryId))];
-    const [entries, snapshots] = await Promise.all([
-        Entry.findAll({ where: { id: entryIds }, attributes: ['id', 'organizationId'] }),
-        MonitoringSnapshot.findAll({ where: { entryId: entryIds }, attributes: ['entryId', 'osInfo'] }),
-    ]);
+    const entries = await Entry.findAll({ where: { id: entryIds }, attributes: ['id', 'organizationId'] });
 
     const entryMap = Object.fromEntries(entries.map(e => [e.id, e]));
-    const snapshotMap = Object.fromEntries(snapshots.map(s => [s.entryId, s.osInfo?.name || null]));
 
     const orgIds = [...new Set(entries.filter(e => e.organizationId).map(e => e.organizationId))];
     const orgs = orgIds.length ? await Organization.findAll({ where: { id: orgIds }, attributes: ['id', 'name'] }) : [];
@@ -136,7 +131,7 @@ const getSessions = async (accountId, tabId = null, browserId = null) => {
             lastActivity: session.lastActivity,
             organizationId: entry?.organizationId || null,
             organizationName: entry?.organizationId ? orgMap[entry.organizationId] || null : null,
-            osName: snapshotMap[session.entryId] || null,
+            osName: null,
             shareId: session.shareId || null,
             shareWritable: session.shareWritable || false,
         };

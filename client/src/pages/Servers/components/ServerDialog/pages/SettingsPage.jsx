@@ -3,7 +3,7 @@ import SelectBox from "@/common/components/SelectBox";
 import ToggleSwitch from "@/common/components/ToggleSwitch";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import Icon from "@mdi/react";
-import { mdiServerNetwork, mdiClose, mdiPlus, mdiChartLine, mdiMonitor, mdiPalette, mdiVolumeHigh, mdiPowerPlug, mdiKeyboardOutline } from "@mdi/js";
+import { mdiServerNetwork, mdiClose, mdiPlus, mdiMonitor, mdiPalette, mdiVolumeHigh, mdiPowerPlug, mdiKeyboardOutline } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 
 const COLOR_DEPTHS = [
@@ -57,7 +57,7 @@ const KEYBOARD_LAYOUTS = [
     { label: "Turkish (Qwerty)", value: "tr-tr-qwerty" }
 ];
 
-const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabled, fieldConfig, editServerId }) => {
+const SettingsPage = ({ config, setConfig, fieldConfig, editServerId }) => {
     const { t } = useTranslation();
     const { servers } = useContext(ServerContext);
     const [keyboardLayout, setKeyboardLayout] = useState(config?.keyboardLayout || "en-us-qwerty");
@@ -161,7 +161,7 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
 
     const showJumpHosts = config?.protocol === 'ssh';
 
-    if (!fieldConfig.showMonitoring && !fieldConfig.showKeyboardLayout && !fieldConfig.showDisplaySettings && !fieldConfig.showAudioSettings && !fieldConfig.showWakeOnLan && !fieldConfig.showTerminalSettings && !showJumpHosts) {
+    if (!fieldConfig.showKeyboardLayout && !fieldConfig.showDisplaySettings && !fieldConfig.showAudioSettings && !fieldConfig.showWakeOnLan && !fieldConfig.showTerminalSettings && !showJumpHosts) {
         return <p className="text-center">{t('servers.dialog.settings.noSettings')}</p>;
     }
 
@@ -226,21 +226,6 @@ const SettingsPage = ({ config, setConfig, monitoringEnabled, setMonitoringEnabl
                             {t('servers.dialog.settings.jumpHosts.noServersAvailable')}
                         </p>
                     )}
-                </div>
-            )}
-
-            {fieldConfig.showMonitoring && (
-                <div className="settings-toggle">
-                    <div className="settings-toggle-info">
-                        <span className="settings-toggle-label">
-                            <Icon path={mdiChartLine} size={0.8} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-                            {t('servers.dialog.settings.monitoring.title')}
-                        </span>
-                        <span className="settings-toggle-description">
-                            {t('servers.dialog.settings.monitoring.description')}
-                        </span>
-                    </div>
-                    <ToggleSwitch checked={monitoringEnabled} onChange={setMonitoringEnabled} id="monitoring-toggle" />
                 </div>
             )}
 

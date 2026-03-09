@@ -130,7 +130,6 @@
     "sidebar": {
       "settings": "Paramètres",
       "servers": "Serveurs",
-      "monitoring": "Surveillance",
       "snippets": "Snippets",
       "audit": "Audit",
       "account": "Compte",
@@ -397,146 +396,6 @@
       "selectIdentity": "Sélectionne l'identité"
     }
   },
-  "monitoring": {
-    "page": {
-      "title": "Surveillance du serveur",
-      "subtitle": "Statistiques et surveillance de la santé du serveur en temps réel",
-      "searchPlaceholder": "Recherche les serveurs..."
-    },
-    "errors": {
-      "loadFailed": "Échec du chargement des données de surveillance"
-    },
-    "grid": {
-      "loading": "Chargement des données de surveillance...",
-      "noServers": {
-        "title": "Aucun serveur trouvé",
-        "subtitle": "Aucun serveur SSH n'est disponible pour la surveillance.\nAjoute quelques serveurs pour commencer à les surveiller."
-      },
-      "metrics": {
-        "cpuUsage": "Utilisation de l'unité centrale",
-        "memoryUsage": "Utilisation de la mémoire",
-        "loadAverage": "Moyenne de la charge",
-        "processes": "Processus",
-        "uptime": "Temps de fonctionnement",
-        "nodes": "Nœuds",
-        "vms": "VMs/Conteneurs"
-      },
-      "status": {
-        "serverOffline": "Serveur hors ligne",
-        "connectionError": "Erreur de connexion",
-        "statusUnknown": "Statut inconnu",
-        "offlineMessage": "Le serveur ne répond pas actuellement aux demandes de surveillance.",
-        "errorMessage": "Impossible d'établir une connexion avec le serveur.",
-        "unknownMessage": "L'état du serveur n'a pas pu être déterminé.",
-        "lastSeen": "Dernière visite : {{time}}",
-        "noRecentActivity": "Aucune activité récente"
-      },
-      "uptime": {
-        "unknown": "Inconnu",
-        "format": {
-          "days": "{{days}}d {{hours}}h {{minutes}}m",
-          "hours": "{{hours}}h {{minutes}}m",
-          "minutes": "{{minutes}}m"
-        }
-      }
-    },
-    "details": {
-      "timeRanges": {
-        "1h": "1h",
-        "6h": "6h",
-        "24h": "24h"
-      },
-      "tabs": {
-        "overview": "Aperçu",
-        "charts": "Graphiques",
-        "storage": "Stockage",
-        "network": "Réseau",
-        "processes": "Processus",
-        "nodes": "Nœuds"
-      },
-      "overview": {
-        "systemInfo": {
-          "title": "Informations sur le système",
-          "hostname": "Affichage de {{count}} sur {{total}} processus",
-          "os": "OS",
-          "version": "Version",
-          "kernel": "Noyau",
-          "architecture": "L'architecture",
-          "uptime": "Temps de fonctionnement",
-          "unknown": "Inconnu",
-          "noData": "Aucune information sur le système n'est disponible"
-        },
-        "performance": {
-          "title": "Métriques de Performance",
-          "cpuUsage": "Utilisation de l'unité centrale",
-          "memoryUsage": "Utilisation de la mémoire",
-          "loadAverage": "Moyenne de la charge",
-          "processes": "Processus actifs",
-          "total": "Total : {{value}}",
-          "loadDetail": "5m : {{fiveMin}}, 15m : {{fifteenMin}}"
-        },
-        "uptime": {
-          "format": {
-            "full": "{{days}} jours, {{hours}} heures, {{minutes}} minutes",
-            "hoursMinutes": "{{hours}} heures, {{minutes}} minutes",
-            "minutes": "{{minutes}} minutes"
-          }
-        }
-      },
-      "charts": {
-        "cpuUsage": "Utilisation de l'unité centrale",
-        "memoryUsage": "Utilisation de la mémoire",
-        "processes": "Processus actifs",
-        "noData": "Aucune donnée disponible pour la plage de temps sélectionnée."
-      },
-      "storage": {
-        "title": "Utilisation du disque",
-        "used": "Utilisé : {{value}}",
-        "available": "Disponible : {{value}}",
-        "total": "Total : {{value}}",
-        "type": "Type : {{value}}",
-        "noData": "Aucune donnée sur l'utilisation du disque n'est disponible",
-        "noPartitions": "Aucune partition montée"
-      },
-      "network": {
-        "title": "Interfaces réseau",
-        "rxBytes": "Octets RX",
-        "txBytes": "Octets TX",
-        "mac": "Adresse MAC",
-        "speed": "Débit",
-        "noData": "Aucune donnée sur l'interface réseau n'est disponible"
-      },
-      "processes": {
-        "title": "Processus en cours",
-        "searchPlaceholder": "Recherche de processus...",
-        "showing": "Affichage de {{count}} sur {{total}} processus",
-        "noData": "Aucune donnée de processus disponible. Les données de processus apparaîtront après le prochain cycle de surveillance.",
-        "noResults": "Aucun processus ne correspond à vos critères de recherche."
-      },
-      "pve": {
-        "clusterInfo": "Informations sur le cluster",
-        "resources": "Utilisation des ressources",
-        "virtualMachines": "Machines virtuelles",
-        "totalNodes": "Nombre total de nœuds",
-        "onlineNodes": "Nœuds en ligne",
-        "totalCPU": "CPU Total",
-        "totalMemory": "Mémoire Totale",
-        "totalStorage": "Stockage total",
-        "storageUsage": "Utilisation Stockage",
-        "cores": "Coeurs",
-        "uptime": "Durée de fonctionnement",
-        "qemuVMs": "VMs QEMU",
-        "lxcContainers": "Conteneur LXC",
-        "running": "{{count}} courir",
-        "vmContainerCount": "Nombre de VM/conteneurs",
-        "cpu": "Processeur",
-        "memory": "Mémoire vive",
-        "storage": "Espace disque",
-        "nodeOffline": "Ce nœud est actuellement hors ligne",
-        "noNodes": "Aucun nœud disponible"
-      }
-    }
-  },
   "settings": {
     "title": "Paramètres",
     "userSettings": "RÉGLAGES DE L'UTILISATEUR",
@@ -553,7 +412,7 @@
       "authentication": "Authentification",
       "integrations": "Intégrations",
       "sources": "Sources",
-      "monitoring": "Surveillance",
+      "monitoring": "Vérificateur de statut",
       "backup": "Stockage"
     },
     "account": {
@@ -960,8 +819,6 @@
       "saveSettings": "Sauvegarder les réglages",
       "saveSuccess": "Paramètres de surveillance enregistrés avec succès",
       "seconds": "secondes",
-      "hours": "heures",
-      "servers": "serveurs",
       "statusChecker": {
         "title": "Vérificateur de statut",
         "description": "Configure la façon dont Infram vérifie le statut en ligne/hors ligne de tes serveurs.",
@@ -972,34 +829,6 @@
         "interval": {
           "title": "Intervalle de vérification",
           "description": "Fréquence de vérification de l'état du serveur (10-300 secondes)"
-        }
-      },
-      "dataCollection": {
-        "title": "Collecte de données",
-        "description": "Configure la collecte des données de surveillance pour les métriques du processeur, de la mémoire, du disque et du réseau.",
-        "enable": {
-          "title": "Activer la surveillance",
-          "description": "Recueille des données détaillées sur les performances des serveurs dont la surveillance est activée."
-        },
-        "interval": {
-          "title": "Intervalle de collecte",
-          "description": "Fréquence de collecte des données de surveillance (30-600 secondes)"
-        },
-        "retention": {
-          "title": "Rétention de données",
-          "description": "Durée de conservation des données de suivi (1-24 heures)"
-        }
-      },
-      "advanced": {
-        "title": "Paramètres avancés",
-        "description": "Améliorer la performance de la surveillance et l'utilisation des ressources.",
-        "timeout": {
-          "title": "Expiration de la connexion",
-          "description": "Temps maximum d'attente d'une réponse du serveur (5-120 secondes)"
-        },
-        "batchSize": {
-          "title": "Taille de chaque lot",
-          "description": "Nombre de serveurs à vérifier simultanément (1-50)"
         }
       },
       "errors": {
@@ -1393,10 +1222,6 @@
           "removeTooltip": "Retire l'hôte de saut",
           "noServersAvailable": "Aucun serveur SSH n'est disponible pour les hôtes de saut. Crée d'abord des serveurs SSH."
         },
-        "monitoring": {
-          "title": "Activer la surveillance des performances",
-          "description": "Recueille les mesures du processeur, de la mémoire, du disque et du réseau pour ce serveur."
-        },
         "wakeOnLan": {
           "title": "Activer le Wake-On-LAN",
           "description": "Permet de réveiller ce serveur à distance en utilisant son adresse MAC"
@@ -1477,10 +1302,8 @@
         "port": "Port",
         "username": "Nom d'utilisateur",
         "password": "Mot de passe",
-        "nodeName": "Nom du nœud (facultatif)",
-        "monitoring": "Suivi des performances"
+        "nodeName": "Nom du nœud (facultatif)"
       },
-      "monitoringDescription": "Recueillir des métriques de CPU, de mémoire et de stockage à l'échelle du cluster",
       "placeholders": {
         "name": "Nom",
         "serverIp": "Serveur-IP",

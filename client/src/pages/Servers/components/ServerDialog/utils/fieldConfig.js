@@ -9,7 +9,6 @@ export const getFieldConfig = (type, protocol) => {
                     showIpPort: true,
                     showIdentities: true,
                     showSettings: true,
-                    showMonitoring: true,
                     showKeyboardLayout: false,
                     showTerminalSettings: true,
                     allowedAuthTypes: ["password", "ssh", "both"],
@@ -21,7 +20,6 @@ export const getFieldConfig = (type, protocol) => {
                     showIpPort: true,
                     showIdentities: false,
                     showSettings: true,
-                    showMonitoring: false,
                     showKeyboardLayout: false,
                     showTerminalSettings: true,
                     showWakeOnLan: true,
@@ -32,7 +30,6 @@ export const getFieldConfig = (type, protocol) => {
                     showIpPort: true,
                     showIdentities: true,
                     showSettings: true,
-                    showMonitoring: false,
                     showKeyboardLayout: true,
                     showDisplaySettings: true,
                     showPerformanceSettings: true,
@@ -46,7 +43,6 @@ export const getFieldConfig = (type, protocol) => {
                     showIpPort: true,
                     showIdentities: true,
                     showSettings: true,
-                    showMonitoring: false,
                     showKeyboardLayout: false,
                     showDisplaySettings: true,
                     showAudioSettings: true,
@@ -59,7 +55,6 @@ export const getFieldConfig = (type, protocol) => {
                     showIpPort: true,
                     showIdentities: true,
                     showSettings: true,
-                    showMonitoring: true,
                     showKeyboardLayout: true,
                     allowedAuthTypes: ["password", "ssh", "both"],
                     showWakeOnLan: true,
@@ -73,7 +68,6 @@ export const getFieldConfig = (type, protocol) => {
             showIpPort: false,
             showIdentities: false,
             showSettings: false,
-            showMonitoring: false,
             showKeyboardLayout: false,
             showPveConfig: true,
             pveFields: ["nodeName"],
@@ -86,7 +80,6 @@ export const getFieldConfig = (type, protocol) => {
             showIpPort: false,
             showIdentities: false,
             showSettings: false,
-            showMonitoring: false,
             showKeyboardLayout: false,
             showPveConfig: true,
             pveFields: ["nodeName", "vmid"],
@@ -99,7 +92,6 @@ export const getFieldConfig = (type, protocol) => {
             showIpPort: false,
             showIdentities: false,
             showSettings: true,
-            showMonitoring: false,
             showKeyboardLayout: false,
             showDisplaySettings: true,
             showAudioSettings: true,
@@ -113,7 +105,6 @@ export const getFieldConfig = (type, protocol) => {
         showIpPort: true,
         showIdentities: true,
         showSettings: true,
-        showMonitoring: true,
         showKeyboardLayout: false,
     };
 };
@@ -128,7 +119,7 @@ export const getAvailableTabs = (type, protocol) => {
         tabs.push({ key: "identities", label: "servers.dialog.tabs.identities", icon: mdiAccountKeyOutline });
     }
 
-    if (config.showSettings && (config.showMonitoring || config.showKeyboardLayout || config.showDisplaySettings || config.showAudioSettings || config.showWakeOnLan || config.showTerminalSettings)) {
+    if (config.showSettings && (config.showKeyboardLayout || config.showDisplaySettings || config.showAudioSettings || config.showWakeOnLan || config.showTerminalSettings)) {
         tabs.push({ key: "settings", label: "servers.dialog.tabs.settings", icon: mdiCogOutline });
     }
 

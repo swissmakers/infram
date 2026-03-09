@@ -40,7 +40,6 @@ const proxmoxConfigSchema = Joi.object({
     port: Joi.number().required(),
     username: Joi.string().required(),
     password: Joi.string().required(),
-    monitoringEnabled: Joi.boolean().optional(),
 });
 
 const createSchema = Joi.object({
@@ -52,7 +51,6 @@ const createSchema = Joi.object({
     port: Joi.when("type", { is: "proxmox", then: Joi.required(), otherwise: Joi.forbidden() }),
     username: Joi.when("type", { is: "proxmox", then: Joi.required(), otherwise: Joi.forbidden() }),
     password: Joi.when("type", { is: "proxmox", then: Joi.required(), otherwise: Joi.forbidden() }),
-    monitoringEnabled: Joi.when("type", { is: "proxmox", then: Joi.boolean().optional(), otherwise: Joi.forbidden() }),
     apiUrl: Joi.when("type", { is: "netbox", then: Joi.required(), otherwise: Joi.forbidden() }),
     apiToken: Joi.when("type", { is: "netbox", then: Joi.required(), otherwise: Joi.forbidden() }),
     verifyTls: Joi.when("type", { is: "netbox", then: Joi.boolean().optional(), otherwise: Joi.forbidden() }),
@@ -76,7 +74,6 @@ const updateSchema = Joi.object({
     port: Joi.number().optional(),
     username: Joi.string().optional(),
     password: Joi.string().optional(),
-    monitoringEnabled: Joi.boolean().optional(),
     apiUrl: Joi.string().uri({ scheme: ["http", "https"] }).optional(),
     apiToken: Joi.string().min(1).optional(),
     verifyTls: Joi.boolean().optional(),

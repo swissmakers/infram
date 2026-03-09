@@ -24,15 +24,18 @@ const SettingItem = ({ title, description, children }) => (
 export const Monitoring = () => {
     const { t } = useTranslation();
     const { sendToast } = useToast();
-    const [settings, setSettings] = useState({ statusCheckerEnabled: true, statusInterval: 30, monitoringEnabled: true, monitoringInterval: 60, dataRetentionHours: 24, connectionTimeout: 30, batchSize: 10 });
+    const [settings, setSettings] = useState({ statusCheckerEnabled: true, statusInterval: 30 });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
     const loadSettings = async () => {
         try {
             setLoading(true);
-            const r = await getRequest("monitoring/settings/global");
-            setSettings({ ...r, statusCheckerEnabled: Boolean(r.statusCheckerEnabled), monitoringEnabled: Boolean(r.monitoringEnabled) });
+            const r = await getRequest("status-checker/settings/global");
+            setSettings({
+                statusCheckerEnabled: Boolean(r.statusCheckerEnabled),
+                statusInterval: Number(r.statusInterval || 30),
+            });
         } catch { sendToast(t("common.error"), t("settings.monitoring.errors.loadSettings")); }
         finally { setLoading(false); }
     };
@@ -40,8 +43,7 @@ export const Monitoring = () => {
     const saveSettings = async () => {
         try {
             setSaving(true);
-            const { id, createdAt, updatedAt, ...data } = settings;
-            await patchRequest("monitoring/settings/global", data);
+            await patchRequest("status-checker/settings/global", settings);
             sendToast(t("common.success"), t("settings.monitoring.saveSuccess"));
         } catch { sendToast(t("common.error"), t("settings.monitoring.errors.saveSettings")); }
         finally { setSaving(false); }
@@ -69,33 +71,6 @@ export const Monitoring = () => {
                         <NumberInput value={settings.statusInterval} onChange={(v) => set("statusInterval", clamp(v, 10, 300))} min={10} max={300} unit={s("seconds")} />
                     </SettingItem>
                 )}
-            </div>
-
-            <div className="settings-section">
-                <h2>{s("dataCollection.title")}</h2>
-                <p>{s("dataCollection.description")}</p>
-                <SettingItem title={s("dataCollection.enable.title")} description={s("dataCollection.enable.description")}>
-                    <ToggleSwitch onChange={(v) => set("monitoringEnabled", v)} id="monitoring" checked={settings.monitoringEnabled} />
-                </SettingItem>
-                {settings.monitoringEnabled && (<>
-                    <SettingItem title={s("dataCollection.interval.title")} description={s("dataCollection.interval.description")}>
-                        <NumberInput value={settings.monitoringInterval} onChange={(v) => set("monitoringInterval", clamp(v, 30, 600))} min={30} max={600} unit={s("seconds")} />
-                    </SettingItem>
-                    <SettingItem title={s("dataCollection.retention.title")} description={s("dataCollection.retention.description")}>
-                        <NumberInput value={settings.dataRetentionHours} onChange={(v) => set("dataRetentionHours", clamp(v, 1, 24))} min={1} max={24} unit={s("hours")} />
-                    </SettingItem>
-                </>)}
-            </div>
-
-            <div className="settings-section">
-                <h2>{s("advanced.title")}</h2>
-                <p>{s("advanced.description")}</p>
-                <SettingItem title={s("advanced.timeout.title")} description={s("advanced.timeout.description")}>
-                    <NumberInput value={settings.connectionTimeout} onChange={(v) => set("connectionTimeout", clamp(v, 5, 120))} min={5} max={120} unit={s("seconds")} />
-                </SettingItem>
-                <SettingItem title={s("advanced.batchSize.title")} description={s("advanced.batchSize.description")}>
-                    <NumberInput value={settings.batchSize} onChange={(v) => set("batchSize", clamp(v, 1, 50))} min={1} max={50} unit={s("servers")} />
-                </SettingItem>
             </div>
 
             <div className="settings-actions">

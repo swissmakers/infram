@@ -5,7 +5,7 @@ import { mdiMagnify, mdiScript, mdiAccountCircle, mdiCloudDownloadOutline, mdiEg
 import Icon from "@mdi/react";
 import { useTranslation } from "react-i18next";
 import { getRequest } from "@/common/utils/RequestUtil.js";
-import { matchesOsFilter, normalizeOsName } from "@/common/utils/osUtils.js";
+import { matchesOsFilter } from "@/common/utils/osUtils.js";
 
 const KONAMI_CODE = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
 
@@ -29,16 +29,6 @@ export const ScriptsMenu = ({ visible, onClose, scripts = [], server, serverOrga
     useEffect(() => {
         getRequest("scripts/sources").then(setSourceScripts).catch(() => {});
     }, []);
-
-    useEffect(() => {
-        if (!visible || !server?.id || isPveEntry) {
-            setServerOsName(null);
-            return;
-        }
-        getRequest(`monitoring/${server.id}`)
-            .then(data => setServerOsName(normalizeOsName(data?.latest?.osInfo?.name)))
-            .catch(() => setServerOsName(null));
-    }, [visible, server?.id, isPveEntry]);
 
     const availableScripts = useMemo(() => {
         const filtered = (scripts || []).filter(s => 

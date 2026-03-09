@@ -1,1 +1,0 @@
-export { MonitoringGrid as default } from "./MonitoringGrid.jsx";

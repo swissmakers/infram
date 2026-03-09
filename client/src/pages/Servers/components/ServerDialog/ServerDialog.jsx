@@ -33,14 +33,13 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     const [icon, setIcon] = useState(null);
     const [identities, setIdentities] = useState([]);
     const [config, setConfig] = useState({});
-    const [monitoringEnabled, setMonitoringEnabled] = useState(false);
     const [entryType, setEntryType] = useState("server");
 
     const [identityUpdates, setIdentityUpdates] = useState({});
 
     const [activeTab, setActiveTab] = useState(0);
     
-    const initialValues = useRef({ name: '', icon: null, config: {}, monitoringEnabled: false });
+    const initialValues = useRef({ name: '', icon: null, config: {} });
 
     const fieldConfig = getFieldConfig(entryType, config.protocol);
     const tabs = getAvailableTabs(entryType, config.protocol);
@@ -128,11 +127,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     const buildConfig = () => {
         const finalConfig = { ...config };
         
-        if (fieldConfig.showMonitoring) {
-            finalConfig.monitoringEnabled = monitoringEnabled;
-        } else {
-            delete finalConfig.monitoringEnabled;
-        }
+        delete finalConfig.monitoringEnabled;
         
         if (!fieldConfig.showIpPort) {
             delete finalConfig.ip;
@@ -201,7 +196,7 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
             return;
         }
         editServerId ? patchServer() : createServer();
-    }, [name, icon, editServerId, identityUpdates, currentFolderId, config, monitoringEnabled, entryType, t]);
+    }, [name, icon, editServerId, identityUpdates, currentFolderId, config, entryType, t]);
 
     useEffect(() => {
         if (!open) return;
@@ -215,12 +210,10 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
 
                 const parsedConfig = server.config || {};
                 setConfig(parsedConfig);
-                setMonitoringEnabled(Boolean(parsedConfig.monitoringEnabled ?? true));
                 initialValues.current = {
                     name: server.name,
                     icon: server.icon || null,
-                    config: JSON.stringify(parsedConfig),
-                    monitoringEnabled: Boolean(parsedConfig.monitoringEnabled ?? true)
+                    config: JSON.stringify(parsedConfig)
                 };
             });
         } else {
@@ -243,14 +236,12 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                 initialValues.current = { 
                     name: '', 
                     icon: defaultIcon, 
-                    config: JSON.stringify(initialConfig), 
-                    monitoringEnabled: false 
+                    config: JSON.stringify(initialConfig)
                 };
             } else {
                 setConfig({});
-                initialValues.current = { name: '', icon: null, config: '{}', monitoringEnabled: false };
+                initialValues.current = { name: '', icon: null, config: '{}' };
             }
-            setMonitoringEnabled(false);
         }
 
         setIdentityUpdates({});
@@ -281,7 +272,6 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
     const isDirty = name !== initialValues.current.name || 
                      icon !== initialValues.current.icon ||
                      JSON.stringify(config) !== initialValues.current.config ||
-                     monitoringEnabled !== initialValues.current.monitoringEnabled ||
                      Object.keys(identityUpdates).length > 0;
 
     const tabSwitcherTabs = useMemo(() => tabs.map((tab, index) => ({
@@ -342,7 +332,6 @@ export const ServerDialog = ({ open, onClose, currentFolderId, currentOrganizati
                                       serverName={name} />}
                     {tabs.find((tab, idx) => idx === activeTab && tab.key === "settings") && 
                         <SettingsPage config={config} setConfig={setConfig}
-                                      monitoringEnabled={monitoringEnabled} setMonitoringEnabled={setMonitoringEnabled}
                                       fieldConfig={fieldConfig} editServerId={editServerId} />}
                 </form>
 

@@ -3,7 +3,7 @@ import "./styles.sass";
 import { useContext, useEffect, useState, useRef } from "react";
 import { ServerContext } from "@/common/contexts/ServerContext.jsx";
 import IconInput from "@/common/components/IconInput";
-import { mdiAccountCircleOutline, mdiChartLine, mdiFormTextbox, mdiIp, mdiLockOutline, mdiLinkVariant, mdiShieldCheckOutline, mdiTimerOutline } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiFormTextbox, mdiIp, mdiLockOutline, mdiLinkVariant, mdiShieldCheckOutline, mdiTimerOutline } from "@mdi/js";
 import Button from "@/common/components/Button";
 import Input from "@/common/components/IconInput";
 import { getRequest, patchRequest, postRequest, putRequest } from "@/common/utils/RequestUtil.js";
@@ -133,7 +133,6 @@ export const IntegrationDialog = ({ open, onClose, currentFolderId, currentOrgan
     const [port, setPort] = useState("8006");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [monitoringEnabled, setMonitoringEnabled] = useState(false);
     const [apiUrl, setApiUrl] = useState("");
     const [apiToken, setApiToken] = useState("");
     const [verifyTls, setVerifyTls] = useState(true);
@@ -200,7 +199,6 @@ export const IntegrationDialog = ({ open, onClose, currentFolderId, currentOrgan
             port,
             username,
             password,
-            monitoringEnabled,
         };
     };
 
@@ -266,7 +264,6 @@ export const IntegrationDialog = ({ open, onClose, currentFolderId, currentOrgan
         setPort("8006");
         setUsername("");
         setPassword("");
-        setMonitoringEnabled(false);
         setApiUrl("");
         setApiToken("");
         setVerifyTls(true);
@@ -310,7 +307,6 @@ export const IntegrationDialog = ({ open, onClose, currentFolderId, currentOrgan
                     setPort(String(server.port || "8006"));
                     setUsername(server.username || "");
                     setPassword("********");
-                    setMonitoringEnabled(server.monitoringEnabled || false);
                 }
                 initialValues.current = {
                     ...server,
@@ -427,18 +423,6 @@ export const IntegrationDialog = ({ open, onClose, currentFolderId, currentOrgan
                                 type="password" id="password" />
                         </div>
 
-                        <div className="settings-toggle">
-                            <div className="settings-toggle-info">
-                                <span className="settings-toggle-label">
-                                    <Icon path={mdiChartLine} size={0.8} style={{ marginRight: "8px", verticalAlign: "middle" }} />
-                                    {t("servers.proxmoxDialog.fields.monitoring")}
-                                </span>
-                                <span className="settings-toggle-description">
-                                    {t("servers.proxmoxDialog.monitoringDescription")}
-                                </span>
-                            </div>
-                            <ToggleSwitch checked={monitoringEnabled} onChange={setMonitoringEnabled} id="pve-monitoring-toggle" />
-                        </div>
                     </>
                 )}
 

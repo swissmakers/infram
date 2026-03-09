@@ -12,8 +12,6 @@ const { authenticate } = require("./middlewares/auth");
 const expressWs = require("express-ws");
 const { startStatusChecker, stopStatusChecker } = require("./utils/statusChecker");
 const { ensureInternalProvider } = require("./controllers/oidc");
-const monitoringService = require("./utils/monitoringService");
-const pveMonitoringService = require("./utils/pveMonitoringService");
 const recordingService = require("./utils/recordingService");
 const { generateOpenAPISpec } = require("./openapi");
 const { isAdmin } = require("./middlewares/permission");
@@ -61,7 +59,7 @@ app.use("/api/sessions", authenticate, require("./routes/session"));
 app.use("/api/connections", authenticate, require("./routes/serverSession"));
 app.use("/api/folders", authenticate, require("./routes/folder"));
 app.use("/api/entries", authenticate, require("./routes/entry"));
-app.use("/api/monitoring", authenticate, require("./routes/monitoring"));
+app.use("/api/status-checker", authenticate, require("./routes/statusChecker"));
 app.use("/api/integrations", authenticate, require("./routes/integration"));
 app.use("/api/audit", authenticate, require("./routes/audit"));
 app.use("/api/identities", authenticate, require("./routes/identity"));
@@ -108,10 +106,6 @@ db.authenticate()
 
         startStatusChecker();
 
-        monitoringService.start();
-
-        pveMonitoringService.start();
-
         recordingService.start();
 
         startSourceSyncService();
@@ -145,8 +139,6 @@ db.authenticate()
 process.on("SIGINT", async () => {
     logger.system("Shutting down server");
 
-    monitoringService.stop();
-    pveMonitoringService.stop();
     recordingService.stop();
     stopStatusChecker();
     stopSourceSyncService();

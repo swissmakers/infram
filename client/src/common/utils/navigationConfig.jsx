@@ -1,4 +1,4 @@
-import { mdiServerOutline, mdiCodeBraces, mdiChartBoxOutline, mdiShieldCheckOutline, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiKeyVariant, mdiConsole, mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiHarddisk, mdiFolderOutline, mdiLanConnect } from "@mdi/js";
+import { mdiServerOutline, mdiCodeBraces, mdiShieldCheckOutline, mdiAccountCircleOutline, mdiAccountGroup, mdiClockStarFourPointsOutline, mdiShieldAccountOutline, mdiDomain, mdiKeyVariant, mdiConsole, mdiKeyboardOutline, mdiCloudDownloadOutline, mdiChartLine, mdiHarddisk, mdiFolderOutline, mdiLanConnect } from "@mdi/js";
 import Account from "@/pages/Settings/pages/Account";
 import Terminal from "@/pages/Settings/pages/Terminal";
 import FileManager from "@/pages/Settings/pages/FileManager";
@@ -15,7 +15,6 @@ import Integrations from "@/pages/Settings/pages/Integrations";
 
 export const getSidebarNavigation = t => [
     { title: t('common.sidebar.servers'), key: "servers", path: "/servers", icon: mdiServerOutline, toggleEvent: "toggleServerList" },
-    { title: t('common.sidebar.monitoring'), key: "monitoring", path: "/monitoring", icon: mdiChartBoxOutline },
     { title: t('common.sidebar.snippets'), key: "snippets", path: "/snippets", icon: mdiCodeBraces },
     { title: t('common.sidebar.audit'), key: "audit", path: "/audit", icon: mdiShieldCheckOutline },
 ];

@@ -130,7 +130,6 @@
     "sidebar": {
       "settings": "Settings",
       "servers": "Servers",
-      "monitoring": "Monitoring",
       "snippets": "Snippets",
       "audit": "Audit",
       "account": "Account",
@@ -397,146 +396,6 @@
       "selectIdentity": "Select Identity"
     }
   },
-  "monitoring": {
-    "page": {
-      "title": "Server Monitoring",
-      "subtitle": "Real-time server statistics and health monitoring",
-      "searchPlaceholder": "Search servers..."
-    },
-    "errors": {
-      "loadFailed": "Failed to load monitoring data"
-    },
-    "grid": {
-      "loading": "Loading monitoring data...",
-      "noServers": {
-        "title": "No Servers Found",
-        "subtitle": "No SSH servers available for monitoring.\nAdd some servers to start monitoring them."
-      },
-      "metrics": {
-        "cpuUsage": "CPU Usage",
-        "memoryUsage": "Memory Usage",
-        "loadAverage": "Load Average",
-        "processes": "Processes",
-        "uptime": "Uptime",
-        "nodes": "Nodes",
-        "vms": "VMs/Containers"
-      },
-      "status": {
-        "serverOffline": "Server Offline",
-        "connectionError": "Connection Error",
-        "statusUnknown": "Status Unknown",
-        "offlineMessage": "The server is currently not responding to monitoring requests.",
-        "errorMessage": "Unable to establish connection to the server.",
-        "unknownMessage": "Server status could not be determined.",
-        "lastSeen": "Last seen: {{time}}",
-        "noRecentActivity": "No recent activity"
-      },
-      "uptime": {
-        "unknown": "Unknown",
-        "format": {
-          "days": "{{days}}d {{hours}}h {{minutes}}m",
-          "hours": "{{hours}}h {{minutes}}m",
-          "minutes": "{{minutes}}m"
-        }
-      }
-    },
-    "details": {
-      "timeRanges": {
-        "1h": "1h",
-        "6h": "6h",
-        "24h": "24h"
-      },
-      "tabs": {
-        "overview": "Overview",
-        "charts": "Charts",
-        "storage": "Storage",
-        "network": "Network",
-        "processes": "Processes",
-        "nodes": "Nodes"
-      },
-      "overview": {
-        "systemInfo": {
-          "title": "System Information",
-          "hostname": "Hostname",
-          "os": "OS",
-          "version": "Version",
-          "kernel": "Kernel",
-          "architecture": "Architecture",
-          "uptime": "Uptime",
-          "unknown": "Unknown",
-          "noData": "No system information available"
-        },
-        "performance": {
-          "title": "Performance Metrics",
-          "cpuUsage": "CPU Usage",
-          "memoryUsage": "Memory Usage",
-          "loadAverage": "Load Average",
-          "processes": "Active Processes",
-          "total": "Total: {{value}}",
-          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
-        },
-        "uptime": {
-          "format": {
-            "full": "{{days}} days, {{hours}} hours, {{minutes}} minutes",
-            "hoursMinutes": "{{hours}} hours, {{minutes}} minutes",
-            "minutes": "{{minutes}} minutes"
-          }
-        }
-      },
-      "charts": {
-        "cpuUsage": "CPU Usage",
-        "memoryUsage": "Memory Usage",
-        "processes": "Active Processes",
-        "noData": "No data available for the selected time range"
-      },
-      "storage": {
-        "title": "Disk Usage",
-        "used": "Used: {{value}}",
-        "available": "Available: {{value}}",
-        "total": "Total: {{value}}",
-        "type": "Type: {{value}}",
-        "noData": "No disk usage data available",
-        "noPartitions": "No mounted partitions"
-      },
-      "network": {
-        "title": "Network Interfaces",
-        "rxBytes": "RX Bytes",
-        "txBytes": "TX Bytes",
-        "mac": "MAC Address",
-        "speed": "Speed",
-        "noData": "No network interface data available"
-      },
-      "processes": {
-        "title": "Running Processes",
-        "searchPlaceholder": "Search processes...",
-        "showing": "Showing {{count}} of {{total}} processes",
-        "noData": "No process data available. Process data will appear after the next monitoring cycle.",
-        "noResults": "No processes match your search criteria."
-      },
-      "pve": {
-        "clusterInfo": "Cluster Information",
-        "resources": "Resource Usage",
-        "virtualMachines": "Virtual Machines",
-        "totalNodes": "Total Nodes",
-        "onlineNodes": "Online Nodes",
-        "totalCPU": "Total CPU",
-        "totalMemory": "Total Memory",
-        "totalStorage": "Total Storage",
-        "storageUsage": "Storage Usage",
-        "cores": "Cores",
-        "uptime": "Uptime",
-        "qemuVMs": "QEMU VMs",
-        "lxcContainers": "LXC Containers",
-        "running": "{{count}} running",
-        "vmContainerCount": "VM/Container Count",
-        "cpu": "CPU",
-        "memory": "Memory",
-        "storage": "Storage",
-        "nodeOffline": "This node is currently offline",
-        "noNodes": "No nodes available"
-      }
-    }
-  },
   "settings": {
     "title": "Settings",
     "userSettings": "USER SETTINGS",
@@ -553,7 +412,7 @@
       "authentication": "Authentication",
       "integrations": "Integrations",
       "sources": "Sources",
-      "monitoring": "Monitoring",
+      "monitoring": "Status Checker",
       "backup": "Storage"
     },
     "account": {
@@ -960,8 +819,6 @@
       "saveSettings": "Save Settings",
       "saveSuccess": "Monitoring settings saved successfully",
       "seconds": "seconds",
-      "hours": "hours",
-      "servers": "servers",
       "statusChecker": {
         "title": "Status Checker",
         "description": "Configure how Infram checks the online/offline status of your servers.",
@@ -972,34 +829,6 @@
         "interval": {
           "title": "Check Interval",
           "description": "How often to check server status (10-300 seconds)"
-        }
-      },
-      "dataCollection": {
-        "title": "Data Collection",
-        "description": "Configure monitoring data collection for CPU, memory, disk, and network metrics.",
-        "enable": {
-          "title": "Enable Monitoring",
-          "description": "Collect detailed performance metrics from servers with monitoring enabled."
-        },
-        "interval": {
-          "title": "Collection Interval",
-          "description": "How often to collect monitoring data (30-600 seconds)"
-        },
-        "retention": {
-          "title": "Data Retention",
-          "description": "How long to keep monitoring data (1-24 hours)"
-        }
-      },
-      "advanced": {
-        "title": "Advanced Settings",
-        "description": "Fine-tune monitoring performance and resource usage.",
-        "timeout": {
-          "title": "Connection Timeout",
-          "description": "Maximum time to wait for a server response (5-120 seconds)"
-        },
-        "batchSize": {
-          "title": "Batch Size",
-          "description": "Number of servers to check simultaneously (1-50)"
         }
       },
       "errors": {
@@ -1393,10 +1222,6 @@
           "removeTooltip": "Remove jump host",
           "noServersAvailable": "No SSH servers available for jump hosts. Create SSH servers first."
         },
-        "monitoring": {
-          "title": "Enable Performance Monitoring",
-          "description": "Collect CPU, memory, disk, and network metrics for this server"
-        },
         "wakeOnLan": {
           "title": "Enable Wake-On-LAN",
           "description": "Allow waking this server remotely using its MAC address"
@@ -1477,10 +1302,8 @@
         "port": "Port",
         "username": "Username",
         "password": "Password",
-        "nodeName": "Node Name (Optional)",
-        "monitoring": "Performance Monitoring"
+        "nodeName": "Node Name (Optional)"
       },
-      "monitoringDescription": "Collect cluster-wide CPU, memory, and storage metrics",
       "placeholders": {
         "name": "Name",
         "serverIp": "Server-IP",

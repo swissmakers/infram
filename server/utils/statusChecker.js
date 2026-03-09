@@ -1,7 +1,7 @@
 const Entry = require("../models/Entry");
 const { checkServerStatus } = require("../hooks/status/portHook");
 const { checkPVEStatus } = require("../hooks/status/pveHook");
-const { getMonitoringSettingsInternal } = require("../controllers/monitoring");
+const { getStatusCheckerSettingsInternal } = require("../controllers/statusChecker");
 const logger = require("./logger");
 
 let statusCheckInterval = null;
@@ -98,7 +98,7 @@ const runStatusCheck = async () => {
     isRunning = true;
     
     try {
-        currentSettings = await getMonitoringSettingsInternal();
+        currentSettings = await getStatusCheckerSettingsInternal();
         
         if (!currentSettings || !currentSettings.statusCheckerEnabled) {
             logger.verbose(`Status checker is disabled, setting all entries to online`);
@@ -158,7 +158,7 @@ const startStatusChecker = async (interval = null) => {
         return;
     }
 
-    currentSettings = await getMonitoringSettingsInternal();
+    currentSettings = await getStatusCheckerSettingsInternal();
     const checkInterval = interval || (currentSettings?.statusInterval ? currentSettings.statusInterval * 1000 : DEFAULT_CHECK_INTERVAL);
 
     logger.system(`Starting status checker`, { interval: checkInterval, batchSize: currentSettings?.batchSize || DEFAULT_BATCH_SIZE });

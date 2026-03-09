@@ -130,7 +130,6 @@
     "sidebar": {
       "settings": "Ajustes",
       "servers": "Servidores",
-      "monitoring": "Supervisión",
       "snippets": "Fragmentos",
       "audit": "Auditoría",
       "account": "Cuenta",
@@ -397,146 +396,6 @@
       "selectIdentity": "Selecciona Identidad"
     }
   },
-  "monitoring": {
-    "page": {
-      "title": "Monitorización de servidores",
-      "subtitle": "Estadísticas del servidor en tiempo real y supervisión de su estado",
-      "searchPlaceholder": "Buscar servidores..."
-    },
-    "errors": {
-      "loadFailed": "Error al cargar los datos de monitorización"
-    },
-    "grid": {
-      "loading": "Cargando datos de seguimiento...",
-      "noServers": {
-        "title": "No se han encontrado servidores",
-        "subtitle": "No hay servidores SSH disponibles para monitorizar.\nAñade algunos servidores para empezar a monitorizarlos."
-      },
-      "metrics": {
-        "cpuUsage": "Uso de la CPU",
-        "memoryUsage": "Uso de la memoria",
-        "loadAverage": "Carga Media",
-        "processes": "Procesos",
-        "uptime": "Tiempo de actividad",
-        "nodes": "Nodos",
-        "vms": "VMs/Contenedores"
-      },
-      "status": {
-        "serverOffline": "Servidor desconectado",
-        "connectionError": "Error de conexión",
-        "statusUnknown": "Estado desconocido",
-        "offlineMessage": "El servidor no responde actualmente a las peticiones de monitorización.",
-        "errorMessage": "No se ha podido establecer la conexión con el servidor.",
-        "unknownMessage": "No se ha podido determinar el estado del servidor.",
-        "lastSeen": "Visto por última vez: {{time}}",
-        "noRecentActivity": "Sin actividad reciente"
-      },
-      "uptime": {
-        "unknown": "Desconocido",
-        "format": {
-          "days": "{{days}}d {{hours}}h {{minutes}}m",
-          "hours": "{{hours}}h {{minutes}}m",
-          "minutes": "{{minutes}}m"
-        }
-      }
-    },
-    "details": {
-      "timeRanges": {
-        "1h": "1h",
-        "6h": "6h",
-        "24h": "24h"
-      },
-      "tabs": {
-        "overview": "Visión general",
-        "charts": "Gráficos",
-        "storage": "Almacenamiento",
-        "network": "Red",
-        "processes": "Procesos",
-        "nodes": "Nodos"
-      },
-      "overview": {
-        "systemInfo": {
-          "title": "Información del sistema",
-          "hostname": "Nombre de host",
-          "os": "OS",
-          "version": "Versión",
-          "kernel": "Núcleo",
-          "architecture": "Arquitectura",
-          "uptime": "Tiempo de actividad",
-          "unknown": "Desconocido",
-          "noData": "No hay información disponible sobre el sistema"
-        },
-        "performance": {
-          "title": "Métricas de rendimiento",
-          "cpuUsage": "Uso de la CPU",
-          "memoryUsage": "Uso de la memoria",
-          "loadAverage": "Carga Media",
-          "processes": "Procesos activos",
-          "total": "Total: {{value}}",
-          "loadDetail": "5m: {{fiveMin}}, 15m: {{fifteenMin}}"
-        },
-        "uptime": {
-          "format": {
-            "full": "{{days}} días, {{hours}} horas, {{minutes}} minutos",
-            "hoursMinutes": "{{hours}} horas, {{minutes}} minutos",
-            "minutes": "{{minutes}} minutos"
-          }
-        }
-      },
-      "charts": {
-        "cpuUsage": "Uso de la CPU",
-        "memoryUsage": "Uso de la memoria",
-        "processes": "Procesos activos",
-        "noData": "No hay datos disponibles para el intervalo de tiempo seleccionado"
-      },
-      "storage": {
-        "title": "Uso del disco",
-        "used": "Usada: {{value}}",
-        "available": "Disponible: {{value}}",
-        "total": "Total: {{value}}",
-        "type": "Tipo: {{value}}",
-        "noData": "No hay datos de uso de disco disponibles",
-        "noPartitions": "No hay particiones montadas"
-      },
-      "network": {
-        "title": "Interfaces de red",
-        "rxBytes": "Bytes RX",
-        "txBytes": "TX Bytes",
-        "mac": "Dirección MAC",
-        "speed": "Velocidad",
-        "noData": "No hay datos de interfaz de red disponibles"
-      },
-      "processes": {
-        "title": "Procesos en ejecución",
-        "searchPlaceholder": "Procesos de búsqueda...",
-        "showing": "Mostrando {{count}} de {{total}} procesos",
-        "noData": "No hay datos de proceso disponibles. Los datos del proceso aparecerán después del siguiente ciclo de monitorización.",
-        "noResults": "Ningún proceso coincide con tus criterios de búsqueda."
-      },
-      "pve": {
-        "clusterInfo": "Información del grupo",
-        "resources": "Uso de recursos",
-        "virtualMachines": "Máquinas virtuales",
-        "totalNodes": "Nodos totales",
-        "onlineNodes": "Nodos en línea",
-        "totalCPU": "CPU total",
-        "totalMemory": "Memoria total",
-        "totalStorage": "Almacenamiento total",
-        "storageUsage": "Uso del almacenamiento",
-        "cores": "Núcleos",
-        "uptime": "Tiempo de actividad",
-        "qemuVMs": "Máquinas virtuales QEMU",
-        "lxcContainers": "Contenedores LXC",
-        "running": "{{count}} corriendo",
-        "vmContainerCount": "Recuento de VM/Contenedores",
-        "cpu": "CPU",
-        "memory": "Memoria",
-        "storage": "Almacenamiento",
-        "nodeOffline": "Este nodo está actualmente desconectado",
-        "noNodes": "No hay nodos disponibles"
-      }
-    }
-  },
   "settings": {
     "title": "Ajustes",
     "userSettings": "CONFIGURACIÓN DEL USUARIO",
@@ -553,7 +412,7 @@
       "authentication": "Autenticación",
       "integrations": "Integraciones",
       "sources": "Fuentes",
-      "monitoring": "Supervisión",
+      "monitoring": "Comprobador de estado",
       "backup": "Almacenamiento"
     },
     "account": {
@@ -960,8 +819,6 @@
       "saveSettings": "Guardar ajustes",
       "saveSuccess": "Ajustes de monitorización guardados correctamente",
       "seconds": "segundos",
-      "hours": "horas",
-      "servers": "servidores",
       "statusChecker": {
         "title": "Comprobador de estado",
         "description": "Configura cómo Infram comprueba el estado online/offline de tus servidores.",
@@ -972,34 +829,6 @@
         "interval": {
           "title": "Intervalo de comprobación",
           "description": "Con qué frecuencia comprobar el estado del servidor (10-300 segundos)"
-        }
-      },
-      "dataCollection": {
-        "title": "Recogida de datos",
-        "description": "Configura la recogida de datos de monitorización para las métricas de CPU, memoria, disco y red.",
-        "enable": {
-          "title": "Activar monitorización",
-          "description": "Recopila métricas de rendimiento detalladas de los servidores con la monitorización activada."
-        },
-        "interval": {
-          "title": "Intervalo de recogida",
-          "description": "Con qué frecuencia recoger los datos de monitorización (30-600 segundos)"
-        },
-        "retention": {
-          "title": "Conservación de datos",
-          "description": "Cuánto tiempo conservar los datos de monitorización (1-24 horas)"
-        }
-      },
-      "advanced": {
-        "title": "Ajustes avanzados",
-        "description": "Ajusta el rendimiento de la monitorización y el uso de recursos.",
-        "timeout": {
-          "title": "Tiempo de espera de la conexión",
-          "description": "Tiempo máximo de espera de una respuesta del servidor (5-120 segundos)"
-        },
-        "batchSize": {
-          "title": "Tamaño del lote",
-          "description": "Número de servidores a comprobar simultáneamente (1-50)"
         }
       },
       "errors": {
@@ -1393,10 +1222,6 @@
           "removeTooltip": "Eliminar host de salto",
           "noServersAvailable": "No hay servidores SSH disponibles para los hosts de salto. Crea primero servidores SSH."
         },
-        "monitoring": {
-          "title": "Activar la supervisión del rendimiento",
-          "description": "Recopila las métricas de CPU, memoria, disco y red de este servidor"
-        },
         "wakeOnLan": {
           "title": "Activar Wake-On-LAN",
           "description": "Permitir la activación remota de este servidor utilizando su dirección MAC"
@@ -1477,10 +1302,8 @@
         "port": "Puerto",
         "username": "Nombre de usuario",
         "password": "Contraseña",
-        "nodeName": "Nombre del nodo (opcional)",
-        "monitoring": "Control del rendimiento"
+        "nodeName": "Nombre del nodo (opcional)"
       },
-      "monitoringDescription": "Recopila métricas de CPU, memoria y almacenamiento de todo el clúster",
       "placeholders": {
         "name": "Nombre",
         "serverIp": "Servidor-IP",

@@ -4,7 +4,6 @@ import '../utils/theme_manager.dart';
 import '../utils/auth_manager.dart';
 import '../utils/snippet_manager.dart';
 import 'servers_screen.dart';
-import 'monitoring_screen.dart';
 import 'settings_screen.dart';
 
 class MainNavigationPage extends StatefulWidget {
@@ -33,7 +32,6 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         authManager: widget.authManager,
         snippetManager: widget.snippetManager,
       ),
-      MonitoringScreen(authManager: widget.authManager),
       SettingsScreen(
         themeManager: widget.themeManager,
         authManager: widget.authManager,
@@ -51,11 +49,6 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             icon: Icon(Icons.dns_outlined),
             selectedIcon: Icon(Icons.dns),
             label: 'Servers',
-          ),
-          NavigationDestination(
-            icon: Icon(MdiIcons.chartBoxOutline),
-            selectedIcon: Icon(MdiIcons.chartBox),
-            label: 'Monitoring',
           ),
           NavigationDestination(
             icon: Icon(MdiIcons.cogOutline),

@@ -5,7 +5,6 @@ const configValidation = Joi.object({
     ip: Joi.string().optional(),
     port: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
     keyboardLayout: Joi.string().optional(),
-    monitoringEnabled: Joi.boolean().optional(),
     nodeName: Joi.string().optional(),
     vmid: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
     jumpHosts: Joi.array().items(Joi.number()).optional(),

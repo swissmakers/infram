@@ -72,7 +72,6 @@ module.exports.createIntegration = async (accountId, configuration) => {
             ip: configuration.ip,
             port: configuration.port,
             username: configuration.username,
-            monitoringEnabled: configuration.monitoringEnabled || false,
             folderId: configuration.folderId || null,
             ownerAccountId: configuration.organizationId ? null : accountId,
         };
@@ -235,7 +234,6 @@ module.exports.editIntegration = async (accountId, integrationId, configuration)
             ip: configuration.ip !== undefined ? configuration.ip : integration.config.ip,
             port: configuration.port !== undefined ? configuration.port : integration.config.port,
             username: configuration.username !== undefined ? configuration.username : integration.config.username,
-            monitoringEnabled: configuration.monitoringEnabled !== undefined ? configuration.monitoringEnabled : integration.config.monitoringEnabled,
             folderId: configuration.folderId !== undefined ? configuration.folderId : integration.config.folderId,
             ownerAccountId: integration.config.ownerAccountId || (integration.organizationId ? null : accountId),
         };
@@ -245,7 +243,6 @@ module.exports.editIntegration = async (accountId, integrationId, configuration)
     delete configuration.port;
     delete configuration.username;
     delete configuration.folderId;
-    delete configuration.monitoringEnabled;
     delete configuration.apiUrl;
     delete configuration.verifyTls;
     delete configuration.syncIntervalMinutes;
@@ -299,7 +296,6 @@ module.exports.getIntegrationUnsafe = async (accountId, integrationId) => {
         ip: payload.config?.ip,
         port: payload.config?.port,
         username: payload.config?.username,
-        monitoringEnabled: payload.config?.monitoringEnabled || false,
         apiUrl: payload.config?.apiUrl,
         verifyTls: payload.config?.verifyTls !== false,
         syncIntervalMinutes: payload.config?.syncIntervalMinutes || 15,

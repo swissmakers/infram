@@ -18,7 +18,6 @@ import TitleBar from "@/common/components/TitleBar";
 
 const Servers = lazy(() => import("@/pages/Servers"));
 const Snippets = lazy(() => import("@/pages/Snippets"));
-const Monitoring = lazy(() => import("@/pages/Monitoring"));
 const Audit = lazy(() => import("@/pages/Audit"));
 const Popout = lazy(() => import("@/pages/Popout"));
 const Share = lazy(() => import("@/pages/Share"));
@@ -50,9 +49,6 @@ const App = () => {
             children: [
                 { path: "/", element: <Navigate to="/servers" /> },
                 { path: "/servers", element: <Servers /> },
-                { path: "/monitoring", element: <Monitoring /> },
-                { path: "/monitoring/:serverId", element: <Monitoring /> },
-                { path: "/monitoring/:serverId/:tab", element: <Monitoring /> },
                 { path: "/audit", element: <Audit /> },
                 { path: "/snippets", element: <Snippets /> }
             ],

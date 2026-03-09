@@ -1,1 +1,0 @@
-export { MonitoringChart as default } from "./MonitoringChart.jsx";
