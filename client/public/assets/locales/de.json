@@ -226,6 +226,11 @@
         "personal": "Persönlich",
         "user": "Benutzer #{{id}}",
         "organization": "Org #{{id}}"
+      },
+      "durationUnits": {
+        "seconds": "seconds",
+        "minutes": "minutes",
+        "hours": "hours"
       }
     },
     "pagination": {
@@ -837,6 +842,7 @@
     },
     "authentication": {
       "title": "{{count}} Anbieter verfügbar",
+      "internalProviderName": "Internal Authentication",
       "addProvider": "Anbieter hinzufügen",
       "addLdapProvider": "LDAP hinzufügen",
       "system": "System",
@@ -1253,6 +1259,20 @@
       "shutdown": "Herunterfahren",
       "stop": "Stop",
       "start": "Start"
+    },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Pop Out",
+        "startSharing": "Start Sharing",
+        "readOnly": "Read-only",
+        "readWrite": "Read & Write",
+        "copyShareLink": "Copy Share Link",
+        "changePermissions": "Change Permissions",
+        "stopSharing": "Stop Sharing",
+        "duplicate": "Duplicate",
+        "hibernateSession": "Hibernate",
+        "closeSession": "Disconnect"
+      }
     },
     "wol": {
       "successDescription": "Magic-Paket an {{name}}gesendet",

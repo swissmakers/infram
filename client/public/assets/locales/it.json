@@ -51,7 +51,7 @@
       "unsavedChangesText": "Le modifiche non sono state salvate. Sei sicuro di voler chiudere?"
     },
     "loginDialog": {
-      "title": "Infram,
+      "title": "Infram",
       "registrationTitle": "Registrazione",
       "ssoOrContinueWith": "oppure continua con",
       "noAuthMethodsAvailable": "Non sono disponibili metodi di autenticazione.",
@@ -226,6 +226,11 @@
         "personal": "Personale",
         "user": "Utente #{{id}}",
         "organization": "Org #{{id}}"
+      },
+      "durationUnits": {
+        "seconds": "seconds",
+        "minutes": "minutes",
+        "hours": "hours"
       }
     },
     "pagination": {
@@ -837,6 +842,7 @@
     },
     "authentication": {
       "title": "{{count}} Fornitori di autenticazione",
+      "internalProviderName": "Internal Authentication",
       "addProvider": "Aggiungi un fornitore",
       "addLdapProvider": "Aggiungi LDAP",
       "system": "Sistema",
@@ -1253,6 +1259,20 @@
       "shutdown": "Spegnimento",
       "stop": "Fermati",
       "start": "Iniziare"
+    },
+    "tabs": {
+      "contextMenu": {
+        "popOut": "Pop Out",
+        "startSharing": "Start Sharing",
+        "readOnly": "Read-only",
+        "readWrite": "Read & Write",
+        "copyShareLink": "Copy Share Link",
+        "changePermissions": "Change Permissions",
+        "stopSharing": "Stop Sharing",
+        "duplicate": "Duplicate",
+        "hibernateSession": "Hibernate",
+        "closeSession": "Disconnect"
+      }
     },
     "wol": {
       "successDescription": "Pacchetto magico inviato a {{name}}",
