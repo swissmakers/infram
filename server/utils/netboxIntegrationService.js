@@ -1,5 +1,6 @@
 const { Op } = require("sequelize");
 const Integration = require("../models/Integration");
+const Credential = require("../models/Credential");
 const logger = require("./logger");
 const { syncNetboxIntegration } = require("./netboxSyncService");
 
@@ -53,12 +54,38 @@ const syncDueIntegrations = async () => {
             if (!isSyncDue(integration)) continue;
 
             try {
+                const credential = await Credential.findOne({
+                    where: { integrationId: integration.id, type: "api-token" },
+                });
+                if (!credential?.secret) {
+                    const message = credential
+                        ? "NetBox scheduled sync failed: Integration credential could not be decrypted. Verify ENCRYPTION_KEY and re-enter credentials."
+                        : "NetBox scheduled sync failed: Integration credentials not found.";
+                    logger.warn("Skipping NetBox scheduled sync due to missing credentials", {
+                        integrationId: integration.id,
+                    });
+                    await Integration.update({
+                        status: "offline",
+                        lastSyncAt: new Date(),
+                        lastSyncStatus: "error",
+                        lastSyncMessage: message,
+                    }, { where: { id: integration.id } });
+                    continue;
+                }
+
                 const ownerAccountId = integration.config?.ownerAccountId;
                 if (!integration.organizationId && !ownerAccountId) {
                     logger.warn("Skipping personal NetBox integration without ownerAccountId", { integrationId: integration.id });
                     continue;
                 }
-                await syncNetboxIntegration(integration, integration.organizationId ? null : ownerAccountId);
+                const integrationPayload = integration.toJSON ? integration.toJSON() : integration;
+                await syncNetboxIntegration({
+                    ...integrationPayload,
+                    config: {
+                        ...(integrationPayload.config || {}),
+                        apiToken: credential.secret,
+                    },
+                }, integration.organizationId ? null : ownerAccountId);
             } catch (error) {
                 const failedAt = new Date();
                 logger.error("Failed NetBox scheduled sync", {
