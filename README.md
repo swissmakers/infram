@@ -112,7 +112,7 @@ The server listens on port 6989 by default. You can modify this behavior using e
 - Initial sync imports all matching devices/VMs and auto-creates missing entries.
 - Ongoing sync applies configurable filters (roles/tags) and protocol mapping rules.
 - Default protocol is SSH; rules can switch matching entries to RDP/VNC.
-- Entries removed from NetBox (or filtered out later) are not deleted; they are marked as managed-disabled.
+- Entries removed from NetBox (or filtered out later) are deleted from managed entries during sync.
 
 ## Security
 

@@ -154,7 +154,7 @@ const syncNetboxIntegration = async (integration, accountId) => {
 
     let created = 0;
     let updated = 0;
-    let disabled = 0;
+    let deleted = 0;
 
     for (const item of items) {
         const action = resolveProtocolAction(item, config);
@@ -187,28 +187,13 @@ const syncNetboxIntegration = async (integration, accountId) => {
         seenExternalIds.add(item.externalId);
     }
 
-    const toDisable = existing.filter((entry) => !seenExternalIds.has(entry.externalId));
-    for (const entry of toDisable) {
-        const updatedConfig = {
-            ...(entry.config || {}),
-            netbox: {
-                ...(entry.config?.netbox || {}),
-                syncDisabled: true,
-                disabledReason: "missing_or_filtered",
-                lastSeenAt: new Date().toISOString(),
-            },
-        };
-
-        await Entry.update({
-            isManagedDisabled: true,
-            status: "offline",
-            config: updatedConfig,
-        }, { where: { id: entry.id } });
-
-        disabled++;
+    const toDelete = existing.filter((entry) => !seenExternalIds.has(entry.externalId));
+    for (const entry of toDelete) {
+        await Entry.destroy({ where: { id: entry.id } });
+        deleted++;
     }
 
-    const summary = `NetBox sync complete: created ${created}, updated ${updated}, disabled ${disabled}.`;
+    const summary = `NetBox sync complete: created ${created}, updated ${updated}, deleted ${deleted}.`;
     await markIntegrationStatus(integration.id, "ok", summary);
     logger.info(summary, { integrationId: integration.id, total: items.length });
 
@@ -216,7 +201,7 @@ const syncNetboxIntegration = async (integration, accountId) => {
         success: true,
         created,
         updated,
-        disabled,
+        deleted,
         totalMatched: items.length,
         totalFetched: allItems.length,
         message: summary,
