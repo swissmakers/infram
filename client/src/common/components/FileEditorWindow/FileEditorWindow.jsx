@@ -11,8 +11,25 @@ import Icon from "@mdi/react";
 import { mdiClose, mdiContentSave, mdiTextBox, mdiArrowAll, mdiWindowMaximize, mdiWindowRestore } from "@mdi/js";
 import "./styles.sass";
 import * as monaco from "monaco-editor";
+import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
+import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
+import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
+import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
+import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 
 loader.config({ monaco });
+
+if (typeof window !== "undefined" && !window.MonacoEnvironment) {
+    window.MonacoEnvironment = {
+        getWorker(_, label) {
+            if (label === "json") return new jsonWorker();
+            if (label === "css" || label === "scss" || label === "less") return new cssWorker();
+            if (label === "html" || label === "handlebars" || label === "razor") return new htmlWorker();
+            if (label === "typescript" || label === "javascript") return new tsWorker();
+            return new editorWorker();
+        },
+    };
+}
 
 const normalizeFilename = (filename) => filename?.toLowerCase() || "";
 
@@ -156,6 +173,7 @@ export const FileEditorWindow = ({ file, session, onClose, zIndex = 9999 }) => {
                 onConfirm={onClose}
                 open={unsavedChangesDialog}
                 setOpen={setUnsavedChangesDialog}
+                zIndex={zIndex + 100}
             />
 
             <div

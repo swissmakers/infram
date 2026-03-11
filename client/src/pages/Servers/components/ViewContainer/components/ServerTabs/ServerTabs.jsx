@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import Icon from "@mdi/react";
-import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate } from "@mdi/js";
+import { mdiClose, mdiViewSplitVertical, mdiChevronLeft, mdiChevronRight, mdiSleep, mdiOpenInNew, mdiShareVariant, mdiLinkVariant, mdiPencil, mdiEye, mdiCloseCircle, mdiContentDuplicate, mdiFolderOpen } from "@mdi/js";
 import { useDrag, useDrop } from "react-dnd";
 import TerminalActionsMenu from "../TerminalActionsMenu";
 import { ContextMenu, ContextMenuItem, ContextMenuSeparator, useContextMenu } from "@/common/components/ContextMenu";
@@ -19,6 +19,7 @@ const DraggableTab = ({
     closeSession,
     hibernateSession,
     duplicateSession,
+    onOpenFileManager,
     index,
     moveTab,
     progress = 0,
@@ -30,6 +31,7 @@ const DraggableTab = ({
     const canPopOut = !session.scriptId && session.type !== "sftp";
     const canShare = canPopOut;
     const isSharing = !!session.shareId;
+    const canOpenFileManager = server?.protocol === "ssh" && session.type !== "sftp" && !session.scriptId;
 
     const handleShare = useCallback(async (writable) => {
         const result = await postRequest(`connections/${session.id}/share`, { writable });
@@ -167,6 +169,13 @@ const DraggableTab = ({
                     label={t("servers.tabs.contextMenu.duplicate")}
                     onClick={() => duplicateSession(session.id)}
                 />
+                {canOpenFileManager && (
+                    <ContextMenuItem
+                        icon={mdiFolderOpen}
+                        label={t("servers.tabs.contextMenu.openFileManager")}
+                        onClick={() => onOpenFileManager?.(session.id)}
+                    />
+                )}
                 <ContextMenuItem
                     icon={mdiSleep}
                     label={t("servers.tabs.contextMenu.hibernateSession")}
@@ -202,6 +211,7 @@ export const ServerTabs = ({
     sessionProgress = {},
     fullscreenEnabled,
     onFullscreenToggle,
+    onOpenFileManager,
 }) => {
 
     const tabsRef = useRef(null);
@@ -325,6 +335,7 @@ export const ServerTabs = ({
                             <DraggableTab key={session.id} session={session} server={session.server} index={index} moveTab={moveTab}
                                 activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                 closeSession={closeSession} hibernateSession={hibernateSession} duplicateSession={duplicateSession}
+                                onOpenFileManager={onOpenFileManager}
                                 progress={sessionProgress[session.id] || 0} />
                         );
                     })}

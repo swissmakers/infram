@@ -1,5 +1,5 @@
 import "./styles.sass";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useContext } from "react";
 import { useSnippets } from "@/common/contexts/SnippetContext.jsx";
 import { useScripts } from "@/common/contexts/ScriptContext.jsx";
 import SnippetsList from "@/pages/Snippets/components/SnippetsList";
@@ -13,9 +13,11 @@ import TabSwitcher from "@/common/components/TabSwitcher";
 import { mdiCodeBraces, mdiPlus, mdiScriptText, mdiCloudDownloadOutline, mdiAccount, mdiDomain } from "@mdi/js";
 import { useTranslation } from "react-i18next";
 import { getRequest } from "@/common/utils/RequestUtil.js";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
 
 export const Snippets = () => {
     const { t } = useTranslation();
+    const { user } = useContext(UserContext);
     const [activeTab, setActiveTab] = useState(0); // 0 = snippets, 1 = scripts
     const [snippetDialogOpen, setSnippetDialogOpen] = useState(false);
     const [scriptDialogOpen, setScriptDialogOpen] = useState(false);
@@ -65,6 +67,10 @@ export const Snippets = () => {
 
     useEffect(() => {
         const fetchSources = async () => {
+            if (user?.role !== "admin") {
+                setSources([]);
+                return;
+            }
             try {
                 const sourcesData = await getRequest("sources");
                 setSources(sourcesData.filter(s => s.enabled && (s.snippetCount > 0 || s.scriptCount > 0)));
@@ -73,7 +79,7 @@ export const Snippets = () => {
             }
         };
         fetchSources();
-    }, []);
+    }, [user?.role]);
 
     useEffect(() => {
         const fetchSourceContent = async () => {

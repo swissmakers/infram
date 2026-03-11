@@ -27,8 +27,9 @@ const MIME_TYPES = {
 
 const getExt = (p) => p.split(".").pop()?.toLowerCase();
 
-const cleanup = (ssh, streams = []) => {
+const cleanup = (ssh, streams = [], closeSsh = true) => {
     streams.forEach(s => { try { s?.destroyed || s?.destroy(); } catch {} });
+    if (!closeSsh) return;
     try { ssh?._jumpConnections?.forEach(c => { try { c.ssh.end(); } catch {} }); ssh?.end(); } catch {}
 };
 
@@ -61,24 +62,44 @@ const validateSession = async (sessionToken, sessionId) => {
     if (!entry) return { error: "Entry not found", status: 404 };
 
     const identityId = serverSession.configuration?.identityId;
-    if (!identityId) return { error: "No identity configured", status: 400 };
+    const directIdentity = serverSession.configuration?.directIdentity || null;
+    const connection = SessionManager.getConnection(sessionId);
 
-    const identity = await Identity.findByPk(identityId);
-    if (!identity) return { error: "Identity not found", status: 404 };
+    let identity = null;
+    if (identityId) {
+        identity = await Identity.findByPk(identityId);
+        if (!identity) return { error: "Identity not found", status: 404 };
+    } else if (directIdentity) {
+        identity = { isDirect: true, directCredentials: directIdentity };
+    }
 
-    return { session, user, serverSession, entry, identity };
+    if (!identity && !connection?.ssh) {
+        return { error: "No identity configured", status: 400 };
+    }
+
+    return { session, user, serverSession, entry, identity, connection };
 };
 
 const setupSSH = async (v, req, res, cleanupFn) => {
+    if (v.connection?.ssh && v.connection.type === "ssh") {
+        return { ssh: v.connection.ssh, sshOptions: null, reused: true };
+    }
+
     const { ssh, sshOptions } = await createSSH(v.entry, v.identity, {}, v.user.id);
     req.on("close", () => { if (!res.writableEnded) cleanupFn(); });
     ssh.on("error", (err) => { cleanupFn(); if (!res.headersSent) res.status(500).json({ error: err.message }); });
-    return { ssh, sshOptions };
+    return { ssh, sshOptions, reused: false };
 };
 
 const handleError = (res, err) => {
-    const status = err.code === 2 ? 404 : err.code === 3 ? 403 : 500;
-    const msg = err.code === 2 ? "Not found" : err.code === 3 ? "Permission denied" : err.message;
+    const code = err?.code;
+    const message = String(err?.message || "");
+    const status = (code === 2 || code === "ENOENT")
+        ? 404
+        : (code === 3 || code === "EACCES" || code === "EPERM" || /permission denied/i.test(message))
+            ? 403
+            : 500;
+    const msg = status === 404 ? "Not found" : status === 403 ? "Permission denied" : (message || "Internal server error");
     if (!res.headersSent) res.status(status).json({ error: msg });
 };
 
@@ -110,12 +131,12 @@ app.post("/upload", async (req, res) => {
     if (!sessionToken || !sessionId || !remotePath) return res.status(400).json({ error: "Missing parameters" });
     if (remotePath.includes("..")) return res.status(400).json({ error: "Invalid path" });
 
-    let ssh = null, tempFile = null, cleaned = false;
+    let ssh = null, tempFile = null, cleaned = false, ownsSsh = true;
     const cleanupAll = () => {
         if (cleaned) return;
         cleaned = true;
         if (tempFile) try { fs.unlinkSync(tempFile); } catch {}
-        cleanup(ssh);
+        cleanup(ssh, [], ownsSsh);
     };
 
     try {
@@ -135,8 +156,10 @@ app.post("/upload", async (req, res) => {
         const stats = fs.statSync(tempFile);
         const setup = await setupSSH(v, req, res, cleanupAll);
         ssh = setup.ssh;
-
-        await connectSSH(ssh, setup.sshOptions);
+        ownsSsh = !setup.reused;
+        if (!setup.reused) {
+            await connectSSH(ssh, setup.sshOptions);
+        }
         const sftp = await sftpConnect(ssh);
 
         await new Promise((resolve, reject) => {
@@ -180,10 +203,15 @@ app.get("/", async (req, res) => {
     if (remotePath.includes("..")) return res.status(400).json({ error: "Invalid path" });
 
     const thumbSize = Math.min(Math.max(parseInt(size) || 100, 50), 300);
-    let ssh = null;
+    let ssh = null, sftp = null, ownsSsh = true;
     const streams = [];
     let cleaned = false;
-    const cleanupAll = () => { if (cleaned) return; cleaned = true; cleanup(ssh, streams); };
+    const cleanupAll = () => {
+        if (cleaned) return;
+        cleaned = true;
+        try { sftp?.end?.(); } catch {}
+        cleanup(ssh, streams, ownsSsh);
+    };
 
     try {
         const v = await validateSession(sessionToken, sessionId);
@@ -191,12 +219,15 @@ app.get("/", async (req, res) => {
 
         const setup = await setupSSH(v, req, res, cleanupAll);
         ssh = setup.ssh;
-        ssh.on("end", cleanupAll);
-        ssh.connect(setup.sshOptions);
+        ownsSsh = !setup.reused;
+        if (!setup.reused) {
+            ssh.on("end", cleanupAll);
+            ssh.connect(setup.sshOptions);
+        }
 
-        ssh.on("ready", async () => {
+        const runDownload = async () => {
             try {
-                const sftp = await sftpConnect(ssh);
+                sftp = await sftpConnect(ssh);
                 const stats = await new Promise((r, j) => sftp.stat(remotePath, (e, s) => e ? j(e) : r(s)));
                 const fileName = remotePath.split("/").pop();
                 const safeFileName = fileName.replace(/[^\w\s.-]/g, "_").substring(0, 255);
@@ -221,7 +252,7 @@ app.get("/", async (req, res) => {
                     const rs = sftp.createReadStream(remotePath);
                     const tf = sharp().resize(thumbSize, thumbSize, { fit: "cover" }).jpeg({ quality: 80 });
                     streams.push(rs, tf);
-                    rs.on("error", () => { cleanupAll(); handleError(res, { message: "Read error" }); });
+                    rs.on("error", (err) => { cleanupAll(); handleError(res, err); });
                     tf.on("end", cleanupAll);
                     rs.pipe(tf).pipe(res);
                     return;
@@ -234,7 +265,7 @@ app.get("/", async (req, res) => {
 
                 const rs = sftp.createReadStream(remotePath);
                 streams.push(rs);
-                rs.on("error", () => { cleanupAll(); handleError(res, { message: "Read error" }); });
+                rs.on("error", (err) => { cleanupAll(); handleError(res, err); });
                 rs.on("end", cleanupAll);
                 rs.pipe(res);
 
@@ -243,7 +274,9 @@ app.get("/", async (req, res) => {
                 cleanupAll();
                 handleError(res, err);
             }
-        });
+        };
+        if (setup.reused) runDownload();
+        else ssh.on("ready", runDownload);
     } catch (err) {
         cleanupAll();
         handleError(res, err);
@@ -298,10 +331,15 @@ app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
     if (!paths || !Array.isArray(paths) || paths.length === 0) return res.status(400).json({ error: "No paths provided" });
     if (paths.some(p => p.includes(".."))) return res.status(400).json({ error: "Invalid path" });
 
-    let ssh = null;
+    let ssh = null, sftp = null, ownsSsh = true;
     const streams = [];
     let cleaned = false;
-    const cleanupAll = () => { if (cleaned) return; cleaned = true; cleanup(ssh, streams); };
+    const cleanupAll = () => {
+        if (cleaned) return;
+        cleaned = true;
+        try { sftp?.end?.(); } catch {}
+        cleanup(ssh, streams, ownsSsh);
+    };
 
     try {
         const validation = await validateSession(sessionToken, sessionId);
@@ -309,12 +347,15 @@ app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
 
         const setup = await setupSSH(validation, req, res, cleanupAll);
         ssh = setup.ssh;
-        ssh.on("end", cleanupAll);
-        ssh.connect(setup.sshOptions);
+        ownsSsh = !setup.reused;
+        if (!setup.reused) {
+            ssh.on("end", cleanupAll);
+            ssh.connect(setup.sshOptions);
+        }
 
-        ssh.on("ready", async () => {
+        const runMultiDownload = async () => {
             try {
-                const sftp = await sftpConnect(ssh);
+                sftp = await sftpConnect(ssh);
                 const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
                 
                 res.header("Content-Disposition", `attachment; filename="infram-download-${timestamp}.zip"`);
@@ -344,7 +385,9 @@ app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
                 cleanupAll();
                 handleError(res, err);
             }
-        });
+        };
+        if (setup.reused) runMultiDownload();
+        else ssh.on("ready", runMultiDownload);
     } catch (err) {
         cleanupAll();
         handleError(res, err);

@@ -1160,6 +1160,7 @@
         "changePermissions": "Change Permissions",
         "stopSharing": "Stop Sharing",
         "duplicate": "Duplicate",
+        "openFileManager": "File Manager",
         "hibernateSession": "Hibernate",
         "closeSession": "Disconnect"
       }

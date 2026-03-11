@@ -37,6 +37,7 @@ export const ViewContainer = ({
                                   duplicateSession,
                                   setOpenFileEditors,
                                   openTerminalFromFileManager,
+                                  openFileManagerFromTab,
                               }) => {
 
     const [layoutMode, setLayoutMode] = useState("single");
@@ -497,6 +498,7 @@ export const ViewContainer = ({
                                             onKeyboardShortcut={handleKeyboardShortcut} hasGuacamole={hasGuacamole}
                                             sessionProgress={sessionProgress} fullscreenEnabled={fullscreenMode}
                                             onFullscreenToggle={toggleFullscreenMode}
+                                            onOpenFileManager={openFileManagerFromTab}
                                             hibernateSession={hibernateSession} duplicateSession={duplicateSession} />}
 
             <div ref={layoutRef}

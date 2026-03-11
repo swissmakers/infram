@@ -1,0 +1,44 @@
+@use "@/common/styles/colors"
+
+.file-manager-modal
+  width: min(92vw, 1240px)
+  height: min(84vh, 860px)
+  display: flex
+  flex-direction: column
+  overflow: hidden
+  position: relative
+
+  .file-manager-modal__close
+    position: absolute
+    top: 0
+    right: 0
+    background: transparent
+    border: 1px solid colors.$gray
+    border-radius: 0.5rem
+    width: 2rem
+    height: 2rem
+    display: flex
+    align-items: center
+    justify-content: center
+    cursor: pointer
+    color: colors.$subtext
+    transition: background-color 0.12s ease, color 0.12s ease, border-color 0.12s ease
+    z-index: 2
+
+    &:hover
+      background-color: colors.$gray
+      color: colors.$error
+      border-color: colors.$error
+
+  h2
+    margin: 0 2.5rem 0.75rem 0
+    font-size: 1rem
+    font-weight: 600
+    color: colors.$white
+
+  .file-manager-modal__body
+    flex: 1
+    min-height: 0
+    border: 1px solid colors.$gray
+    border-radius: 0.5rem
+    overflow: hidden

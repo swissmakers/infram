@@ -46,6 +46,8 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const reconnectAttemptsRef = useRef(0);
     const fileListRef = useRef(null);
     const propertiesHandlerRef = useRef(null);
+    const lastSuccessfulDirectoryRef = useRef("/");
+    const pendingNavigationRef = useRef(null);
 
     const wsUrl = getWebSocketUrl("/api/ws/sftp", { sessionToken, sessionId: session.id });
 
@@ -167,8 +169,15 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     listFiles();
                     break;
                 case OPERATIONS.LIST_FILES:
-                    if (payload?.files) { setItems(payload.files); setError(null); } 
-                    else { setError("Failed to load directory contents"); setItems([]); }
+                    if (payload?.files) {
+                        setItems(payload.files);
+                        setError(null);
+                        lastSuccessfulDirectoryRef.current = directory;
+                        pendingNavigationRef.current = null;
+                    } else {
+                        setError("Failed to load directory contents");
+                        setItems([]);
+                    }
                     setLoading(false);
                     break;
                 case OPERATIONS.CREATE_FILE:
@@ -183,6 +192,14 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     break;
                 case OPERATIONS.ERROR:
                     sendToast(t("common.error"), payload?.message || t("servers.fileManager.toast.error"));
+                    // Roll back optimistic navigation when listing a protected/unavailable path fails.
+                    if (pendingNavigationRef.current?.to === directory) {
+                        const pending = pendingNavigationRef.current;
+                        setDirectory(pending.from);
+                        setHistory(pending.history);
+                        setHistoryIndex(pending.historyIndex);
+                        pendingNavigationRef.current = null;
+                    }
                     setLoading(false);
                     break;
                 case OPERATIONS.SEARCH_DIRECTORIES:
@@ -243,13 +260,45 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
     const changeDirectory = (newDirectory) => {
         if (newDirectory === directory) return;
-        setHistory(historyIndex === history.length - 1 ? [...history, newDirectory] : [...history.slice(0, historyIndex + 1), newDirectory]);
-        setHistoryIndex(historyIndex + 1);
+        const nextHistory = historyIndex === history.length - 1
+            ? [...history, newDirectory]
+            : [...history.slice(0, historyIndex + 1), newDirectory];
+        const nextHistoryIndex = historyIndex + 1;
+        pendingNavigationRef.current = {
+            from: directory,
+            to: newDirectory,
+            history,
+            historyIndex,
+        };
+        setHistory(nextHistory);
+        setHistoryIndex(nextHistoryIndex);
         setDirectory(newDirectory);
     };
 
-    const goBack = () => { if (historyIndex > 0) { setHistoryIndex(historyIndex - 1); setDirectory(history[historyIndex - 1]); } };
-    const goForward = () => { if (historyIndex < history.length - 1) { setHistoryIndex(historyIndex + 1); setDirectory(history[historyIndex + 1]); } };
+    const goBack = () => {
+        if (historyIndex > 0) {
+            pendingNavigationRef.current = {
+                from: directory,
+                to: history[historyIndex - 1],
+                history,
+                historyIndex,
+            };
+            setHistoryIndex(historyIndex - 1);
+            setDirectory(history[historyIndex - 1]);
+        }
+    };
+    const goForward = () => {
+        if (historyIndex < history.length - 1) {
+            pendingNavigationRef.current = {
+                from: directory,
+                to: history[historyIndex + 1],
+                history,
+                historyIndex,
+            };
+            setHistoryIndex(historyIndex + 1);
+            setDirectory(history[historyIndex + 1]);
+        }
+    };
 
     const handleDrag = async (e) => {
         if (e.dataTransfer.types.includes("application/x-sftp-files")) return;

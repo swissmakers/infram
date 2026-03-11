@@ -273,6 +273,12 @@ class SessionManager {
             if (conn.ssh) {
                 try { conn.ssh.end(); } catch (e) {}
             }
+            if (conn.sftpHandles?.size) {
+                for (const sftpHandle of conn.sftpHandles) {
+                    try { sftpHandle.end?.(); } catch (e) {}
+                }
+                conn.sftpHandles.clear();
+            }
             if (conn.socket) {
                 try { conn.socket.end(); } catch (e) {}
                 try { conn.socket.destroy(); } catch (e) {}
@@ -346,6 +352,21 @@ class SessionManager {
 
     getConnection(sessionId) {
         return this.getMasterConnection(sessionId);
+    }
+
+    registerSftpHandle(sessionId, sftpHandle) {
+        const conn = this.getConnection(sessionId);
+        if (!conn || !sftpHandle) return false;
+        if (!conn.sftpHandles) conn.sftpHandles = new Set();
+        conn.sftpHandles.add(sftpHandle);
+        return true;
+    }
+
+    unregisterSftpHandle(sessionId, sftpHandle) {
+        const conn = this.getConnection(sessionId);
+        if (!conn?.sftpHandles || !sftpHandle) return false;
+        conn.sftpHandles.delete(sftpHandle);
+        return true;
     }
 
     setConnectingPromise(sessionId, promise) {

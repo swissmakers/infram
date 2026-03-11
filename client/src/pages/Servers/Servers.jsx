@@ -9,6 +9,7 @@ import IntegrationDialog from "@/pages/Servers/components/IntegrationDialog";
 import SSHConfigImportDialog from "@/pages/Servers/components/SSHConfigImportDialog";
 import ConnectionReasonDialog from "@/pages/Servers/components/ConnectionReasonDialog";
 import DirectConnectDialog from "@/pages/Servers/components/DirectConnectDialog";
+import FileManagerModal from "@/pages/Servers/components/FileManagerModal";
 import FileEditorWindow from "@/common/components/FileEditorWindow";
 import FilePreviewWindow from "@/common/components/FilePreviewWindow";
 import { useActiveSessions } from "@/common/contexts/SessionContext.jsx";
@@ -31,6 +32,8 @@ export const Servers = () => {
     const [directConnectServer, setDirectConnectServer] = useState(null);
     const [pendingConnection, setPendingConnection] = useState(null);
     const [openFileEditors, setOpenFileEditors] = useState([]);
+    const [fileManagerModalOpen, setFileManagerModalOpen] = useState(false);
+    const [fileManagerModalSession, setFileManagerModalSession] = useState(null);
     const [mobileServerListOpen, setMobileServerListOpen] = useState(false);
     const [leftPaneSlot, setLeftPaneSlot] = useState(null);
 
@@ -208,6 +211,29 @@ export const Servers = () => {
             console.error("Failed to create session", error);
         }
     };
+
+    const createFileManagerModalSession = useCallback((session) => {
+        if (!session?.id || !session?.server) return;
+        setFileManagerModalSession({
+            ...session,
+            // Reuse the existing terminal session and let backend SFTP attach to it.
+            type: "sftp",
+            reuseTerminalSession: true,
+        });
+        setFileManagerModalOpen(true);
+    }, []);
+
+    const closeFileManagerModal = useCallback(() => {
+        setFileManagerModalOpen(false);
+        setFileManagerModalSession(null);
+    }, []);
+
+    const openFileManagerFromTab = useCallback(async (sessionId) => {
+        const session = activeSessions.find(s => s.id === sessionId);
+        if (!session?.server || session.type === "sftp") return;
+        if (session.server.protocol !== "ssh") return;
+        createFileManagerModalSession(session);
+    }, [activeSessions, createFileManagerModalSession]);
 
     const runScript = async (serverId, identityId, scriptId) => {
         const server = getServerById(serverId);
@@ -476,6 +502,13 @@ export const Servers = () => {
                 onConnect={handleConnectionReasonProvided}
                 serverName={pendingConnection?.server?.name || "Unknown Server"}
             />
+            <FileManagerModal
+                open={fileManagerModalOpen}
+                session={fileManagerModalSession}
+                onClose={closeFileManagerModal}
+                setOpenFileEditors={setOpenFileEditors}
+                openTerminalFromFileManager={openTerminalFromFileManager}
+            />
             {leftPaneSlot && createPortal(
                 <ServerList setServerDialogOpen={(protocol = null) => {
                     setServerDialogProtocol(protocol);
@@ -510,6 +543,7 @@ export const Servers = () => {
                                activeSessionId={activeSessionId} setActiveSessionId={setActiveSessionId}
                                hibernateSession={hibernateSession} duplicateSession={duplicateSession}
                                setOpenFileEditors={setOpenFileEditors}
+                               openFileManagerFromTab={openFileManagerFromTab}
                                openTerminalFromFileManager={openTerminalFromFileManager} />}
             {openFileEditors.map((editor, index) => (
                 editor.type === "preview" ? (

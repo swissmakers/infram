@@ -3,7 +3,7 @@ import { DialogProvider } from "@/common/components/Dialog";
 import Button from "@/common/components/Button";
 import { useTranslation } from "react-i18next";
 
-export const ActionConfirmDialog = ({open, setOpen, onConfirm, onCancel, text}) => {
+export const ActionConfirmDialog = ({open, setOpen, onConfirm, onCancel, text, zIndex = 40000}) => {
     const { t } = useTranslation();
 
     const cancel = () => {
@@ -23,7 +23,7 @@ export const ActionConfirmDialog = ({open, setOpen, onConfirm, onCancel, text}) 
     }
 
     return (
-        <DialogProvider onClose={() => setOpen(false)} open={open}>
+        <DialogProvider onClose={() => setOpen(false)} open={open} zIndex={zIndex}>
             <div className="confirm-dialog">
                 <h2>{t('common.confirmDialog.title')}</h2>
                 <p>{text ? text : t('common.confirmDialog.defaultText')}</p>

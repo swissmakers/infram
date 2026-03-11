@@ -31,11 +31,13 @@ module.exports = async (ws, req) => {
     if (!ctx) return;
 
     const { entry, identity, user, connectionReason, ipAddress, userAgent, serverSession } = ctx;
+    const existingConnection = serverSession ? SessionManager.getConnection(serverSession.sessionId) : null;
+    const reuseExistingSsh = Boolean(existingConnection?.ssh && existingConnection?.type === "ssh");
     if (serverSession) SessionManager.resume(serverSession.sessionId);
 
-    let ssh = null, sftp = null, isClosing = false;
+    let ssh = reuseExistingSsh ? existingConnection.ssh : null, sftp = null, isClosing = false;
     const startTime = Date.now();
-    const auditLogId = serverSession?.auditLogId || null;
+    const auditLogId = reuseExistingSsh ? null : (serverSession?.auditLogId || null);
 
     const cleanup = async () => {
         if (isClosing) return;
@@ -44,10 +46,18 @@ module.exports = async (ws, req) => {
             await updateAuditLogWithSessionDuration(auditLogId, startTime);
         } catch {
         }
-        if (serverSession) {
+        if (serverSession && !reuseExistingSsh) {
             const s = SessionManager.get(serverSession.sessionId);
             if (s && !s.isHibernated) SessionManager.remove(serverSession.sessionId);
         }
+        if (reuseExistingSsh && serverSession && sftp) {
+            SessionManager.unregisterSftpHandle(serverSession.sessionId, sftp);
+            try {
+                sftp.end?.();
+            } catch {
+            }
+        }
+        if (reuseExistingSsh) return;
         try {
             ssh?._jumpConnections?.forEach(c => {
                 try {
@@ -61,20 +71,22 @@ module.exports = async (ws, req) => {
     };
 
     try {
-        ssh = await createSSHConnection(entry, identity, ws, user.id);
-        ssh.on("error", async (err) => {
-            sendError(ws, "Connection error: " + err.message);
-            await cleanup("ssh_error");
-            try {
-                ws.close(4001);
-            } catch {
-            }
-        });
-        ssh.on("end", () => cleanup("ssh_end"));
+        if (!reuseExistingSsh) {
+            ssh = await createSSHConnection(entry, identity, ws, user.id);
+            ssh.on("error", async (err) => {
+                sendError(ws, "Connection error: " + err.message);
+                await cleanup("ssh_error");
+                try {
+                    ws.close(4001);
+                } catch {
+                }
+            });
+            ssh.on("end", () => cleanup("ssh_end"));
+        }
         ws.on("close", () => cleanup("ws_close"));
         ws.on("error", () => cleanup("ws_error"));
 
-        ssh.on("ready", () => {
+        const openSftpChannel = () => {
             ssh.sftp((err, sftpSession) => {
                 if (err) {
                     sendError(ws, "SFTP failed: " + err.message);
@@ -82,7 +94,12 @@ module.exports = async (ws, req) => {
                     return;
                 }
                 sftp = sftpSession;
-                if (serverSession) SessionManager.setConnection(serverSession.sessionId, { ssh, sftp, auditLogId });
+                if (serverSession && !reuseExistingSsh) {
+                    SessionManager.setConnection(serverSession.sessionId, { ssh, sftp, auditLogId });
+                }
+                if (serverSession && reuseExistingSsh) {
+                    SessionManager.registerSftpHandle(serverSession.sessionId, sftp);
+                }
                 safeSend(ws, Buffer.from([OPERATIONS.READY]));
 
                 ws.on("message", async (msg) => {
@@ -374,7 +391,13 @@ module.exports = async (ws, req) => {
                     }
                 });
             });
-        });
+        };
+
+        if (reuseExistingSsh) {
+            openSftpChannel();
+        } else {
+            ssh.on("ready", openSftpChannel);
+        }
     } catch (err) {
         sendError(ws, "Connection failed: " + err.message);
         await cleanup("error");

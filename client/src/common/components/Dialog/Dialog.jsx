@@ -7,7 +7,7 @@ import "./styles.sass";
 
 export const DialogContext = createContext({});
 
-export const DialogProvider = ({ disableClosing, open, children, onClose, isDirty }) => {
+export const DialogProvider = ({ disableClosing, open, children, onClose, isDirty, zIndex = 10000 }) => {
     const { t } = useTranslation();
     const areaRef = useRef();
     const ref = useRef();
@@ -100,7 +100,7 @@ export const DialogProvider = ({ disableClosing, open, children, onClose, isDirt
     };
 
     const dialogContent = isVisible ? (
-        <div className={`dialog-area ${isClosing ? "dialog-area-hidden" : ""}`} ref={areaRef}>
+        <div className={`dialog-area ${isClosing ? "dialog-area-hidden" : ""}`} ref={areaRef} style={{ zIndex }}>
             <div className={`dialog ${isClosing ? "dialog-hidden" : ""}`} ref={ref}
                 onAnimationEnd={handleAnimationEnd}>
                 {!disableClosing && (
