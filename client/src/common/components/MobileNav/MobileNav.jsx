@@ -2,14 +2,17 @@ import "./styles.sass";
 import { mdiAccountCogOutline } from "@mdi/js";
 import Icon from "@mdi/react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { getSidebarNavigation } from "@/common/utils/navigationConfig.jsx";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
 
 export const MobileNav = () => {
     const { t } = useTranslation();
     const { pathname } = useLocation();
     const navigate = useNavigate();
-    const navigation = getSidebarNavigation(t);
+    const { user } = useContext(UserContext);
+    const navigation = getSidebarNavigation(t, user?.role === "admin");
 
     const handleClick = (item) => {
         if (pathname.startsWith(item.path) && item.toggleEvent) window.dispatchEvent(new CustomEvent(item.toggleEvent));

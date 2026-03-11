@@ -13,10 +13,10 @@ import Monitoring from "@/pages/Settings/pages/Monitoring";
 import Backup from "@/pages/Settings/pages/Backup";
 import Integrations from "@/pages/Settings/pages/Integrations";
 
-export const getSidebarNavigation = t => [
+export const getSidebarNavigation = (t, isAdmin = false) => [
     { title: t('common.sidebar.servers'), key: "servers", path: "/servers", icon: mdiServerOutline, toggleEvent: "toggleServerList" },
     { title: t('common.sidebar.snippets'), key: "snippets", path: "/snippets", icon: mdiCodeBraces },
-    { title: t('common.sidebar.audit'), key: "audit", path: "/audit", icon: mdiShieldCheckOutline },
+    ...(isAdmin ? [{ title: t('common.sidebar.audit'), key: "audit", path: "/audit", icon: mdiShieldCheckOutline }] : []),
 ];
 
 export const getSettingsUserPages = t => [

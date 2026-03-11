@@ -2,6 +2,7 @@ const { Router } = require("express");
 const fs = require("fs");
 const logger = require("../utils/logger");
 const auditController = require("../controllers/audit");
+const { isAdmin } = require("../middlewares/permission");
 const { getAuditLogsValidation, updateOrganizationAuditSettingsValidation } = require("../validations/audit");
 const { validateSchema } = require("../utils/schema");
 
@@ -24,7 +25,7 @@ const app = Router();
  * @return {object} 200 - Audit logs matching the specified criteria
  * @return {object} 400 - Invalid filter parameters
  */
-app.get("/logs", async (req, res) => {
+app.get("/logs", isAdmin, async (req, res) => {
     try {
         if (validateSchema(res, getAuditLogsValidation, req.query)) return;
         const filters = {
@@ -52,7 +53,7 @@ app.get("/logs", async (req, res) => {
  * @return {object} 200 - Audit metadata including available actions and resource types
  * @return {object} 500 - Internal server error
  */
-app.get("/metadata", async (req, res) => {
+app.get("/metadata", isAdmin, async (req, res) => {
     try {
         res.json(await auditController.getAuditMetadata());
     } catch (error) {
@@ -73,7 +74,7 @@ app.get("/metadata", async (req, res) => {
  * @return {object} 404 - Organization not found or access denied
  * @return {object} 500 - Internal server error
  */
-app.get("/organizations/:id/settings", async (req, res) => {
+app.get("/organizations/:id/settings", isAdmin, async (req, res) => {
     try {
         const result = await auditController.getOrganizationAuditSettings(req.user.id, parseInt(req.params.id));
         if (result.code) return res.status(result.code).json({ message: result.message });
@@ -98,7 +99,7 @@ app.get("/organizations/:id/settings", async (req, res) => {
  * @return {object} 404 - Organization not found or access denied
  * @return {object} 500 - Internal server error
  */
-app.patch("/organizations/:id/settings", async (req, res) => {
+app.patch("/organizations/:id/settings", isAdmin, async (req, res) => {
     try {
         if (validateSchema(res, updateOrganizationAuditSettingsValidation, req.body)) return;
         const result = await auditController.updateOrganizationAuditSettings(req.user.id, parseInt(req.params.id), req.body);
@@ -123,7 +124,7 @@ app.patch("/organizations/:id/settings", async (req, res) => {
  * @return {object} 404 - Recording not found
  * @return {object} 500 - Internal server error
  */
-app.get("/:auditLogId/recording", async (req, res) => {
+app.get("/:auditLogId/recording", isAdmin, async (req, res) => {
     try {
         const auditLogId = parseInt(req.params.auditLogId);
         const result = await auditController.getRecording(req.user.id, auditLogId);

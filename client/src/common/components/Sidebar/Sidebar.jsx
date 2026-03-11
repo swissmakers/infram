@@ -33,7 +33,7 @@ export const Sidebar = ({ onToggleCollapse }) => {
         return () => window.removeEventListener("openSettings", handleOpenSettings);
     }, []);
 
-    const navigation = getSidebarNavigation(t);
+    const navigation = getSidebarNavigation(t, user?.role === "admin");
     const userProviderLabel = user?.authProviderType === "ldap" && user?.authProviderName
         ? user.authProviderName
         : user?.username;

@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
+import { useContext } from "react";
 import { useToast } from "@/common/contexts/ToastContext.jsx";
 import { getRequest } from "@/common/utils/RequestUtil.js";
 import {
@@ -13,11 +14,13 @@ import PageHeader from "@/common/components/PageHeader";
 import AuditTable from "./components/AuditTable";
 import AuditFilters from "./components/AuditFilters";
 import { useTranslation } from "react-i18next";
+import { UserContext } from "@/common/contexts/UserContext.jsx";
 import "./styles.sass";
 
 export const Audit = () => {
     const { t } = useTranslation();
     const { sendToast } = useToast();
+    const { user } = useContext(UserContext);
     const [auditLogs, setAuditLogs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [metadata, setMetadata] = useState(null);
@@ -32,6 +35,7 @@ export const Audit = () => {
         offset: 0,
     });
     const [total, setTotal] = useState(0);
+    const [forbidden, setForbidden] = useState(false);
 
     const pagination = useMemo(() => ({
         total,
@@ -40,6 +44,10 @@ export const Audit = () => {
     }), [total, filters.offset, filters.limit]);
 
     const fetchData = useCallback(async () => {
+        if (user?.role !== "admin") {
+            setForbidden(true);
+            return;
+        }
         try {
             const [metadataRes, orgsRes] = await Promise.all([
                 getRequest("audit/metadata"),
@@ -47,12 +55,22 @@ export const Audit = () => {
             ]);
             setMetadata(metadataRes);
             setOrganizations(orgsRes);
+            setForbidden(false);
         } catch (error) {
+            if (error?.code === 403 || error?.message === "Forbidden") {
+                setForbidden(true);
+                return;
+            }
             sendToast("Error", t('audit.errors.failedToLoadData'));
         }
-    }, [sendToast, t]);
+    }, [sendToast, t, user?.role]);
 
     const fetchAuditLogs = useCallback(async () => {
+        if (user?.role !== "admin") {
+            setForbidden(true);
+            setAuditLogs([]);
+            return;
+        }
         setLoading(true);
         try {
             const params = new URLSearchParams(
@@ -63,13 +81,19 @@ export const Audit = () => {
             const response = await getRequest(`audit/logs?${params}`);
             setAuditLogs(response.logs);
             setTotal(response.total);
+            setForbidden(false);
         } catch (error) {
+            if (error?.code === 403 || error?.message === "Forbidden") {
+                setForbidden(true);
+                setAuditLogs([]);
+                return;
+            }
             sendToast("Error", t('audit.errors.failedToLoadLogs'));
             setAuditLogs([]);
         } finally {
             setLoading(false);
         }
-    }, [filters, sendToast, t]);
+    }, [filters, sendToast, t, user?.role]);
 
     useEffect(() => {
         fetchData();
@@ -95,6 +119,18 @@ export const Audit = () => {
         if (action.startsWith("organization.")) return mdiDomain;
         return mdiShieldCheckOutline;
     }, []);
+
+    if (user?.role !== "admin" || forbidden) {
+        return (
+            <div className="audit-page">
+                <PageHeader icon={mdiShieldCheckOutline} title={t('audit.page.title')}
+                            subtitle={t('audit.page.subtitle')} />
+                <div className="audit-content">
+                    <div>{t('common.errors.generalError')}: Forbidden</div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="audit-page">
