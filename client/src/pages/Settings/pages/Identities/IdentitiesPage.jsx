@@ -16,8 +16,6 @@ export const IdentityCard = ({ identity, onEdit, onDelete }) => {
     
     const getIdentityTypeLabel = (type) => {
         if (type === "ssh") return t("settings.identities.dialog.authTypes.ssh");
-        if (type === "both") return t("settings.identities.dialog.authTypes.both");
-        if (type === "password-only") return t("settings.identities.dialog.authTypes.password-only");
         return t("settings.identities.dialog.authTypes.password");
     };
     
@@ -27,7 +25,7 @@ export const IdentityCard = ({ identity, onEdit, onDelete }) => {
                 <Icon path={mdiKey} className="identity-icon" />
                 <div className="identity-details">
                     <h3>{identity.name}</h3>
-                    <p className="identity-username">{identity.username || t("settings.identities.noUsername")}</p>
+                    <p className="identity-username">{identity.username || "-"}</p>
                     <span className="identity-type">{getIdentityTypeLabel(identity.type)}</span>
                 </div>
             </div>

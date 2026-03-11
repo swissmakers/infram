@@ -11,9 +11,10 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
     const { t } = useTranslation();
     const isNew = !identity.id || String(identity.id).startsWith("new-");
     const isOrg = identity.scope === 'organization';
+    const normalizeAuthType = (value) => (value === "ssh" ? "ssh" : "password");
     const [name, setName] = useState(identity.name || "");
     const [username, setUsername] = useState(identity.username || "");
-    const [authType, setAuthType] = useState(identity.authType || identity.type || (allowedAuthTypes?.[0] || "password"));
+    const [authType, setAuthType] = useState(normalizeAuthType(identity.authType || identity.type || (allowedAuthTypes?.[0] || "password")));
     const [password, setPassword] = useState(identity.password || "");
     const [sshKey, setSshKey] = useState(identity.sshKey || null);
     const [passphrase, setPassphrase] = useState(identity.passphrase || "");
@@ -21,15 +22,13 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
     const [ppTouched, setPpTouched] = useState(false);
 
     const allAuthOptions = [
-        { label: t("servers.dialog.identities.passwordOnly"), value: "password-only" },
         { label: t("servers.dialog.identities.userPassword"), value: "password" },
         { label: t("servers.dialog.identities.sshKey"), value: "ssh" },
-        { label: t("servers.dialog.identities.both"), value: "both" },
     ];
     
     const authOptions = allowedAuthTypes 
         ? allAuthOptions.filter(opt => allowedAuthTypes.includes(opt.value))
-        : allAuthOptions.filter(opt => ["password", "ssh", "both"].includes(opt.value));
+        : allAuthOptions.filter(opt => ["password", "ssh"].includes(opt.value));
 
     const readFile = (e) => {
         const reader = new FileReader();
@@ -40,15 +39,13 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
     useEffect(() => {
         onUpdate({
             id: identity.id, name, username, authType, scope: identity.scope, organizationId: identity.organizationId,
-            ...(authType === "password" || authType === "password-only"
+            ...(authType === "password"
                 ? { password, passwordTouched: pwTouched || isNew || password !== "" }
-                : authType === "both"
-                ? { password, passwordTouched: pwTouched || isNew || password !== "", sshKey, passphrase, passphraseTouched: ppTouched || isNew || passphrase !== "" }
                 : { sshKey, passphrase, passphraseTouched: ppTouched || isNew || passphrase !== "" }),
         });
     }, [name, username, authType, password, sshKey, passphrase, identity.id, pwTouched, ppTouched, isNew]);
 
-    const showUsername = authType !== "password-only";
+    const showUsername = true;
 
     return (
         <div className={`identity identity-${isOrg ? 'organization' : 'personal'}`}>
@@ -82,13 +79,13 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
                         <SelectBox options={authOptions} selected={authType} setSelected={setAuthType} />
                     </div>
                 </div>
-                {(authType === "password" || authType === "password-only" || authType === "both") && (
+                {authType === "password" && (
                     <div className="form-group">
                         <label>{t("servers.dialog.identities.passwordField")}</label>
                         <Input icon={mdiLockOutline} type="password" id={`identity-password-${identity.id}`} name="password" placeholder={t("servers.dialog.identities.passwordField")} autoComplete="new-password" value={password} setValue={(v) => { setPassword(v); setPwTouched(true); }} />
                     </div>
                 )}
-                {(authType === "ssh" || authType === "both") && (
+                {authType === "ssh" && (
                     <>
                         <div className="form-group">
                             <label>{t("servers.dialog.identities.sshPrivateKey")}</label>
@@ -108,8 +105,6 @@ const Identity = ({ identity, onUpdate, onDelete, onMoveToOrg, isOrgContext, org
 const getAuthTypeLabel = (type, t) => {
     switch (type) {
         case "ssh": return t("servers.dialog.identities.sshKey");
-        case "both": return t("servers.dialog.identities.both");
-        case "password-only": return t("servers.dialog.identities.passwordOnly");
         default: return t("servers.dialog.identities.userPassword");
     }
 };
@@ -134,7 +129,7 @@ const IdentitySection = ({ title, icon, description, identities, available, onUp
                             <div key={i.id} className="available-identity" onClick={() => onLink(i.id)}>
                                 <div className="available-identity-info">
                                     <div className="available-identity-name"><Icon path={mdiLink} size={0.7} />{i.name}</div>
-                                    <div className="available-identity-username">{i.username || t("servers.dialog.identities.noUsername")}</div>
+                                    <div className="available-identity-username">{i.username || "-"}</div>
                                 </div>
                                 <div className="available-identity-type">{getAuthTypeLabel(i.authType || i.type, t)}</div>
                             </div>

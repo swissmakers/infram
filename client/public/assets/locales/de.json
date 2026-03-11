@@ -1176,7 +1176,8 @@
       "usingIdentity": "Verwende Identität: {{name}}",
       "messages": {
         "identityRequired": "Bitte wähle eine Identität aus",
-        "noIdentitiesAvailable": "Keine kompatiblen Identitäten für diese Verbindung verfügbar."
+        "noIdentitiesAvailable": "Keine kompatiblen Identitäten für diese Verbindung verfügbar.",
+        "sshIdentityHint": "Hinweis: Für SSH-Schlüsselanmeldungen füge deinen Schlüssel als persönliche Identität hinzu und nutze Gespeicherte Identität für schnellen, wiederverwendbaren Zugriff."
       }
     },
     "tabs": {

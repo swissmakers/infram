@@ -23,7 +23,7 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
 
     const protocol = server?.config?.protocol;
     const fieldConfig = useMemo(() => getFieldConfig("server", protocol), [protocol]);
-    const allowedAuthTypes = fieldConfig.allowedAuthTypes || ["password", "ssh", "both"];
+    const allowedAuthTypes = fieldConfig.allowedAuthTypes || ["password", "ssh"];
     const defaultAuthType = allowedAuthTypes[0] || "password";
 
     const [username, setUsername] = useState("");
@@ -35,10 +35,8 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
     const [selectedIdentityId, setSelectedIdentityId] = useState(null);
 
     const authOptions = [
-        { label: t("servers.dialog.identities.passwordOnly"), value: "password-only" },
         { label: t("servers.dialog.identities.userPassword"), value: "password" },
         { label: t("servers.dialog.identities.sshKey"), value: "ssh" },
-        { label: t("servers.dialog.identities.both"), value: "both" },
     ].filter((option) => allowedAuthTypes.includes(option.value));
 
     const parseOrganizationId = (value) => {
@@ -76,6 +74,25 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
         savedIdentities.find((identity) => identity.id === selectedIdentityId) || null
     ), [savedIdentities, selectedIdentityId]);
 
+    const preferredPersonalIdentity = useMemo(() => {
+        const personalAuthIdentities = savedIdentities.filter((identity) => (
+            identity.scope === "personal" && (identity.type === "ssh" || identity.type === "password")
+        ));
+        if (personalAuthIdentities.length === 0) return null;
+
+        const normalizedUsername = (user?.username || "").trim().toLowerCase();
+        if (normalizedUsername) {
+            const usernameMatches = personalAuthIdentities.filter((identity) => (
+                (identity.username || "").trim().toLowerCase() === normalizedUsername
+            ));
+            if (usernameMatches.length > 0) {
+                return usernameMatches.find((identity) => identity.type === "ssh") || usernameMatches[0];
+            }
+        }
+
+        return personalAuthIdentities.find((identity) => identity.type === "ssh") || personalAuthIdentities[0];
+    }, [savedIdentities, user?.username]);
+
     const readFile = (event) => {
         const file = event.target.files[0];
         if (!file) return;
@@ -100,17 +117,17 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
             return true;
         }
 
-        if (authType !== "password-only" && !username) {
+        if (!username) {
             sendToast("Error", t("servers.messages.usernameRequired") || "Username is required");
             return false;
         }
 
-        if ((authType === "password" || authType === "password-only" || authType === "both") && !password) {
+        if (authType === "password" && !password) {
             sendToast("Error", t("servers.messages.passwordRequired") || "Password is required");
             return false;
         }
 
-        if ((authType === "ssh" || authType === "both") && !sshKey) {
+        if (authType === "ssh" && !sshKey) {
             sendToast("Error", t("servers.messages.sshKeyRequired") || "SSH key is required");
             return false;
         }
@@ -128,12 +145,10 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
         }
 
         const directIdentity = {
-            username: authType === "password-only" ? undefined : username,
+            username,
             type: authType,
-            ...(authType === "password" || authType === "password-only"
+            ...(authType === "password"
                 ? { password }
-                : authType === "both"
-                ? { password, sshKey, passphrase: passphrase || undefined }
                 : { sshKey, passphrase: passphrase || undefined }
             ),
         };
@@ -156,6 +171,13 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
     }, [open, defaultAuthType, loadIdentities, user?.username]);
 
     useEffect(() => {
+        if (!open || selectedIdentityId || mode !== "manual" || !preferredPersonalIdentity) return;
+
+        setMode("saved");
+        setSelectedIdentityId(preferredPersonalIdentity.id);
+    }, [mode, open, preferredPersonalIdentity, selectedIdentityId]);
+
+    useEffect(() => {
         if (!open) return;
 
         const submitOnEnter = (event) => {
@@ -171,7 +193,7 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
         };
     }, [open, handleConnect]);
 
-    const showUsername = mode === "manual" && authType !== "password-only";
+    const showUsername = mode === "manual";
 
     return (
         <DialogProvider open={open} onClose={onClose}>
@@ -243,7 +265,7 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
                         </div>
                         )}
 
-                        {mode === "manual" && (authType === "password" || authType === "password-only" || authType === "both") && (
+                        {mode === "manual" && authType === "password" && (
                             <div className="form-group">
                                 <label htmlFor="password">{t("servers.dialog.fields.password")}</label>
                                 <Input
@@ -257,7 +279,7 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
                             </div>
                         )}
 
-                        {mode === "manual" && (authType === "ssh" || authType === "both") && (
+                        {mode === "manual" && authType === "ssh" && (
                             <>
                                 <div className="form-group">
                                     <label htmlFor="keyfile">{t("servers.dialog.identities.sshPrivateKey")}</label>
@@ -280,6 +302,10 @@ export const DirectConnectDialog = ({ open, onClose, onConnect, server }) => {
                                         setValue={setPassphrase}
                                     />
                                 </div>
+
+                                <span className="identity-note">
+                                    {t("servers.directConnect.messages.sshIdentityHint")}
+                                </span>
                             </>
                         )}
                     </div>

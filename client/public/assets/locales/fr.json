@@ -1176,7 +1176,8 @@
       "usingIdentity": "Identité utilisée : {{name}}",
       "messages": {
         "identityRequired": "Veuillez sélectionner une identité",
-        "noIdentitiesAvailable": "Aucune identité compatible n'est disponible pour cette connexion."
+        "noIdentitiesAvailable": "Aucune identité compatible n'est disponible pour cette connexion.",
+        "sshIdentityHint": "Conseil : pour les connexions par clé SSH, ajoutez votre clé comme identité personnelle et utilisez l'identité enregistrée pour un accès rapide et réutilisable."
       }
     },
     "tabs": {

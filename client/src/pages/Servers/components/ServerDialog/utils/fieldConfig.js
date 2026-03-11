@@ -11,7 +11,7 @@ export const getFieldConfig = (type, protocol) => {
                     showSettings: true,
                     showKeyboardLayout: false,
                     showTerminalSettings: true,
-                    allowedAuthTypes: ["password", "ssh", "both"],
+                    allowedAuthTypes: ["password", "ssh"],
                     showWakeOnLan: true,
                 };
             case "telnet":
@@ -34,7 +34,7 @@ export const getFieldConfig = (type, protocol) => {
                     showDisplaySettings: true,
                     showPerformanceSettings: true,
                     showAudioSettings: true,
-                    allowedAuthTypes: ["password-only", "password"],
+                    allowedAuthTypes: ["password"],
                     showWakeOnLan: true,
                 };
             case "vnc":
@@ -46,7 +46,7 @@ export const getFieldConfig = (type, protocol) => {
                     showKeyboardLayout: false,
                     showDisplaySettings: true,
                     showAudioSettings: true,
-                    allowedAuthTypes: ["password-only", "password"],
+                    allowedAuthTypes: ["password"],
                     showWakeOnLan: true,
                 };
             default:
@@ -56,7 +56,7 @@ export const getFieldConfig = (type, protocol) => {
                     showIdentities: true,
                     showSettings: true,
                     showKeyboardLayout: true,
-                    allowedAuthTypes: ["password", "ssh", "both"],
+                    allowedAuthTypes: ["password", "ssh"],
                     showWakeOnLan: true,
                 };
         }
