@@ -23,7 +23,7 @@ export const InframLogo = memo(({ size = 40, className = "" }) => {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             className={className}
-            style={{ display: "block", overflow: "hidden", maxWidth: "100%", maxHeight: "100%" }}
+            style={{ display: "block", overflow: "hidden", maxWidth: "100%", maxHeight: "100%", transform: "rotate(180deg)" }}
         >
             <defs>
                 <filter id="glow_infram" x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox">
