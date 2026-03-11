@@ -39,7 +39,7 @@ jobs:
 
       - name: Build multi-arch manifest locally
         env:
-          LOCAL_MANIFEST: localhost/infra-manager:${{ github.sha }}
+          LOCAL_MANIFEST: localhost/infram:${{ github.sha }}
           PLATFORMS: linux/amd64,linux/arm64
         run: |
           podman build --pull \
@@ -53,19 +53,19 @@ jobs:
         env:
           REG: ${{ secrets.HARBOR_REGISTRY }}
           PROJ: ${{ secrets.HARBOR_PROJECT }}
-          LOCAL_MANIFEST: localhost/infra-manager:${{ github.sha }}
+          LOCAL_MANIFEST: localhost/infram:${{ github.sha }}
         run: |
-          DEST="docker://$REG/$PROJ/infra-manager"
+          DEST="docker://$REG/$PROJ/infram"
           podman manifest push --all "$LOCAL_MANIFEST" "$DEST:${{ github.sha }}"
           podman manifest push --all "$LOCAL_MANIFEST" "$DEST:latest"
 
-#      - name: Push to Docker Hub
-#        if: ${{ secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN }}
-#        env:
-#          DH_NS: ${{ secrets.DOCKERHUB_USERNAME }}
-#          DH_REPO: infra-manager
-#          LOCAL_MANIFEST: localhost/infra-manager:${{ github.sha }}
-#        run: |
-#          DEST="docker://docker.io/$DH_NS/$DH_REPO"
-#          podman manifest push --all "$LOCAL_MANIFEST" "$DEST:${{ github.sha }}"
-#          podman manifest push --all "$LOCAL_MANIFEST" "$DEST:latest"
+      - name: Push to Docker Hub
+        if: ${{ secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN }}
+        env:
+          DH_NS: ${{ secrets.DOCKERHUB_USERNAME }}
+          DH_REPO: infram
+          LOCAL_MANIFEST: localhost/infram:${{ github.sha }}
+        run: |
+          DEST="docker://docker.io/$DH_NS/$DH_REPO"
+          podman manifest push --all "$LOCAL_MANIFEST" "$DEST:${{ github.sha }}"
+          podman manifest push --all "$LOCAL_MANIFEST" "$DEST:latest"
