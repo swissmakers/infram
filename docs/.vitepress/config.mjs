@@ -52,7 +52,7 @@ export default defineConfig({
         ],
 
         footer: {
-            message: "Distributed under the MIT License",
+            message: "Distributed under the GNU GPL v3 License",
             copyright: "© 2024 Mathias Wagner",
         },
         search: {
@@ -68,6 +68,7 @@ export default defineConfig({
                     { text: "Install", link: "/installation" },
                     { text: "SSL/HTTPS", link: "/ssl" },
                     { text: "Reverse Proxy", link: "/reverse-proxy" },
+                    { text: "Licensing", link: "/licensing" },
                     {
                         text: "Authentication",
                         collapsed: true,

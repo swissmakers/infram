@@ -20,9 +20,9 @@ hero:
     alt: MySpeed
 
 features:
-  - icon: 📊
-    title: Monitoring
-    details: Real-time server monitoring with CPU, memory, and process metrics at a glance.
+  - icon: ✅
+    title: Status Checker
+    details: Focused host/service availability checks for clear operational health visibility.
   - icon: 🔒
     title: Secure
     details: Two-factor authentication, session management and encryption built-in.

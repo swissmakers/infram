@@ -91,18 +91,44 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
             }
             return;
         }
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = url;
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "paths";
-        input.value = JSON.stringify(paths);
-        form.appendChild(input);
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
-        sendToast(t("common.success"), t("servers.fileManager.toast.downloadingItems", { count: paths.length }));
+
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ paths }),
+            });
+
+            if (!response.ok) {
+                let message = `Download failed (${response.status})`;
+                try {
+                    const data = await response.json();
+                    message = data?.error || message;
+                } catch {
+                    const text = await response.text();
+                    if (text) message = text;
+                }
+                throw new Error(message);
+            }
+
+            const blob = await response.blob();
+            const disposition = response.headers.get("content-disposition") || "";
+            const nameMatch = disposition.match(/filename="([^"]+)"/i);
+            const fileName = nameMatch?.[1] || defaultFileName;
+
+            const blobUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = blobUrl;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
+
+            sendToast(t("common.success"), t("servers.fileManager.toast.downloadingItems", { count: paths.length }));
+        } catch (e) {
+            sendToast(t("common.error"), e?.message || t("servers.fileManager.toast.error"));
+        }
     };
 
     const uploadFileHttp = async (file, targetDir) => {

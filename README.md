@@ -2,7 +2,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
+[![GNU GPL v3 License][license-shield]][license-url]
 [![Release][release-shield]][release-url]
 
 <br />
@@ -18,23 +18,65 @@
 
 ## What is infra-manager?
 
-Infram (short form) is an open-source server management software that allows you to:
+Infram (infra-manager) is a privacy-first and security focused platform for remote infrastructure operations.
+It combines remote access, identity-aware administration, inventory synchronization, and auditability in one system.
 
--   Connect remotely via SSH, VNC and RDP
--   Manage files through SFTP
--   Deploy applications via Docker
--   Manage Proxmox LXC and QEMU containers
--   Sync NetBox device and VM inventory into organizations
--   Secure access with two-factor authentication and OIDC SSO
--   Separate users and servers into Organizations
+Core capabilities:
+
+- Remote access to Servers / Clients / IoT, via SSH, RDP, VNC (or Telnet)
+- Integrated file management over same SSH-session that used by terminal
+- Team isolation through seperate tenant Organizations and access-rules
+- LDAP / 2FA / FIDO2 capability for identity and access control. (OIDC as addition)
+- Script and snippet automation for repeatable operations (e.g. give a long command "a name", and execute it directly from the WebUI console)
+- NetBox (and Proxmox -> we may remove that) integration for infrastructure sync and manager automation.
+- Audit logs and session lifecycle controls for operational traceability
+- Optional session recording (video) for productive systems
 
 ## Upstream Attribution
 
 This project is a fork/rebrand maintained by Swissmakers GmbH.
 It is based on the original Nexterm project by Mathias Wagner.
-Our roadmap focuses on privacy and security optimization, including a hardened containerized version for enterprise use cases.
+Infram follows an independent roadmap centered on production reliability, security hardening, and privacy-by-default operation.
 
 Original copyright and third-party notices are preserved in `LICENSE` and `NOTICE`.
+
+## Fork Changes vs Upstream (Nexterm)
+
+Infram is intentionally maintained as an operationally independent software because our product goals prioritize stricter security and privacy controls.
+
+### Security and Privacy Hardening
+
+- Removed AI runtime integrations and related backend/frontend feature surfaces.
+- Hardened default behavior with strict outbound TLS validation (`STRICT_TLS=true`).
+- Disabled external source synchronization by default (`ENABLE_SOURCE_SYNC=false`).
+- Added UI/runtime control for external link handling (`VITE_ENABLE_EXTERNAL_LINKS=false` by default).
+- Restricted sensitive audit capabilities to admin-level access.
+- Build/runtime cleanup with reduced non-essential runtime dependencies.
+- Added container-first dependency and vulnerability workflow with optional SBOM generation:
+  - `make security-update`, `make security-audit`, `make security-all`, `make security-sbom`
+  - `yarn security:update`, `yarn security:audit`, `yarn security:all`, `yarn security:sbom`
+
+### Platform and Feature Architecture
+
+- Replaced the old broad monitoring module with a focused status-checker architecture (that only checks if a server is online or not).
+- Added NetBox integration and synchronization services:
+  - inventory import for devices/VMs
+  - auto-create/update of managed entries
+  - role/tag filtering and protocol mapping
+  - delete-on-remote-delete synchronization behavior
+- Extended LDAP integration:
+  - additional directory attributes
+  - automatic organization assignment on login
+  - improved org-admin mapping support
+- Evolved File Manager implementation:
+  - SSH-session-based operation model
+  - improved multi-file download/upload behavior and failure handling for e.g. permission-denied paths
+- Improved lockfile/dependency hygiene across root/client/landing/connector.
+
+### Upstream Sync Policy
+
+Once again, the upstream is treated as a historical source, not as the product roadmap baseline.
+Relevant upstream fixes can be selectively backported after compatibility review.
 
 ## Screenshots
 
@@ -171,13 +213,14 @@ Contributions are welcome! Please feel free to:
 ## Useful Links
 
 -   [Documentation](https://github.com/swissmakers/infra-manager)
+-   [License & Third-Party Notices](docs/licensing.md)
 -   [Report a bug](https://github.com/swissmakers/infra-manager/issues)
 -   [Request a feature](https://github.com/swissmakers/infra-manager/issues)
 
 
 ## License
 
-Distributed under the MIT license. See `LICENSE` for more information.
+Distributed under the GNU General Public License v3.0. See `LICENSE` for more information.
 
 [contributors-shield]: https://img.shields.io/github/contributors/swissmakers/infra-manager.svg?style=for-the-badge
 [contributors-url]: https://github.com/swissmakers/infra-manager/graphs/contributors

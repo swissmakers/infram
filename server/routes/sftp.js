@@ -103,6 +103,52 @@ const handleError = (res, err) => {
     if (!res.headersSent) res.status(status).json({ error: msg });
 };
 
+const isPermissionError = (err) => {
+    const code = err?.code;
+    const message = String(err?.message || "");
+    return code === 3 || code === "EACCES" || code === "EPERM" || /permission denied/i.test(message);
+};
+
+const withPathContext = (err, remotePath) => {
+    const wrapped = err instanceof Error ? err : new Error(String(err || "Unknown error"));
+    wrapped.code = wrapped.code || err?.code;
+    wrapped.path = wrapped.path || remotePath;
+    return wrapped;
+};
+
+const assertReadablePath = async (sftp, remotePath) => {
+    const ensureReadableFile = (filePath) => new Promise((resolve, reject) => {
+        sftp.open(filePath, "r", (openErr, handle) => {
+            if (openErr) return reject(withPathContext(openErr, filePath));
+            sftp.close(handle, (closeErr) => closeErr ? reject(withPathContext(closeErr, filePath)) : resolve());
+        });
+    });
+
+    const walk = async (currentPath) => {
+        const stats = await new Promise((resolve, reject) => {
+            sftp.stat(currentPath, (err, fileStats) => err ? reject(withPathContext(err, currentPath)) : resolve(fileStats));
+        });
+
+        if (!stats.isDirectory()) {
+            await ensureReadableFile(currentPath);
+            return;
+        }
+
+        const list = await new Promise((resolve, reject) => {
+            sftp.readdir(currentPath, (err, entries) => err ? reject(withPathContext(err, currentPath)) : resolve(entries || []));
+        });
+
+        for (const file of list) {
+            if (file.longname.startsWith("l")) continue;
+            const fullPath = currentPath === "/" ? `/${file.filename}` : `${currentPath}/${file.filename}`;
+            if (file.longname.startsWith("d")) await walk(fullPath);
+            else await ensureReadableFile(fullPath);
+        }
+    };
+
+    await walk(remotePath);
+};
+
 const audit = (v, req, action, resource, details) => {
     createAuditLog({
         accountId: v.user.id, organizationId: v.entry.organizationId,
@@ -318,7 +364,7 @@ const addFileToArchive = (sftp, remotePath, archive, archiveName, streams) => ne
  * @return {object} 404 - Session or entry not found
  * @return {object} 500 - Download error
  */
-app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
+app.post("/multi", express.json(), express.urlencoded({ extended: true }), async (req, res) => {
     const { sessionToken, sessionId } = req.query;
     let paths = req.body.paths;
     
@@ -357,7 +403,20 @@ app.post("/multi", express.urlencoded({ extended: true }), async (req, res) => {
             try {
                 sftp = await sftpConnect(ssh);
                 const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-                
+
+                for (const remotePath of paths) {
+                    try {
+                        await assertReadablePath(sftp, remotePath);
+                    } catch (err) {
+                        if (isPermissionError(err)) {
+                            const deniedPath = err.path || remotePath;
+                            cleanupAll();
+                            return res.status(403).json({ error: `Permission denied: ${deniedPath}` });
+                        }
+                        throw err;
+                    }
+                }
+
                 res.header("Content-Disposition", `attachment; filename="infram-download-${timestamp}.zip"`);
                 res.header("Content-Type", "application/zip");
 
