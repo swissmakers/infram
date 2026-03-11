@@ -6,6 +6,7 @@ const ldap = require("../controllers/ldap");
 const { validateSchema } = require("../utils/schema");
 const { oidcProviderValidation, oidcProviderUpdateValidation } = require("../validations/oidc");
 const { ldapProviderValidation, ldapProviderUpdateValidation } = require("../validations/ldap");
+const { getClientIp } = require("../utils/requestIp");
 
 const app = Router();
 
@@ -302,7 +303,7 @@ app.get("/oidc/callback", async (req, res) => {
         const { code, state } = req.query;
         if (!code || !state) return res.status(400).json({ message: "Missing required parameters" });
 
-        const userInfo = { ip: req.ip, userAgent: req.headers["user-agent"] };
+        const userInfo = { ip: getClientIp(req), userAgent: req.headers["user-agent"] };
         const result = await oidc.handleOIDCCallback(req.query, userInfo);
 
         if (result.code) return res.redirect(`/?error=${encodeURIComponent(result.message)}`);

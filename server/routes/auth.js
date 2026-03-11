@@ -8,6 +8,7 @@ const { validateSchema } = require("../utils/schema");
 const { generateAuthenticationOptions, verifyAuthentication } = require("../controllers/passkey");
 const { createCode, pollToken, authorizeCode, getCodeInfo } = require("../controllers/deviceCode");
 const { authenticate } = require("../middlewares/auth");
+const { getClientIp } = require("../utils/requestIp");
 
 const app = Router();
 
@@ -31,7 +32,7 @@ const deviceCodeRateLimiter = rateLimit({
  */
 app.post("/login", async (req, res) => {
     if (validateSchema(res, loginValidation, req.body)) return;
-    const session = await login(req.body, { ip: req.ip, userAgent: req.header("User-Agent") || "None" });
+    const session = await login(req.body, { ip: getClientIp(req), userAgent: req.header("User-Agent") || "None" });
     if (session?.code) return res.json(session);
     res.header("Authorization", session?.token).json({ ...session, message: "Your session got successfully created" });
 });
@@ -81,7 +82,7 @@ app.post("/passkey/options", async (req, res) => {
  */
 app.post("/passkey/verify", async (req, res) => {
     if (validateSchema(res, passkeyAuthenticationValidation, req.body)) return;
-    const result = await verifyAuthentication(req, req.body.response, { ip: req.ip, userAgent: req.header("User-Agent") || "None" }, req.body.origin);
+    const result = await verifyAuthentication(req, req.body.response, { ip: getClientIp(req), userAgent: req.header("User-Agent") || "None" }, req.body.origin);
     if (result?.code) return res.json(result);
     res.header("Authorization", result.token).json({ token: result.token, message: "Your session got successfully created" });
 });
@@ -100,7 +101,7 @@ app.post("/device/create", deviceCodeRateLimiter, async (req, res) => {
     if (validateSchema(res, createDeviceCodeValidation, req.body)) return;
     const result = await createCode({
         clientType: req.body.clientType,
-        ipAddress: req.ip,
+        ipAddress: getClientIp(req),
         userAgent: req.header("User-Agent") || "Unknown Device",
     });
     if (result?.code && typeof result.code === "number") return res.json(result);

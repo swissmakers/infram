@@ -6,8 +6,10 @@ const SessionManager = require("../lib/SessionManager");
 const { validateEntryAccess } = require("../controllers/entry");
 const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
 const { resolveIdentity } = require("../utils/identityResolver");
+const { getClientIp } = require("../utils/requestIp");
 
-const authenticateSharedSession = async (ws, query) => {
+const authenticateSharedSession = async (ws, req) => {
+    const { query } = req;
     const { shareId } = query;
     if (!shareId) return null;
 
@@ -26,7 +28,7 @@ const authenticateSharedSession = async (ws, query) => {
         serverSession: session,
         containerId: "0",
         connectionReason: null,
-        ipAddress: query.ip || "unknown",
+        ipAddress: getClientIp(req),
         userAgent: query.userAgent || "unknown",
         isShared: true,
         shareWritable: session.shareWritable,
@@ -93,7 +95,7 @@ const authenticateWebSocket = async (ws, query) => {
 }
 
 module.exports = async (ws, req) => {
-    const sharedAuth = await authenticateSharedSession(ws, req.query);
+    const sharedAuth = await authenticateSharedSession(ws, req);
     if (sharedAuth) return sharedAuth;
 
     const baseAuth = await authenticateWebSocket(ws, req.query);
@@ -141,7 +143,7 @@ module.exports = async (ws, req) => {
         serverSession,
         containerId: containerId || "0",
         connectionReason: connectionReason || null,
-        ipAddress: req.ip || req.socket?.remoteAddress || 'unknown',
+        ipAddress: getClientIp(req),
         userAgent: req.headers['user-agent'] || 'unknown',
     };
 };

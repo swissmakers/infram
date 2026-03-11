@@ -11,6 +11,7 @@ const { addFolderToArchive } = require("../utils/sftpHelpers");
 const logger = require("../utils/logger");
 const archiver = require("archiver");
 const sharp = require("sharp");
+const { getClientIp } = require("../utils/requestIp");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
@@ -152,7 +153,7 @@ const assertReadablePath = async (sftp, remotePath) => {
 const audit = (v, req, action, resource, details) => {
     createAuditLog({
         accountId: v.user.id, organizationId: v.entry.organizationId,
-        action, resource, details, ipAddress: req.ip, userAgent: req.headers["user-agent"],
+        action, resource, details, ipAddress: getClientIp(req), userAgent: req.headers["user-agent"],
     });
 };
 

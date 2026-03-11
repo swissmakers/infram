@@ -135,11 +135,38 @@ The server listens on port 6989 by default. You can modify this behavior using e
 -   `SERVER_PORT`: Server listening port (default: 6989)
 -   `NODE_ENV`: Runtime environment (development/production)
 -   `ENCRYPTION_KEY`: Encryption key for passwords, SSH keys and passphrases. Supports Docker secrets via /run/secrets/encryption_key`
+-   `TRUST_PROXY`: Express proxy trust setting for client IP extraction (`false` by default).
 -   `LOG_LEVEL`: Logging level for application and guacd (system/info/verbose/debug/warn/error, default: system)
 -   `STRICT_TLS`: Enforce TLS certificate validation for outbound integrations like Proxmox and LDAP (default: true)
 -   `ENABLE_SOURCE_SYNC`: Enable source synchronization requests and default official source creation (default: false)
 -   `ENABLE_VERSION_CHECK`: Allow GitHub version check endpoint (`/api/service/version/check`) (default: true)
 -   `VITE_ENABLE_EXTERNAL_LINKS`: Allow opening external links from the web UI (default: false)
+
+### Proxy and Client IP Configuration (`TRUST_PROXY`)
+
+Infram uses Express `trust proxy` behavior to determine the real client IP (`req.ip`) for:
+
+- audit log actor IPs
+- authentication/session IP tracking
+- WebSocket session metadata
+
+`TRUST_PROXY` accepts the same formats as Express:
+
+- `false` (default): do not trust forwarding headers (`X-Forwarded-For`, etc.)
+- `true`: trust all proxies (not recommended in most production environments)
+- integer (for example `1`): trust that many proxy hops
+- CSV/list/network names (for example `loopback,uniquelocal`) to trust specific proxy source ranges
+
+Recommended values:
+
+- Containerized backend behind exactly one Apache reverse proxy: `TRUST_PROXY=1`
+- Multiple chained, controlled reverse proxies: set explicit trusted hops or ranges
+- Direct/no reverse proxy deployments: keep `TRUST_PROXY=false`
+
+Important:
+
+- Never use broad trust settings unless your network boundary is controlled.
+- Incorrect `TRUST_PROXY` values can cause wrong actor IP attribution in audit logs.
 
 ### Offline Runtime Defaults
 

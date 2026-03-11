@@ -19,6 +19,7 @@ const logger = require("./utils/logger");
 const { startSourceSyncService, stopSourceSyncService } = require("./utils/sourceSyncService");
 const backupService = require("./utils/backupService");
 const { startNetboxIntegrationService, stopNetboxIntegrationService } = require("./utils/netboxIntegrationService");
+const { getTrustProxyConfig } = require("./utils/requestIp");
 require("./utils/folder");
 
 process.on("uncaughtException", (err) => require("./utils/errorHandling")(err));
@@ -33,6 +34,8 @@ const KEY_PATH = path.join(CERTS_DIR, "key.pem");
 const hasSSLCerts = () => fs.existsSync(CERT_PATH) && fs.existsSync(KEY_PATH);
 
 const app = expressWs(express()).app;
+const trustProxyConfig = getTrustProxyConfig();
+app.set("trust proxy", trustProxyConfig);
 
 generateOpenAPISpec(app);
 
@@ -90,6 +93,9 @@ if (!process.env.ENCRYPTION_KEY) throw new Error("ENCRYPTION_KEY not found. Set 
 
 logger.system(`Starting Infram version ${packageJson.version} in ${process.env.NODE_ENV || 'development'} mode`);
 logger.system(`Running on Node.js ${process.version}`);
+logger.system("Configured proxy trust", {
+    trustProxy: Array.isArray(trustProxyConfig) ? trustProxyConfig.join(",") : trustProxyConfig,
+});
 
 db.authenticate()
     .catch((err) => {

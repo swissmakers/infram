@@ -8,6 +8,7 @@ const { validateEntryAccess } = require("../controllers/entry");
 const { getOrganizationAuditSettingsInternal } = require("../controllers/audit");
 const { getIdentityCredentials, listIdentities } = require("../controllers/identity");
 const logger = require("../utils/logger");
+const { getClientIp } = require("../utils/requestIp");
 
 module.exports.authenticate = async (req, res, next) => {
     const authHeader = req.header("authorization");
@@ -23,7 +24,7 @@ module.exports.authenticate = async (req, res, next) => {
     if (req.session === null)
         return res.status(401).json({ message: "The provided token is not valid" });
 
-    await Session.update({ lastActivity: new Date(), ip: req.ip }, { where: { id: req.session.id } });
+    await Session.update({ lastActivity: new Date(), ip: getClientIp(req) }, { where: { id: req.session.id } });
 
     req.user = await Account.findByPk(req.session.accountId);
     if (req.user === null)
@@ -124,7 +125,7 @@ module.exports.authorizeGuacamole = async (req) => {
         connectionConfig.user = req.user;
         connectionConfig.server = entry;
         connectionConfig.identity = identity;
-        connectionConfig.ipAddress = req.ip || req.socket?.remoteAddress || 'unknown';
+        connectionConfig.ipAddress = getClientIp(req);
         connectionConfig.userAgent = req.headers?.['user-agent'] || 'unknown';
         connectionConfig.connectionReason = query.connectionReason || null;
     }

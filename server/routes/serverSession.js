@@ -3,6 +3,7 @@ const { createSession, getSessions, getSession, hibernateSession, resumeSession,
 const { createSessionValidation, sessionIdValidation, resumeSessionValidation, duplicateSessionValidation } = require("../validations/serverSession");
 const { validateSchema } = require("../utils/schema");
 const stateBroadcaster = require("../lib/StateBroadcaster");
+const { getClientIp } = require("../utils/requestIp");
 
 const app = Router();
 
@@ -21,7 +22,7 @@ app.post("/", async (req, res) => {
     
     try {
         const { entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, scriptId, startPath } = req.body;
-        const ipAddress = req.ip || req.socket?.remoteAddress || 'unknown';
+        const ipAddress = getClientIp(req);
         const userAgent = req.headers['user-agent'] || 'unknown';
         const result = await createSession(req.user.id, entryId, identityId, connectionReason, type, directIdentity, tabId, browserId, scriptId, startPath, ipAddress, userAgent);
         
@@ -204,7 +205,7 @@ app.post("/:id/duplicate", async (req, res) => {
     if (validateSchema(res, duplicateSessionValidation, req.body)) return;
     
     const { tabId, browserId } = req.body;
-    const ipAddress = req.ip || req.socket?.remoteAddress || 'unknown';
+    const ipAddress = getClientIp(req);
     const userAgent = req.headers['user-agent'] || 'unknown';
     
     const result = await duplicateSession(req.user.id, req.params.id, tabId, browserId, ipAddress, userAgent);
@@ -228,7 +229,7 @@ app.post("/:id/paste-password", async (req, res) => {
     if (validateSchema(res, sessionIdValidation, req.params)) return;
 
     try {
-        const result = await pasteIdentityPassword(req.user.id, req.params.id, req.ip, req.headers?.["user-agent"]);
+        const result = await pasteIdentityPassword(req.user.id, req.params.id, getClientIp(req), req.headers?.["user-agent"]);
         if (result?.code) return res.status(result.code).json({ error: result.message });
         res.json(result);
     } catch (error) {

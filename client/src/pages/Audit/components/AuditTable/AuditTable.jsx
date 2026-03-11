@@ -45,8 +45,8 @@ export const AuditTable = ({ logs, loading, pagination, onPageChange, getIconFor
             if (action.includes("disconnect")) return "orange";
         }
         if (action.startsWith("file.")) {
-            if (action.includes("upload")) return "green";
-            if (action.includes("download")) return "blue";
+            if (action.includes("upload")) return "red";
+            if (action.includes("download")) return "red";
             if (action.includes("delete")) return "red";
         }
         if (action.startsWith("folder.delete")) return "red";

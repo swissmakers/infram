@@ -3,6 +3,7 @@ const { validateSchema } = require("../utils/schema");
 const { listIdentities, createIdentity, deleteIdentity, updateIdentity, moveIdentityToOrganization } = require("../controllers/identity");
 const { createIdentityValidation, updateIdentityValidation, moveIdentityValidation } = require("../validations/identity");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
+const { getClientIp } = require("../utils/requestIp");
 
 const app = Router();
 
@@ -47,7 +48,7 @@ app.put("/", async (req, res) => {
             identityType: req.body.type,
             scope: req.body.organizationId ? 'organization' : 'personal',
         },
-        ipAddress: req.ip,
+        ipAddress: getClientIp(req),
         userAgent: req.headers?.["user-agent"],
     });
 
@@ -79,7 +80,7 @@ app.delete("/:identityId", async (req, res) => {
             identityName: result.identity?.name,
             identityType: result.identity?.type,
         },
-        ipAddress: req.ip,
+        ipAddress: getClientIp(req),
         userAgent: req.headers?.["user-agent"],
     });
 
@@ -115,7 +116,7 @@ app.patch("/:identityId", async (req, res) => {
             identityType: result.identity?.type,
             updatedFields: Object.keys(req.body).filter(key => !['password', 'sshKey', 'passphrase'].includes(key)),
         },
-        ipAddress: req.ip,
+        ipAddress: getClientIp(req),
         userAgent: req.headers?.["user-agent"],
     });
 
@@ -151,7 +152,7 @@ app.post("/:identityId/move", async (req, res) => {
             identityName: result.identity?.name,
             targetOrganizationId: req.body.organizationId,
         },
-        ipAddress: req.ip,
+        ipAddress: getClientIp(req),
         userAgent: req.headers?.["user-agent"],
     });
 
