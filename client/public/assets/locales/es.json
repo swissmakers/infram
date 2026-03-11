@@ -804,13 +804,42 @@
           "addProvider": "Añadir proveedor",
           "saveChanges": "Guardar cambios",
           "testConnection": "Conexión de prueba",
-          "testing": "Probando..."
+          "testing": "Probando...",
+          "testUsers": "Probar usuarios",
+          "testingUsers": "Probando usuarios..."
         },
         "messages": {
           "saveFailed": "No se ha podido guardar el proveedor",
           "saveFirst": "Guarda primero el proveedor para probar la conexión",
           "testSuccess": "Prueba de conexión correcta",
-          "testFailed": "Error en la prueba de conexión"
+          "testFailed": "Error en la prueba de conexión",
+          "testUsersSuccess": "Prueba de descubrimiento de usuarios completada",
+          "testUsersFailed": "Prueba de descubrimiento de usuarios fallida"
+        },
+        "diagnostics": {
+          "connectionTitle": "Diagnóstico de conexión",
+          "usersTitle": "Diagnóstico de descubrimiento de usuarios",
+          "host": "Host",
+          "port": "Puerto",
+          "tls": "TLS",
+          "baseDN": "Base DN",
+          "bindDN": "Bind DN",
+          "durationMs": "Duración (ms)",
+          "searchProbe": "Sondeo de búsqueda",
+          "searchSampleCount": "Conteo de muestras",
+          "rawEntries": "Entradas sin procesar",
+          "usersFound": "Usuarios encontrados",
+          "adminCandidates": "Candidatos admin",
+          "limit": "Límite",
+          "matchedUsers": "Usuarios encontrados",
+          "adminUsers": "Usuarios marcados como admin",
+          "noUsers": "No se encontraron usuarios",
+          "noAdminUsers": "No se encontraron candidatos admin",
+          "success": "Éxito",
+          "failed": "Fallido",
+          "notRun": "No ejecutado",
+          "enabled": "Habilitado",
+          "disabled": "Deshabilitado"
         }
       }
     },

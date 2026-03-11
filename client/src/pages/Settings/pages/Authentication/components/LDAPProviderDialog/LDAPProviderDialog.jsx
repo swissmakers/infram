@@ -1,6 +1,6 @@
 import { DialogProvider } from "@/common/components/Dialog";
 import "./styles.sass";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Input from "@/common/components/IconInput";
 import SelectBox from "@/common/components/SelectBox";
@@ -24,7 +24,11 @@ export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
     const [form, setForm] = useState(defaults);
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [testing, setTesting] = useState(false);
+    const [testingUsers, setTestingUsers] = useState(false);
     const [organizations, setOrganizations] = useState([]);
+    const [connectionTestResult, setConnectionTestResult] = useState(null);
+    const [usersTestResult, setUsersTestResult] = useState(null);
+    const dialogRef = useRef(null);
 
     const set = (key) => (val) => setForm(f => ({ ...f, [key]: val }));
     const T = (key) => t(`settings.authentication.ldapDialog.${key}`);
@@ -60,6 +64,8 @@ export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
             });
         } else setForm(defaults);
         setShowAdvanced(false);
+        setConnectionTestResult(null);
+        setUsersTestResult(null);
     }, [provider, open]);
 
     const handleSubmit = async () => {
@@ -88,14 +94,36 @@ export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
         setTesting(true);
         try {
             const r = await postRequest(`auth/providers/admin/ldap/${provider.id}/test`);
-            if (r.success) sendToast(t("common.success"), T("messages.testSuccess"));
+            if (r.success) {
+                setConnectionTestResult(r);
+                sendToast(t("common.success"), T("messages.testSuccess"));
+                setTimeout(() => {
+                    dialogRef.current?.scrollTo({ top: dialogRef.current.scrollHeight, behavior: "smooth" });
+                }, 50);
+            }
         } catch (e) { sendToast("Error", e.message || T("messages.testFailed")); }
         finally { setTesting(false); }
     };
 
+    const handleTestUsers = async () => {
+        if (!provider) return sendToast("Error", T("messages.saveFirst"));
+        setTestingUsers(true);
+        try {
+            const r = await postRequest(`auth/providers/admin/ldap/${provider.id}/test-users`, { limit: 100 });
+            if (r.success) {
+                setUsersTestResult(r);
+                sendToast(t("common.success"), T("messages.testUsersSuccess"));
+                setTimeout(() => {
+                    dialogRef.current?.scrollTo({ top: dialogRef.current.scrollHeight, behavior: "smooth" });
+                }, 50);
+            }
+        } catch (e) { sendToast("Error", e.message || T("messages.testUsersFailed")); }
+        finally { setTestingUsers(false); }
+    };
+
     return (
         <DialogProvider open={open} onClose={onClose}>
-            <div className="ldap-provider-dialog">
+            <div className="ldap-provider-dialog" ref={dialogRef}>
                 <h2>{provider ? T("editTitle") : T("createTitle")}</h2>
 
                 <div className="form-group">
@@ -205,8 +233,70 @@ export const LDAPProviderDialog = ({ open, onClose, provider, onSave }) => {
 
                 <div className="button-row">
                     {provider && <Button type="secondary" icon={mdiTestTube} onClick={handleTest} text={testing ? T("actions.testing") : T("actions.testConnection")} disabled={testing} />}
+                    {provider && <Button type="secondary" icon={mdiAccountMultiple} onClick={handleTestUsers} text={testingUsers ? T("actions.testingUsers") : T("actions.testUsers")} disabled={testingUsers || testing} />}
                     <Button text={provider ? T("actions.saveChanges") : T("actions.addProvider")} onClick={handleSubmit} />
                 </div>
+
+                {provider && connectionTestResult?.diagnostics && (
+                    <div className="ldap-test-results">
+                        <h3>{T("diagnostics.connectionTitle")}</h3>
+                        <div className="diagnostic-grid">
+                            <div><span>{T("diagnostics.host")}:</span> {connectionTestResult.diagnostics.host}</div>
+                            <div><span>{T("diagnostics.port")}:</span> {connectionTestResult.diagnostics.port}</div>
+                            <div><span>{T("diagnostics.tls")}:</span> {connectionTestResult.diagnostics.useTLS ? T("diagnostics.enabled") : T("diagnostics.disabled")}</div>
+                            <div><span>{T("diagnostics.baseDN")}:</span> {connectionTestResult.diagnostics.baseDN}</div>
+                            <div><span>{T("diagnostics.bindDN")}:</span> {connectionTestResult.diagnostics.bindDN}</div>
+                            <div><span>{T("diagnostics.durationMs")}:</span> {connectionTestResult.diagnostics.durationMs}</div>
+                            <div><span>{T("diagnostics.searchProbe")}:</span> {connectionTestResult.diagnostics.searchProbe?.attempted ? (connectionTestResult.diagnostics.searchProbe?.success ? T("diagnostics.success") : T("diagnostics.failed")) : T("diagnostics.notRun")}</div>
+                            <div><span>{T("diagnostics.searchSampleCount")}:</span> {connectionTestResult.diagnostics.searchProbe?.sampleCount ?? 0}</div>
+                        </div>
+                        {connectionTestResult.diagnostics.searchProbe?.error && (
+                            <p className="diagnostic-error">{connectionTestResult.diagnostics.searchProbe.error}</p>
+                        )}
+                    </div>
+                )}
+
+                {provider && usersTestResult?.success && (
+                    <div className="ldap-test-results">
+                        <h3>{T("diagnostics.usersTitle")}</h3>
+                        <div className="diagnostic-grid">
+                            <div><span>{T("diagnostics.rawEntries")}:</span> {usersTestResult.summary?.rawEntries ?? 0}</div>
+                            <div><span>{T("diagnostics.usersFound")}:</span> {usersTestResult.summary?.searchedUsers ?? 0}</div>
+                            <div><span>{T("diagnostics.adminCandidates")}:</span> {usersTestResult.summary?.adminCandidates ?? 0}</div>
+                            <div><span>{T("diagnostics.limit")}:</span> {usersTestResult.summary?.limit ?? 100}</div>
+                        </div>
+
+                        <div className="diagnostic-list">
+                            <h4>{T("diagnostics.matchedUsers")}</h4>
+                            {(usersTestResult.users || []).length === 0 ? (
+                                <p>{T("diagnostics.noUsers")}</p>
+                            ) : (
+                                <ul>
+                                    {usersTestResult.users.map((user) => (
+                                        <li key={`${user.dn}-${user.username}`}>
+                                            <strong>{user.username || "-"}</strong> ({user.firstName || "-"} {user.lastName || "-"}) - {user.dn}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+
+                        <div className="diagnostic-list">
+                            <h4>{T("diagnostics.adminUsers")}</h4>
+                            {(usersTestResult.adminCandidates || []).length === 0 ? (
+                                <p>{T("diagnostics.noAdminUsers")}</p>
+                            ) : (
+                                <ul>
+                                    {usersTestResult.adminCandidates.map((user) => (
+                                        <li key={`admin-${user.dn}-${user.username}`}>
+                                            <strong>{user.username || "-"}</strong> - {user.adminMatchMethod} ({user.matchedAdminTarget || "-"})
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
         </DialogProvider>
     );

@@ -804,13 +804,42 @@
           "addProvider": "Aggiungi un fornitore",
           "saveChanges": "Salva le modifiche",
           "testConnection": "Collegamento di prova",
-          "testing": "Test..."
+          "testing": "Test...",
+          "testUsers": "Test utenti",
+          "testingUsers": "Test utenti in corso..."
         },
         "messages": {
           "saveFailed": "Impossibile salvare il provider",
           "saveFirst": "Salva prima il provider per testare la connessione",
           "testSuccess": "Test di connessione riuscito",
-          "testFailed": "Test di connessione fallito"
+          "testFailed": "Test di connessione fallito",
+          "testUsersSuccess": "Test di individuazione utenti completato",
+          "testUsersFailed": "Test di individuazione utenti fallito"
+        },
+        "diagnostics": {
+          "connectionTitle": "Diagnostica connessione",
+          "usersTitle": "Diagnostica individuazione utenti",
+          "host": "Host",
+          "port": "Porta",
+          "tls": "TLS",
+          "baseDN": "Base DN",
+          "bindDN": "Bind DN",
+          "durationMs": "Durata (ms)",
+          "searchProbe": "Sonda ricerca",
+          "searchSampleCount": "Conteggio campioni",
+          "rawEntries": "Voci grezze",
+          "usersFound": "Utenti trovati",
+          "adminCandidates": "Candidati admin",
+          "limit": "Limite",
+          "matchedUsers": "Utenti trovati",
+          "adminUsers": "Utenti marcati admin",
+          "noUsers": "Nessun utente trovato",
+          "noAdminUsers": "Nessun candidato admin trovato",
+          "success": "Successo",
+          "failed": "Fallito",
+          "notRun": "Non eseguito",
+          "enabled": "Abilitato",
+          "disabled": "Disabilitato"
         }
       }
     },

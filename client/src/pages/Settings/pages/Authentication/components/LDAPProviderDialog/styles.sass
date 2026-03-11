@@ -67,3 +67,55 @@
     gap: 0.5rem
     justify-content: flex-end
     margin-top: 0.5rem
+
+  .ldap-test-results
+    display: flex
+    flex-direction: column
+    gap: 0.6rem
+    padding: 0.9rem
+    border: 1px solid $gray
+    border-radius: 0.75rem
+    background: $dark-gray
+
+    h3, h4
+      margin: 0
+
+    .diagnostic-grid
+      display: grid
+      grid-template-columns: 1fr 1fr
+      gap: 0.4rem 0.8rem
+      overflow-wrap: anywhere;
+
+      div
+        font-size: 0.85rem
+        color: $white
+
+      span
+        color: $subtext
+        font-weight: 600
+
+    .diagnostic-error
+      margin: 0
+      color: $error
+      font-size: 0.83rem
+
+    .diagnostic-list
+      display: flex
+      flex-direction: column
+      gap: 0.4rem
+
+      p
+        margin: 0
+        font-size: 0.84rem
+        color: $subtext
+
+      ul
+        margin: 0
+        padding-left: 1rem
+        display: flex
+        flex-direction: column
+        gap: 0.25rem
+
+      li
+        font-size: 0.83rem
+        line-height: 1.25

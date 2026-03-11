@@ -49,3 +49,7 @@ module.exports.ldapProviderValidation = Joi.object({
 });
 
 module.exports.ldapProviderUpdateValidation = Joi.object(fields);
+
+module.exports.ldapTestUsersValidation = Joi.object({
+    limit: Joi.number().integer().min(1).max(100).default(100),
+}).unknown(false);

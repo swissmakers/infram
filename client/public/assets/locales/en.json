@@ -804,13 +804,42 @@
           "addProvider": "Add Provider",
           "saveChanges": "Save Changes",
           "testConnection": "Test Connection",
-          "testing": "Testing..."
+          "testing": "Testing...",
+          "testUsers": "Test Users",
+          "testingUsers": "Testing Users..."
         },
         "messages": {
           "saveFailed": "Failed to save provider",
           "saveFirst": "Save the provider first to test the connection",
           "testSuccess": "Connection test successful",
-          "testFailed": "Connection test failed"
+          "testFailed": "Connection test failed",
+          "testUsersSuccess": "User discovery test completed",
+          "testUsersFailed": "User discovery test failed"
+        },
+        "diagnostics": {
+          "connectionTitle": "Connection Diagnostics",
+          "usersTitle": "User Discovery Diagnostics",
+          "host": "Host",
+          "port": "Port",
+          "tls": "TLS",
+          "baseDN": "Base DN",
+          "bindDN": "Bind DN",
+          "durationMs": "Duration (ms)",
+          "searchProbe": "Search Probe",
+          "searchSampleCount": "Search Sample Count",
+          "rawEntries": "Raw Entries",
+          "usersFound": "Users Found",
+          "adminCandidates": "Admin Candidates",
+          "limit": "Limit",
+          "matchedUsers": "Matched Users",
+          "adminUsers": "Users Marked as Admin",
+          "noUsers": "No users found",
+          "noAdminUsers": "No admin candidates found",
+          "success": "Success",
+          "failed": "Failed",
+          "notRun": "Not run",
+          "enabled": "Enabled",
+          "disabled": "Disabled"
         }
       }
     },

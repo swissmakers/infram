@@ -9,6 +9,7 @@ const { genSalt, hash } = require("bcrypt");
 const crypto = require("crypto");
 const logger = require("../utils/logger");
 const { getLdapTlsOptions } = require("../utils/security");
+const MAX_LDAP_TEST_USERS = 100;
 
 const createLdapClient = (provider) => {
     const url = `${provider.useTLS ? "ldaps" : "ldap"}://${provider.host}:${provider.port}`;
@@ -24,6 +25,102 @@ const normalizeArray = (value) => {
 };
 
 const normalizeDn = (value) => String(value || "").trim().toLowerCase();
+
+const getAttributeValue = (entry, attributeName, fallback = "") => {
+    if (!entry || !attributeName) return fallback;
+    const raw = entry[attributeName];
+    const first = Array.isArray(raw) ? raw[0] : raw;
+    if (first === undefined || first === null) return fallback;
+    const value = String(first).trim();
+    return value || fallback;
+};
+
+const getAdminTargets = (provider) => normalizeArray(provider?.adminGroupDNs).map(normalizeDn).filter(Boolean);
+
+const buildSearchFilter = (template, replacements = {}) => {
+    let filter = String(template || "");
+    Object.entries(replacements).forEach(([key, value]) => {
+        filter = filter.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), String(value || ""));
+    });
+    return filter;
+};
+
+const buildUserSearchAttributes = (provider) => {
+    const attrs = [
+        provider.usernameAttribute,
+        provider.emailAttribute,
+        provider.firstNameAttribute,
+        provider.lastNameAttribute,
+        "memberOf",
+    ].filter(Boolean);
+    return [...new Set(attrs)];
+};
+
+const getGroupName = (entry, groupNameAttribute) => getAttributeValue(entry, groupNameAttribute || "cn", "");
+
+const scoreUserItem = (item) => {
+    let score = 0;
+    if (item.firstName) score += 2;
+    if (item.lastName) score += 2;
+    if (item.email) score += 1;
+    if (item.dn && !/cn=compat/i.test(item.dn)) score += 1;
+    return score;
+};
+
+const searchUserGroups = async (client, provider, userEntry, username) => {
+    if (!provider.groupSearchBaseDN) return [];
+    const memberAttr = provider.groupMemberAttribute || "member";
+    const filterTemplate = provider.groupSearchFilter || `(${memberAttr}={{dn}})`;
+    const filter = buildSearchFilter(filterTemplate, {
+        dn: userEntry?.dn,
+        username,
+        groupMemberAttribute: memberAttr,
+    });
+    const attributes = [provider.groupNameAttribute || "cn", memberAttr].filter(Boolean);
+    const { searchEntries } = await client.search(provider.groupSearchBaseDN, {
+        scope: "sub",
+        filter,
+        attributes,
+        timeLimit: Math.max(1, Math.ceil(Number(provider.searchTimeoutMs || 10000) / 1000)),
+    });
+    return searchEntries || [];
+};
+
+const resolveAdminStatus = async (client, provider, userEntry, username) => {
+    const adminTargets = getAdminTargets(provider);
+    if (!adminTargets.length) {
+        return { isAdmin: false, method: "none", matchedTarget: null };
+    }
+
+    const memberOfSet = new Set(normalizeArray(userEntry?.memberOf).map(normalizeDn).filter(Boolean));
+    const memberOfMatch = adminTargets.find((adminDn) => memberOfSet.has(adminDn));
+    if (memberOfMatch) {
+        return { isAdmin: true, method: "memberOf", matchedTarget: memberOfMatch };
+    }
+
+    // Only fall back to group search when memberOf is not available.
+    if (memberOfSet.size > 0) {
+        return { isAdmin: false, method: "memberOf", matchedTarget: null };
+    }
+
+    if (!provider.groupSearchBaseDN) {
+        return { isAdmin: false, method: "groupSearch", matchedTarget: null };
+    }
+
+    const groups = await searchUserGroups(client, provider, userEntry, username);
+    for (const group of groups) {
+        const groupDn = normalizeDn(group?.dn);
+        const groupName = normalizeDn(getGroupName(group, provider.groupNameAttribute));
+        if (groupDn && adminTargets.includes(groupDn)) {
+            return { isAdmin: true, method: "groupSearch", matchedTarget: groupDn };
+        }
+        if (groupName && adminTargets.includes(groupName)) {
+            return { isAdmin: true, method: "groupSearch", matchedTarget: groupName };
+        }
+    }
+
+    return { isAdmin: false, method: "groupSearch", matchedTarget: null };
+};
 
 const syncOrganizationMemberships = async (accountId, organizationIds = []) => {
     if (!organizationIds.length) return;
@@ -126,13 +223,129 @@ module.exports.testConnection = async (id) => {
     if (!provider) return { code: 404, message: "Provider not found" };
 
     const client = createLdapClient(provider);
+    const startedAt = Date.now();
     try {
         await client.bind(provider.bindDN, provider.bindPassword || "");
-        await client.unbind();
-        return { success: true, message: "Connection test successful" };
+
+        let searchProbe = { attempted: false, success: null, sampleCount: 0, error: null };
+        try {
+            searchProbe.attempted = true;
+            const filter = buildSearchFilter(provider.userSearchFilter, { username: "*" });
+            const { searchEntries } = await client.search(provider.baseDN, {
+                scope: "sub",
+                filter,
+                attributes: [provider.usernameAttribute].filter(Boolean),
+                sizeLimit: 5,
+                timeLimit: Math.max(1, Math.ceil(Number(provider.searchTimeoutMs || 10000) / 1000)),
+            });
+            searchProbe.success = true;
+            searchProbe.sampleCount = Array.isArray(searchEntries) ? searchEntries.length : 0;
+        } catch (error) {
+            searchProbe.success = false;
+            searchProbe.error = error.message;
+        }
+
+        return {
+            success: true,
+            message: "Connection test successful",
+            diagnostics: {
+                host: provider.host,
+                port: provider.port,
+                useTLS: provider.useTLS,
+                bindDN: provider.bindDN,
+                baseDN: provider.baseDN,
+                userSearchFilter: provider.userSearchFilter,
+                connectionTimeoutMs: Number(provider.connectionTimeoutMs || 10000),
+                searchTimeoutMs: Number(provider.searchTimeoutMs || 10000),
+                durationMs: Date.now() - startedAt,
+                searchProbe,
+            },
+        };
     } catch (error) {
         logger.error("LDAP connection test failed", { providerId: id, error: error.message });
         return { code: 400, message: `Connection failed: ${error.message}` };
+    } finally {
+        try { await client.unbind(); } catch {}
+    }
+};
+
+module.exports.testUsers = async (id, options = {}) => {
+    const provider = await LDAPProvider.findByPk(id);
+    if (!provider) return { code: 404, message: "Provider not found" };
+
+    const limitRaw = Number.parseInt(options.limit, 10);
+    const limit = Number.isFinite(limitRaw) ? Math.max(1, Math.min(limitRaw, MAX_LDAP_TEST_USERS)) : MAX_LDAP_TEST_USERS;
+
+    const client = createLdapClient(provider);
+    try {
+        await client.bind(provider.bindDN, provider.bindPassword || "");
+
+        const attributes = buildUserSearchAttributes(provider);
+        const filter = buildSearchFilter(provider.userSearchFilter, { username: "*" });
+        const { searchEntries } = await client.search(provider.baseDN, {
+            scope: "sub",
+            filter,
+            attributes,
+            sizeLimit: limit,
+            timeLimit: Math.max(1, Math.ceil(Number(provider.searchTimeoutMs || 10000) / 1000)),
+        });
+
+        const usersByKey = new Map();
+
+        for (const entry of (searchEntries || [])) {
+            const username = getAttributeValue(entry, provider.usernameAttribute, "");
+            const firstName = getAttributeValue(entry, provider.firstNameAttribute, "");
+            const lastName = getAttributeValue(entry, provider.lastNameAttribute, "");
+            const email = getAttributeValue(entry, provider.emailAttribute, "");
+            const adminResult = await resolveAdminStatus(client, provider, entry, username);
+
+            const userItem = {
+                dn: entry.dn || "",
+                username,
+                firstName,
+                lastName,
+                email,
+                isAdmin: adminResult.isAdmin,
+                adminMatchMethod: adminResult.method,
+                matchedAdminTarget: adminResult.matchedTarget,
+            };
+            const dedupeKey = normalizeDn(username || entry.dn || "");
+            const existing = usersByKey.get(dedupeKey);
+            if (!existing) {
+                usersByKey.set(dedupeKey, userItem);
+                continue;
+            }
+
+            const existingScore = scoreUserItem(existing);
+            const nextScore = scoreUserItem(userItem);
+            const merged = nextScore > existingScore ? { ...existing, ...userItem } : { ...userItem, ...existing };
+            merged.isAdmin = existing.isAdmin || userItem.isAdmin;
+            if (!merged.adminMatchMethod) merged.adminMatchMethod = existing.adminMatchMethod || userItem.adminMatchMethod;
+            if (!merged.matchedAdminTarget) merged.matchedAdminTarget = existing.matchedAdminTarget || userItem.matchedAdminTarget;
+            usersByKey.set(dedupeKey, merged);
+        }
+
+        const users = Array.from(usersByKey.values());
+        const adminCandidates = users.filter((user) => user.isAdmin);
+
+        return {
+            success: true,
+            message: "LDAP user test completed",
+            users,
+            adminCandidates,
+            summary: {
+                rawEntries: (searchEntries || []).length,
+                searchedUsers: users.length,
+                adminCandidates: adminCandidates.length,
+                limit,
+                filter,
+            },
+        };
+    } catch (error) {
+        logger.error("LDAP test users failed", { providerId: id, error: error.message });
+        return { code: 400, message: `Test users failed: ${error.message}` };
+    } finally {
+        try { await client.unbind(); } catch {}
     }
 };
 
@@ -144,13 +357,7 @@ module.exports.authenticateUser = async (username, password, userInfo) => {
     try {
         await client.bind(provider.bindDN, provider.bindPassword || "");
 
-        const attributes = [
-            provider.usernameAttribute,
-            provider.emailAttribute,
-            provider.firstNameAttribute,
-            provider.lastNameAttribute,
-            "memberOf",
-        ].filter(Boolean);
+        const attributes = buildUserSearchAttributes(provider);
 
         const { searchEntries } = await client.search(provider.baseDN, {
             scope: "sub",
@@ -165,23 +372,22 @@ module.exports.authenticateUser = async (username, password, userInfo) => {
         const userClient = createLdapClient(provider);
         try {
             await userClient.bind(userEntry.dn, password);
-            await userClient.unbind();
-        } catch { await client.unbind(); return null; }
+        } catch {
+            try { await userClient.unbind(); } catch {}
+            await client.unbind();
+            return null;
+        }
 
+        const ldapUsername = getAttributeValue(userEntry, provider.usernameAttribute, username);
+        const adminResult = await resolveAdminStatus(client, provider, userEntry, ldapUsername);
+        const isAdminByGroup = adminResult.isAdmin;
         await client.unbind();
-
-        const ldapUsername = userEntry[provider.usernameAttribute] || username;
-        const memberOfSet = new Set(normalizeArray(userEntry.memberOf).map(normalizeDn).filter(Boolean));
-        const isAdminByGroup = normalizeArray(provider.adminGroupDNs)
-            .map(normalizeDn)
-            .filter(Boolean)
-            .some((adminDn) => memberOfSet.has(adminDn));
+        try { await userClient.unbind(); } catch {}
         let account = await Account.findOne({ where: { username: String(ldapUsername) } });
 
-        const userData = {
-            firstName: String(userEntry[provider.firstNameAttribute] || ""),
-            lastName: String(userEntry[provider.lastNameAttribute] || ""),
-        };
+        const firstName = getAttributeValue(userEntry, provider.firstNameAttribute, "");
+        const lastName = getAttributeValue(userEntry, provider.lastNameAttribute, "");
+        const userData = { firstName, lastName };
 
         if (!account) {
             const hashedPassword = await hash(crypto.randomBytes(16).toString("hex"), await genSalt(10));
@@ -194,15 +400,18 @@ module.exports.authenticateUser = async (username, password, userInfo) => {
                 authProviderName: provider.name,
             });
         } else {
+            const updateData = {
+                role: isAdminByGroup ? "admin" : "user",
+                authProviderType: "ldap",
+                authProviderName: provider.name,
+            };
+            if (firstName) updateData.firstName = firstName;
+            if (lastName) updateData.lastName = lastName;
             await Account.update(
-                {
-                    ...userData,
-                    role: isAdminByGroup ? "admin" : account.role,
-                    authProviderType: "ldap",
-                    authProviderName: provider.name,
-                },
+                updateData,
                 { where: { id: account.id } }
             );
+            account = await Account.findByPk(account.id);
         }
 
         await syncOrganizationMemberships(account.id, provider.organizationIds || []);
@@ -215,8 +424,9 @@ module.exports.authenticateUser = async (username, password, userInfo) => {
             user: {
                 id: account.id,
                 username: account.username,
-                ...userData,
-                role: isAdminByGroup ? "admin" : account.role,
+                firstName: account.firstName,
+                lastName: account.lastName,
+                role: isAdminByGroup ? "admin" : "user",
                 authProviderType: "ldap",
                 authProviderName: provider.name,
             },

@@ -5,7 +5,7 @@ const oidc = require("../controllers/oidc");
 const ldap = require("../controllers/ldap");
 const { validateSchema } = require("../utils/schema");
 const { oidcProviderValidation, oidcProviderUpdateValidation } = require("../validations/oidc");
-const { ldapProviderValidation, ldapProviderUpdateValidation } = require("../validations/ldap");
+const { ldapProviderValidation, ldapProviderUpdateValidation, ldapTestUsersValidation } = require("../validations/ldap");
 const { getClientIp } = require("../utils/requestIp");
 
 const app = Router();
@@ -261,6 +261,32 @@ app.delete("/providers/admin/ldap/:id", authenticate, isAdmin, async (req, res) 
 app.post("/providers/admin/ldap/:id/test", authenticate, isAdmin, async (req, res) => {
     try {
         const result = await ldap.testConnection(req.params.id);
+        if (result.code) return res.status(result.code).json({ message: result.message });
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+/**
+ * POST /auth/providers/admin/ldap/{id}/test-users
+ * @summary Test LDAP User Discovery
+ * @description Runs a user discovery test against the LDAP provider and returns a user preview plus admin-candidate matches.
+ * @tags Auth Providers
+ * @produces application/json
+ * @security BearerAuth
+ * @param {string} id.path.required - LDAP provider ID
+ * @param {object} request.body - Optional limit for preview (max 100)
+ * @return {object} 200 - Test results with users and admin candidates
+ * @return {object} 400 - Test failed or validation error
+ * @return {object} 401 - User is not authenticated
+ * @return {object} 403 - User is not an administrator
+ * @return {object} 404 - Provider not found
+ */
+app.post("/providers/admin/ldap/:id/test-users", authenticate, isAdmin, async (req, res) => {
+    try {
+        if (validateSchema(res, ldapTestUsersValidation, req.body || {})) return;
+        const result = await ldap.testUsers(req.params.id, req.body || {});
         if (result.code) return res.status(result.code).json({ message: result.message });
         res.json(result);
     } catch (error) {

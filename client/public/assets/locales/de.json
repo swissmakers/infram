@@ -804,13 +804,42 @@
           "addProvider": "Anbieter hinzufügen",
           "saveChanges": "Änderungen speichern",
           "testConnection": "Test Verbindung",
-          "testing": "Testen..."
+          "testing": "Testen...",
+          "testUsers": "Benutzer testen",
+          "testingUsers": "Benutzer werden getestet..."
         },
         "messages": {
           "saveFailed": "Anbieter konnte nicht gespeichert werden",
           "saveFirst": "Speichere den Anbieter zuerst, um die Verbindung zu testen",
           "testSuccess": "Verbindungstest erfolgreich",
-          "testFailed": "Verbindungstest fehlgeschlagen"
+          "testFailed": "Verbindungstest fehlgeschlagen",
+          "testUsersSuccess": "Benutzererkennungstest abgeschlossen",
+          "testUsersFailed": "Benutzererkennungstest fehlgeschlagen"
+        },
+        "diagnostics": {
+          "connectionTitle": "Verbindungsdiagnose",
+          "usersTitle": "Benutzererkennungsdiagnose",
+          "host": "Host",
+          "port": "Port",
+          "tls": "TLS",
+          "baseDN": "Base DN",
+          "bindDN": "Bind DN",
+          "durationMs": "Dauer (ms)",
+          "searchProbe": "Suchprobe",
+          "searchSampleCount": "Suchbeispiele",
+          "rawEntries": "Roh-Eintraege",
+          "usersFound": "Gefundene Benutzer",
+          "adminCandidates": "Admin-Kandidaten",
+          "limit": "Limit",
+          "matchedUsers": "Gefundene Benutzer",
+          "adminUsers": "Als Admin markierte Benutzer",
+          "noUsers": "Keine Benutzer gefunden",
+          "noAdminUsers": "Keine Admin-Kandidaten gefunden",
+          "success": "Erfolg",
+          "failed": "Fehlgeschlagen",
+          "notRun": "Nicht ausgefuehrt",
+          "enabled": "Aktiviert",
+          "disabled": "Deaktiviert"
         }
       }
     },
