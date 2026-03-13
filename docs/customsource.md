@@ -1,34 +1,51 @@
-# 🔗 Custom Sources
+# Custom Sources
 
-Add your own scripts and snippets to Infram by connecting a Git repository. You can use public repositories from GitHub, GitLab, or any other Git hosting platform.
+Custom Sources allow Infram to synchronize scripts and snippets from external Git repositories.
 
-## Adding a Source
+## Typical Use Cases
 
-1. Open **Settings** and go to **Sources**
+- Shared operational command libraries across teams
+- Environment-specific runbooks (prod/stage/dev)
+- Centralized script governance with pull-request workflows
 
-![Navigate to Sources](/assets/image-1.png)
+## Enable Source Sync
 
-2. Click **Add** and enter a name and the repository URL
+Source synchronization is controlled by:
 
-![Create Custom Source](/assets/image-3.png)
+- `ENABLE_SOURCE_SYNC=true` to enable periodic sync worker
+- `ENABLE_SOURCE_SYNC=false` to disable sync worker (default)
 
-The name is just for display purposes, so choose something descriptive.
+## Add a Source
 
-## Using Your Scripts & Snippets
+1. Open **Settings -> Sources**.
+2. Select **Add Source**.
+3. Provide:
+   - display name
+   - repository URL
+4. Save and trigger initial sync.
 
-Once added, your scripts and snippets are available in the Snippets panel. Select your repository from the dropdown to see its contents.
+## Operational Best Practices
 
-![Add Snippet Dropdown](/assets/image-4.png)
+- Use read-only deploy keys or tokens where possible.
+- Keep script repositories private when containing internal logic.
+- Separate production and non-production sources.
+- Require code review on script/snippet changes.
+- Keep scripts idempotent and rollback-aware.
 
-Switch to the **Scripts** tab to access your scripts.
+## Validation Checklist
 
-![Scripts Tab View](/assets/image-6.png)
+- Source status shows healthy in UI.
+- Expected scripts appear in the **Scripts** tab.
+- Expected snippets appear in terminal/snippet picker.
+- Metadata tags render correctly (`@name`, `@description`, `@os`).
 
-## Syncing
+## Troubleshooting
 
-Your repository syncs automatically when Infram starts. Push updates to your repository and restart Infram to see the changes.
+- **No sync activity**: verify `ENABLE_SOURCE_SYNC=true`.
+- **Auth failures**: check repository credentials/keys.
+- **Unexpected content**: review default branch and source URL.
 
-You can add multiple sources if you want to organize scripts by project or team.
+## Related
 
-> [!TIP]
-> See [Scripts & Snippets](/scripts&snippets) for how to format your files.
+- [Scripts & Snippets](/scripts&snippets)
+- [Scripting Variables & Directives](/ScriptingVariables)

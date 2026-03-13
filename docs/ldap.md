@@ -1,96 +1,83 @@
-# 📁 LDAP Authentication
+# LDAP Authentication
 
-Authenticate users against your LDAP or Active Directory server.
+Use LDAP or Active Directory integration for centralized login and role mapping.
 
-## How It Works
+## Authentication Flow
 
-When a user logs in:
+1. Infram binds using the configured service account (`bindDN`).
+2. Infram searches for the user with `userSearchFilter`.
+3. User credentials are validated against the discovered entry.
+4. Local account fields are synchronized from LDAP attributes.
+5. Admin privileges are resolved via configured group mapping.
 
-1. Infram searches for the user in your directory
-2. Tries to bind with their credentials
-3. Creates/updates their local account with LDAP attributes
-4. Issues a session token
+## Required Provider Settings
 
-## Setup
+Configure under **Settings -> Authentication -> LDAP Provider**:
 
-Go to **Settings** → **Authentication** → **Add LDAP**.
+- `name`
+- `host`
+- `port` (`389` LDAP, `636` LDAPS)
+- `bindDN`
+- `bindPassword`
+- `baseDN`
+- `userSearchFilter` (must include `{{username}}`)
+- `usernameAttribute`
 
-![LDAP Provider](/assets/add-ldap-provider.png)
+Useful defaults:
 
-| Field              | Description                   |
-|--------------------|-------------------------------|
-| Host               | LDAP server hostname          |
-| Port               | 389 (LDAP) or 636 (LDAPS)     |
-| Bind DN            | Service account for searching |
-| Bind Password      | Service account password      |
-| Base DN            | Where to search for users     |
-| User Search Filter | How to find users             |
-| Use TLS            | Enable for LDAPS              |
+- `userSearchFilter`: `(uid={{username}})`
+- `usernameAttribute`: `uid`
+- `firstNameAttribute`: `givenName`
+- `lastNameAttribute`: `sn`
+- `emailAttribute`: `mail`
 
-## Examples
+## Search Filter Examples
 
-### Active Directory
+| Directory | User Search Filter |
+|---|---|
+| Active Directory | `(sAMAccountName={{username}})` |
+| OpenLDAP | `(uid={{username}})` |
+| Email login pattern | `(mail={{username}})` |
 
-::: v-pre
+## Admin Group Mapping
 
-```text
-Host: dc01.corp.example.com
-Port: 636
-Bind DN: CN=svc_infram,CN=Users,DC=corp,DC=example,DC=com
-Base DN: CN=Users,DC=corp,DC=example,DC=com
-User Search Filter: (sAMAccountName={{username}})
-Use TLS: enabled
-```
+Use these fields for elevated role mapping:
 
-:::
+- `adminGroupDNs`: explicit allow-list of admin groups
+- `groupSearchBaseDN`: group search root
+- `groupSearchFilter`: default `(member={{dn}})`
+- `groupNameAttribute`: default `cn`
+- `groupMemberAttribute`: default `member`
 
-### OpenLDAP
+## TLS and Certificate Validation
 
-::: v-pre
+- Set `useTLS=true` for LDAPS deployments.
+- Keep `STRICT_TLS=true` in production so LDAP server certificates are verified.
+- Only disable strict TLS in isolated troubleshooting scenarios.
 
-```text
-Host: ldap.example.com
-Port: 389
-Bind DN: cn=readonly,dc=example,dc=com
-Base DN: ou=users,dc=example,dc=com
-User Search Filter: (uid={{username}})
-```
+## Timeout Tuning
 
-:::
+Provider timeout fields:
 
-## Search Filters
+- `connectionTimeoutMs` (default `10000`)
+- `searchTimeoutMs` (default `10000`)
 
-The <code v-pre>{{username}}</code> placeholder gets replaced with the login input.
+Increase values for high-latency links or large directory trees.
 
-| Directory        | Filter                                           |
-|------------------|--------------------------------------------------|
-| Active Directory | <code v-pre>(sAMAccountName={{username}})</code> |
-| OpenLDAP         | <code v-pre>(uid={{username}})</code>            |
-| Email login      | <code v-pre>(mail={{username}})</code>           |
+## Validation Workflow
 
-## Attribute Mapping
-
-Defaults work for most setups. Change in **Advanced Settings** if needed.
-
-| Field      | Default     |
-|------------|-------------|
-| Username   | `uid`       |
-| First Name | `givenName` |
-| Last Name  | `sn`        |
-
-For AD, change Username to `sAMAccountName`.
-
-## Testing
-
-Click **Test Connection** after saving to verify the bind credentials work.
-
-![Test LDAP Connection](/assets/test-ldap-connection.png)
+1. Save provider settings.
+2. Run **Test Connection**.
+3. Run **Test Users** and verify:
+   - expected users are discovered
+   - usernames are unique and deduplicated
+   - admin candidate mapping behaves as expected
+4. Perform an end-to-end login test with a non-admin and admin user.
 
 ## Troubleshooting
 
-**ECONNREFUSED** - Server not reachable. Check host/port and firewall.
-
-**INVALID_CREDENTIALS** - Wrong bind DN or password.
-
-**Users can't log in** - Check Base DN and search filter. Try <code v-pre>(&(objectClass=person)(
-uid={{username}}))</code>.
+- **`ECONNREFUSED`**: LDAP host/port unreachable.
+- **`INVALID_CREDENTIALS`**: incorrect bind credentials.
+- **No users found**: verify `baseDN` and `userSearchFilter`.
+- **Admin role missing**: verify `adminGroupDNs` and group search fields.
+- **TLS handshake failure**: verify LDAP certificate chain and `STRICT_TLS` policy.

@@ -1,45 +1,53 @@
 # Screenshots
 
-Take a look at what Infram has to offer.
+This gallery highlights key interfaces in Infram.
 
-## Servers
+## Server Inventory
 
-Organize your servers into folders for easy navigation.
+Organize infrastructure entries by folders and organizations.
 
 ![Servers](/assets/showoff/servers.png)
 
-## Connections
+## Connection Workspace
 
-Manage multiple SSH, VNC and RDP connections with a tabbed interface.
+Operate SSH, VNC, and RDP sessions in a tabbed workspace.
 
 ![Connections](/assets/showoff/connections.png)
 
-## SFTP
+## SFTP Operations
 
-Browse and manage files on remote servers with the built-in file manager.
+Browse and manage remote files directly from the interface.
 
 ![SFTP](/assets/showoff/sftp.png)
 
 ## Snippets
 
-Create and manage snippets for quick access to frequently used commands.
+Store and execute reusable command snippets.
 
 ![Snippets](/assets/showoff/snippets.png)
 
-## Monitoring
+## Status Checker
 
-Monitor server performance and resource usage in real-time.
+Track host and service availability.
 
 ![Monitoring](/assets/showoff/monitoring.png)
 
-## Recordings
+## Session Recordings
 
-Record and replay terminal sessions for documentation or debugging.
+Record and replay terminal sessions for audit or troubleshooting.
 
 ![Recordings](/assets/showoff/recordings.png)
 
 ## Settings
 
-Customize Infram to fit your workflow.
+Configure authentication, integrations, and operational behavior.
 
 ![Settings](/assets/showoff/settings.png)
+
+## Related Documentation
+
+- [Installation](/installation)
+- [Reverse Proxy](/reverse-proxy)
+- [LDAP](/ldap)
+- [OIDC / SSO](/oidc)
+- [Custom Sources](/customsource)

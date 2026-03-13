@@ -1,351 +1,54 @@
-# 📋 Scripting Variables & Directives
+# Scripting Variables & Directives
 
-Infram provides a set of special directives that allow you to create interactive, user-friendly scripts with structured input, feedback, and progress tracking. These directives enhance the script execution experience by providing clear communication and data collection from users.
+Use `@INFRAM:*` directives to make scripts interactive, safer, and easier to operate.
 
-## Overview
+## Directive Syntax Reference
 
-Scripting directives are special annotations prefixed with `@INFRAM:` that you can embed in your scripts to control the user interface and workflow. They enable you to:
+| Directive | Purpose | Example |
+|---|---|---|
+| `@INFRAM:STEP "text"` | Mark logical execution step | `@INFRAM:STEP "Validate prerequisites"` |
+| `@INFRAM:INPUT <var> "prompt" "default"` | Prompt for free-text input | `@INFRAM:INPUT HOST "Target host" "localhost"` |
+| `@INFRAM:SELECT <var> "prompt" "A" "B"` | Prompt for fixed options | `@INFRAM:SELECT MODE "Deploy mode" "Rolling" "BlueGreen"` |
+| `@INFRAM:CONFIRM "text"` | Require explicit user confirmation | `@INFRAM:CONFIRM "Continue with restart?"` |
+| `@INFRAM:INFO "text"` | Emit informational message | `@INFRAM:INFO "Applying configuration"` |
+| `@INFRAM:WARN "text"` | Emit warning message | `@INFRAM:WARN "Low disk space"` |
+| `@INFRAM:SUCCESS "text"` | Mark successful milestone | `@INFRAM:SUCCESS "Backup completed"` |
+| `@INFRAM:PROGRESS <0-100\|$var>` | Update progress indicator | `@INFRAM:PROGRESS 75` |
+| `@INFRAM:SUMMARY "title" "k1" "v1" ...` | Show structured key/value summary | `@INFRAM:SUMMARY "Result" "Changed" "14"` |
+| `@INFRAM:TABLE "title" "h1" "h2" "r1c1" ...` | Render tabular output | `@INFRAM:TABLE "Users" "Name" "Role" "alice" "admin"` |
+| `@INFRAM:MSGBOX "title" "message"` | Display message dialog | `@INFRAM:MSGBOX "Completed" "Operation finished"` |
 
-- Guide users through step-by-step processes
-- Collect user input with validation
-- Provide real-time feedback and status updates
-- Track progress visually
-- Display structured information
+## End-to-End Example
 
-## Available Directives
-
-### `@INFRAM:STEP`
-
-Marks a logical step in your script workflow and displays it in the UI.
-
-**Purpose:** Breaks down complex scripts into clear, numbered steps that help users understand the script's flow and their progress.
-
-**Usage:**
 ```sh
-@INFRAM:STEP "Step description"
-```
-
-**Example:**
-```sh
-@INFRAM:STEP "Installing dependencies"
-npm install
-
-@INFRAM:STEP "Building the application"
-npm run build
-
-@INFRAM:STEP "Running tests"
-npm test
-```
-
-**Design Pattern:** Used to create a visual roadmap of the script execution, making it clear what's happening at each stage.
-
----
-
-### `@INFRAM:INPUT`
-
-Prompts the user to enter a value with an optional default value.
-
-**Purpose:** Collect user-provided data with a default fallback to streamline user interactions.
-
-**Usage:**
-```sh
-@INFRAM:INPUT "Enter value" "default"
-```
-
-**Parameters:**
-- `"Enter value"` - The prompt message displayed to the user
-- `"default"` - (Optional) The default value if the user doesn't provide input
-
-**Example:**
-```sh
-@INFRAM:INPUT "Enter the database host" "localhost"
-@INFRAM:INPUT "Enter the database port" "5432"
-@INFRAM:INPUT "Enter the API key" ""
-```
-
-**Design Pattern:** Enables dynamic script execution by allowing users to customize behavior without editing the script. Defaults reduce required input for common scenarios.
-
----
-
-### `@INFRAM:SELECT`
-
-Presents the user with multiple choice options and captures their selection.
-
-**Purpose:** Restrict user input to predefined options, reducing errors and clarifying available choices.
-
-**Usage:**
-```sh
-@INFRAM:SELECT "Select option" "Option 1" "Option 2" "Option 3"
-```
-
-**Parameters:**
-- First parameter: The prompt message
-- Remaining parameters: The available options to choose from
-
-**Example:**
-```sh
-@INFRAM:SELECT "Select deployment environment" "Development" "Staging" "Production"
-@INFRAM:SELECT "Choose backup type" "Full" "Incremental" "Differential"
-@INFRAM:SELECT "Select database version" "PostgreSQL 12" "PostgreSQL 13" "PostgreSQL 14"
-```
-
-**Design Pattern:** Enforces validation at the input level by limiting choices to safe, predefined options. Improves user experience by clearly showing available alternatives.
-
----
-
-### `@INFRAM:CONFIRM`
-
-Requires the user to confirm an action before proceeding, typically for critical operations.
-
-**Purpose:** Prevent accidental execution of destructive or important operations by requiring explicit user confirmation.
-
-**Usage:**
-```sh
-@INFRAM:CONFIRM "Are you sure you want to continue?"
-```
-
-**Example:**
-```sh
-@INFRAM:STEP "Preparing to delete database"
-@INFRAM:CONFIRM "Are you sure you want to delete the entire database? This cannot be undone."
-rm -rf /var/lib/postgresql/data
-```
-
-**Design Pattern:** Acts as a safety guard for critical operations (deletions, deployments to production, etc.). Blocks execution until user explicitly acknowledges the action.
-
----
-
-### `@INFRAM:INFO`
-
-Displays an informational message to the user without blocking execution.
-
-**Purpose:** Communicate important information, instructions, or context to the user during script execution.
-
-**Usage:**
-```sh
-@INFRAM:INFO "Information message"
-```
-
-**Example:**
-```sh
-@INFRAM:INFO "Docker is not installed. Installing Docker now..."
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
-
-@INFRAM:INFO "Configuration will be applied after the service restarts."
-systemctl restart myservice
-```
-
-**Design Pattern:** Keeps users informed about what's happening without requiring interaction. Improves transparency and helps users understand the script's workflow.
-
----
-
-### `@INFRAM:SUCCESS`
-
-Displays a success message indicating successful completion of a task or milestone.
-
-**Purpose:** Provide positive feedback and confirmation that an operation completed successfully.
-
-**Usage:**
-```sh
-@INFRAM:SUCCESS "Operation completed successfully!"
-```
-
-**Example:**
-```sh
-@INFRAM:STEP "Deploying application"
-docker pull myapp:latest
-docker run -d myapp:latest
-@INFRAM:SUCCESS "Application deployed successfully!"
-
-@INFRAM:STEP "Running health checks"
-curl http://localhost:8080/health
-@INFRAM:SUCCESS "All health checks passed!"
-```
-
-**Design Pattern:** Provides clear feedback that a task succeeded, improving user confidence and allowing them to understand which operations completed successfully.
-
----
-
-### `@INFRAM:WARN`
-
-Displays a warning message alerting the user to potential issues or important considerations.
-
-**Purpose:** Alert users about non-critical issues that may affect operation but allow execution to continue.
-
-**Usage:**
-```sh
-@INFRAM:WARN "Warning: proceeding with caution"
-```
-
-**Example:**
-```sh
-@INFRAM:STEP "Updating production configuration"
-@INFRAM:WARN "Warning: You are modifying production configuration. Ensure you have a backup."
-cp config.prod.yml config.prod.yml.backup
-sed -i 's/old_value/new_value/g' config.prod.yml
-
-@INFRAM:WARN "Warning: This operation requires manual verification in the admin panel."
-```
-
-**Design Pattern:** Brings attention to situations that may need user awareness or intervention, without blocking execution. Helps users understand potential consequences of their actions.
-
----
-
-### `@INFRAM:ERROR`
-
-Displays an error message indicating that something has gone wrong.
-
-**Purpose:** Communicate failures, misconfigurations, or other error conditions to the user.
-
-**Usage:**
-```sh
-@INFRAM:ERROR "Error occurred"
-```
-
-**Example:**
-```sh
-@INFRAM:STEP "Verifying prerequisites"
-if ! command -v docker &> /dev/null; then
-    @INFRAM:ERROR "Docker is not installed. Please install Docker before proceeding."
-    exit 1
-fi
-@INFRAM:SUCCESS "All prerequisites verified"
-
-@INFRAM:STEP "Connecting to database"
-if ! psql -h localhost -U user -d mydb -c "SELECT 1" &> /dev/null; then
-    @INFRAM:ERROR "Failed to connect to database. Check your connection parameters."
-    exit 1
-fi
-```
-
-**Design Pattern:** Clearly marks failure points, helping users quickly identify what went wrong and where they need to take action.
-
----
-
-### `@INFRAM:PROGRESS`
-
-Updates a progress indicator showing the completion percentage of an operation.
-
-**Purpose:** Provide visual feedback during long-running operations, showing the user progress without blocking.
-
-**Usage:**
-```sh
-@INFRAM:PROGRESS 50
-```
-
-**Parameters:**
-- A number from `0` to `100` representing the percentage completed
-
-**Example:**
-```sh
-@INFRAM:STEP "Processing large file"
-total_lines=$(wc -l < input.txt)
-
-@INFRAM:PROGRESS 0
-processed=0
-while IFS= read -r line; do
-    # Process each line
-    process_line "$line"
-    ((processed++))
-    percentage=$((processed * 100 / total_lines))
-    @INFRAM:PROGRESS "$percentage"
-done < input.txt
-
+@INFRAM:STEP "Collect input"
+@INFRAM:INPUT HOST "Target host" "localhost"
+@INFRAM:SELECT MODE "Deployment mode" "Rolling" "BlueGreen"
+@INFRAM:CONFIRM "Continue with deployment?"
+
+@INFRAM:STEP "Deploy"
+@INFRAM:INFO "Starting deployment"
+@INFRAM:PROGRESS 20
+# deployment commands...
 @INFRAM:PROGRESS 100
-@INFRAM:SUCCESS "File processed successfully"
+@INFRAM:SUCCESS "Deployment finished"
+
+@INFRAM:SUMMARY "Deployment Summary" "Host" "$HOST" "Mode" "$MODE" "Status" "Success"
 ```
 
-**Design Pattern:** Keeps users informed during lengthy operations, preventing the perception of a frozen interface and allowing users to estimate remaining time.
+## Implementation Notes
 
----
-
-### `@INFRAM:SUMMARY`
-
-Displays a structured summary of results with key-value pairs.
-
-**Purpose:** Present comprehensive results or information in an organized, readable format at the end of a script execution.
-
-**Usage:**
-```sh
-@INFRAM:SUMMARY "Summary Title" "Key 1" "Value 1" "Key 2" "Value 2"
-```
-
-**Parameters:**
-- First parameter: The summary title/heading
-- Alternating key-value pairs: Information to display
-
-**Example:**
-```sh
-@INFRAM:STEP "Gathering server statistics"
-uptime_value=$(uptime)
-memory_value=$(free -h | grep Mem | awk '{print $2}')
-disk_value=$(df -h / | awk 'NR==2 {print $2}')
-cpu_value=$(nproc)
-
-@INFRAM:SUMMARY "Server Information" \
-    "Uptime" "$uptime_value" \
-    "Total Memory" "$memory_value" \
-    "Total Disk" "$disk_value" \
-    "CPU Cores" "$cpu_value"
-
-@INFRAM:STEP "Backup completed"
-@INFRAM:SUMMARY "Backup Results" \
-    "Backup Size" "2.5GB" \
-    "Files Backed Up" "15,847" \
-    "Backup Location" "/backups/2024-01-20" \
-    "Duration" "45 minutes"
-```
-
-**Design Pattern:** Presents information in a clean, structured format making it easy for users to digest and reference results. Ideal for displaying final statistics, configuration details, or operation summaries.
-
-
-
-
----
-
-## Design Principles
-
-### 1. **Clarity and Guidance**
-Directives provide clear navigation through script execution with `@INFRAM:STEP` helping users understand where they are in the process.
-
-### 2. **User Engagement**
-Interactive directives like `@INFRAM:INPUT`, `@INFRAM:SELECT`, and `@INFRAM:CONFIRM` keep users involved and allow customization.
-
-### 3. **Feedback and Status**
-Real-time feedback through `@INFRAM:INFO`, `@INFRAM:SUCCESS`, `@INFRAM:WARN`, and `@INFRAM:ERROR` keeps users informed about script progress and status.
-
-### 4. **Safety**
-The `@INFRAM:CONFIRM` directive prevents accidental execution of critical operations.
-
-### 5. **Progress Visibility**
-The `@INFRAM:PROGRESS` directive provides visual feedback during long operations, improving perceived performance.
-
-### 6. **Structured Results**
-The `@INFRAM:SUMMARY` directive presents comprehensive results in an organized, easy-to-read format.
-
----
+- Directives are transformed server-side before execution.
+- `sudo` commands are automatically adjusted to support password prompts.
+- Escape literal colons in directive payloads when needed.
 
 ## Best Practices
 
-1. **Use Steps Logically** - Break scripts into meaningful steps that represent distinct phases of work.
+- Use `STEP` markers in long-running scripts.
+- Use `CONFIRM` before destructive operations.
+- Prefer `SELECT` over free-text where possible.
+- End critical workflows with `SUMMARY` for auditable output.
 
-2. **Provide Defaults** - Always offer sensible defaults in `@INFRAM:INPUT` to reduce required user interaction.
+## Related
 
-3. **Confirm Critical Operations** - Use `@INFRAM:CONFIRM` for operations that modify, delete, or deploy to production.
-
-4. **Inform Users** - Use `@INFRAM:INFO` to explain what's happening, especially during long operations.
-
-5. **Validate Input** - Use `@INFRAM:SELECT` instead of free-text input when possible to prevent errors.
-
-6. **Progressive Feedback** - Update `@INFRAM:PROGRESS` frequently to show activity during long operations.
-
-7. **Clear Error Messages** - Use `@INFRAM:ERROR` with actionable information about what went wrong and how to fix it.
-
-8. **Summarize Results** - Always end important scripts with `@INFRAM:SUMMARY` showing key results and completion details.
-
----
-
-## Related Documentation
-
-- [Scripts & Snippets](./scripts&snippets.md) - Learn how to create and organize scripts and snippets in Infram.
+- [Scripts & Snippets](/scripts&snippets)

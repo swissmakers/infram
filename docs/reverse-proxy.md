@@ -1,50 +1,108 @@
-# Reverse Proxy & Cloudflare Tunnel
+# Reverse Proxy
 
-This guide helps you with setting up Infram behind a reverse proxy or Cloudflare Tunnel. Make sure WebSocket support is
-enabled for it to work.
+This guide describes production-safe reverse proxy patterns for Infram, including complete TLS configuration and WebSocket forwarding requirements.
 
-## Nginx
+## Prerequisites
+
+- Infram reachable on `http://127.0.0.1:6989`
+- Reverse proxy with WebSocket support
+- Correct `TRUST_PROXY` setting in Infram runtime
+- Certificate and private key available on the proxy host
+
+## Critical Requirements
+
+Your proxy configuration must:
+
+- forward `Host`, `X-Forwarded-For`, and `X-Forwarded-Proto`
+- support `Upgrade` and `Connection` headers for WebSockets
+- allow long-lived connections for terminal/session streams
+- terminate TLS with a valid certificate chain
+
+## `TRUST_PROXY` Guidance
+
+Set `TRUST_PROXY` according to your topology:
+
+- `TRUST_PROXY=1` for one trusted proxy hop
+- `TRUST_PROXY=<n>` for multiple trusted hops
+- `TRUST_PROXY=<cidr-or-ip-list>` for explicit trust boundaries
+- `TRUST_PROXY=false` when no reverse proxy is used
+
+> [!WARNING]
+> Incorrect `TRUST_PROXY` values can produce wrong client IP attribution in audit and session records.
+
+## NGINX (TLS Termination)
 
 ```nginx
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
 server {
     listen 80;
-    server_name infram.yourdomain.com;
+    listen [::]:80;
+    server_name infram.example.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name infram.example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/infram.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/infram.example.com/privkey.pem;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:10m;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
     location / {
         proxy_pass http://127.0.0.1:6989;
         proxy_http_version 1.1;
-        
-        # WebSocket support
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        
+
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        
+
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+
         proxy_read_timeout 86400;
+        proxy_send_timeout 86400;
     }
 }
 ```
 
-With SSL, add a redirect block and use `listen 443 ssl http2` with your cert paths.
+## Apache HTTPD (TLS Termination)
 
-## Apache
-
-Enable modules first:
+Enable modules:
 
 ```sh
-sudo a2enmod proxy proxy_http proxy_wstunnel rewrite
+sudo a2enmod ssl proxy proxy_http proxy_wstunnel headers rewrite
 ```
+
+Virtual host:
 
 ```apache
 <VirtualHost *:80>
-    ServerName infram.yourdomain.com
+    ServerName infram.example.com
+    Redirect permanent / https://infram.example.com/
+</VirtualHost>
 
+<VirtualHost *:443>
+    ServerName infram.example.com
+
+    SSLEngine on
+    SSLCertificateFile /etc/letsencrypt/live/infram.example.com/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/infram.example.com/privkey.pem
+
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
     ProxyPreserveHost On
+    RequestHeader set X-Forwarded-Proto "https"
 
-    # WebSocket
     RewriteEngine On
     RewriteCond %{HTTP:Upgrade} websocket [NC]
     RewriteCond %{HTTP:Connection} upgrade [NC]
@@ -58,58 +116,48 @@ sudo a2enmod proxy proxy_http proxy_wstunnel rewrite
 
 ## Caddy
 
+Caddy automatically provisions certificates when DNS and inbound access are correct:
+
 ```caddy
-infram.yourdomain.com {
+infram.example.com {
+    encode zstd gzip
     reverse_proxy 127.0.0.1:6989
 }
 ```
 
-Caddy handles WebSockets and SSL automatically.
-
-## Traefik (Docker)
+## Traefik (Container Deployments)
 
 ```yaml
 services:
   infram:
+    image: swissmakers/infram:latest
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.infram.rule=Host(`infram.yourdomain.com`)"
+      - "traefik.http.routers.infram.rule=Host(`infram.example.com`)"
       - "traefik.http.routers.infram.entrypoints=websecure"
+      - "traefik.http.routers.infram.tls=true"
       - "traefik.http.routers.infram.tls.certresolver=letsencrypt"
       - "traefik.http.services.infram.loadbalancer.server.port=6989"
 ```
 
-## Cloudflare Tunnel
+## Certificate Operations
 
-Cloudflare Tunnel lets you expose Infram to the internet without opening inbound ports. Traffic flows through
-Cloudflare's network, giving you DDoS protection and optional Zero Trust authentication.
+- Use full certificate chain (`fullchain.pem`) for `ssl_certificate`/`SSLCertificateFile`
+- Restrict private key permissions (`chmod 600`)
+- Automate renewal (for example `certbot renew`)
+- Reload proxy service after renewal
 
-### Prerequisites
+## Validation Checklist
 
-- A Cloudflare account with an active domain
-- `cloudflared` installed on your
-  server ([download](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/))
+1. Open `https://infram.example.com` and inspect certificate validity.
+2. Login and open an interactive terminal session.
+3. Confirm session remains stable for long-running commands.
+4. Validate audit events include the real client IP.
+5. Confirm HTTP requests are redirected to HTTPS.
 
-### 1. Create a Tunnel
+## Troubleshooting
 
-Log in to [Cloudflare Zero Trust](https://one.dash.cloudflare.com/) and go to **Networks** → **Connectors**.
-
-1. Click **Create a tunnel**
-2. Choose **Cloudflared** as the connector type
-3. Give your tunnel a name (e.g., `infram`)
-4. Copy the installation command and run it on your server
-
-### 2. Configure the Public Hostname
-
-After creating the tunnel, add a public hostname:
-
-| Field     | Value                          |
-|-----------|--------------------------------|
-| Subdomain | `infram` (or your preference) |
-| Domain    | Select your domain             |
-| Type      | `HTTP`                         |
-| URL       | `localhost:6989`               |
-
-![Create Tunnel in Cloudflare Dashboard](/assets/cloudflare-tunnel-create.png)
-
-Click **Save tunnel**. Your Infram instance should now be accessible at `https://infram.yourdomain.com`.
+- **WebSocket disconnects**: verify upgrade headers and long timeout settings.
+- **Wrong source IP in audit logs**: re-check `TRUST_PROXY` value.
+- **TLS errors**: verify cert/key paths and file permissions on the proxy host.
+- **Redirect loops**: ensure backend protocol is HTTP when TLS terminates at proxy.

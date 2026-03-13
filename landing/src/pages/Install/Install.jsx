@@ -1,9 +1,11 @@
 import "./styles.sass";
-import {faDocker} from "@fortawesome/free-brands-svg-icons";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCheck, faCopy, faChevronRight, faChevronLeft, faRefresh, faLayerGroup, faTerminal, faHardDrive, faFolderOpen} from "@fortawesome/free-solid-svg-icons";
-import {useState, useEffect} from "react";
-import {DOCUMENTATION_BASE} from "@/main.jsx";
+import { faDocker } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faCopy, faChevronRight, faChevronLeft, faRefresh, faLayerGroup, faTerminal, faHardDrive, faFolderOpen } from "@fortawesome/free-solid-svg-icons";
+import { useState, useEffect } from "react";
+import { DOCUMENTATION_BASE } from "@/main.jsx";
+
+const IMAGE = "swissmakers/infram:latest";
 
 const generateEncryptionKey = () => {
     const array = new Uint8Array(32);
@@ -14,10 +16,11 @@ const generateEncryptionKey = () => {
 export const Install = () => {
     const [step, setStep] = useState(1);
     const [encryptionKey, setEncryptionKey] = useState('');
-    const [deployMethod, setDeployMethod] = useState('docker');
+    const [deployMethod, setDeployMethod] = useState('run');
+    const [runtime, setRuntime] = useState("podman");
     const [volumeType, setVolumeType] = useState('named');
     const [volumeName, setVolumeName] = useState('infram');
-    const [bindPath, setBindPath] = useState('./infram-data');
+    const [bindPath, setBindPath] = useState('/opt/podman-infra-manager/data');
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
@@ -34,21 +37,22 @@ export const Install = () => {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const getDockerCommand = () => {
+    const getRunCommand = () => {
         const volumeArg = volumeType === 'named' 
             ? `-v ${volumeName}:/app/data`
-            : `-v ${bindPath}:/app/data`;
+            : `-v ${bindPath}:/app/data${runtime === "podman" ? ":Z" : ""}`;
         
-        return `docker run -d \\
-  -e ENCRYPTION_KEY=${encryptionKey} \\
+        return `${runtime} run -d \\
+  --name infram-local \\
   --network host \\
-  --name infram \\
   --restart always \\
+  -e ENCRYPTION_KEY=${encryptionKey} \\
+  -e TRUST_PROXY=1 \\
   ${volumeArg} \\
-  germannewsmaker/nexterm:latest`;
+  ${IMAGE}`;
     };
 
-    const getDockerComposeContent = () => {
+    const getComposeContent = () => {
         const volumeConfig = volumeType === 'named'
             ? `      - ${volumeName}:/app/data`
             : `      - ${bindPath}:/app/data`;
@@ -59,12 +63,13 @@ export const Install = () => {
 
         return `services:
   infram:
-    image: germannewsmaker/nexterm:latest
-    container_name: infram
+    image: ${IMAGE}
+    container_name: infram-local
     network_mode: host
     restart: always
     environment:
       - ENCRYPTION_KEY=${encryptionKey}
+      - TRUST_PROXY=1
     volumes:
 ${volumeConfig}${volumesSection}`;
     };
@@ -100,15 +105,15 @@ ${volumeConfig}${volumesSection}`;
                     {step === 1 && (
                         <div className="wizard-step">
                             <h2>Deployment Method</h2>
-                            <p>Choose how you want to deploy Infram.</p>
+                            <p>Choose deployment format and runtime.</p>
                             
                             <div className="option-cards">
                                 <button 
-                                    className={`option-card ${deployMethod === 'docker' ? 'selected' : ''}`}
-                                    onClick={() => setDeployMethod('docker')}
+                                    className={`option-card ${deployMethod === 'run' ? 'selected' : ''}`}
+                                    onClick={() => setDeployMethod('run')}
                                 >
                                     <FontAwesomeIcon icon={faTerminal}/>
-                                    <span className="option-title">Docker CLI</span>
+                                    <span className="option-title">Run Command</span>
                                     <span className="option-desc">Single command deployment</span>
                                 </button>
                                 <button 
@@ -118,6 +123,25 @@ ${volumeConfig}${volumesSection}`;
                                     <FontAwesomeIcon icon={faLayerGroup}/>
                                     <span className="option-title">Docker Compose</span>
                                     <span className="option-desc">YAML configuration file</span>
+                                </button>
+                            </div>
+
+                            <div className="option-cards">
+                                <button
+                                    className={`option-card ${runtime === 'podman' ? 'selected' : ''}`}
+                                    onClick={() => setRuntime('podman')}
+                                >
+                                    <FontAwesomeIcon icon={faDocker}/>
+                                    <span className="option-title">Podman</span>
+                                    <span className="option-desc">Recommended runtime</span>
+                                </button>
+                                <button
+                                    className={`option-card ${runtime === 'docker' ? 'selected' : ''}`}
+                                    onClick={() => setRuntime('docker')}
+                                >
+                                    <FontAwesomeIcon icon={faDocker}/>
+                                    <span className="option-title">Docker</span>
+                                    <span className="option-desc">Compatible runtime</span>
                                 </button>
                             </div>
                         </div>
@@ -166,21 +190,21 @@ ${volumeConfig}${volumesSection}`;
                         <div className="wizard-step">
                             <h2>Deploy Infram</h2>
                             <p>
-                                {deployMethod === 'docker' 
-                                    ? 'Run this command in your terminal:' 
+                                {deployMethod === 'run'
+                                    ? `Run this command with ${runtime}:`
                                     : 'Save this as docker-compose.yml and run docker compose up -d:'}
                             </p>
                             
-                            <div className="command-block" onClick={() => copyToClipboard(deployMethod === 'docker' ? getDockerCommand() : getDockerComposeContent())}>
+                            <div className="command-block" onClick={() => copyToClipboard(deployMethod === 'run' ? getRunCommand() : getComposeContent())}>
                                 <div className="command-header">
                                     <FontAwesomeIcon icon={faDocker}/>
-                                    <span>{deployMethod === 'docker' ? 'Terminal' : 'docker-compose.yml'}</span>
+                                    <span>{deployMethod === 'run' ? 'Terminal' : 'docker-compose.yml'}</span>
                                     <button className={`copy-btn ${copied ? 'copied' : ''}`}>
                                         <FontAwesomeIcon icon={copied ? faCheck : faCopy}/>
                                         {copied ? 'Copied!' : 'Copy'}
                                     </button>
                                 </div>
-                                <pre><code>{deployMethod === 'docker' ? getDockerCommand() : getDockerComposeContent()}</code></pre>
+                                <pre><code>{deployMethod === 'run' ? getRunCommand() : getComposeContent()}</code></pre>
                             </div>
 
                             <div className="key-section">
@@ -222,12 +246,12 @@ ${volumeConfig}${volumesSection}`;
                 <div className="help-section">
                     <p>Need more options?</p>
                     <div className="help-links">
+                        <a onClick={() => openDocs("/installation")}>Installation Guide</a>
                         <a onClick={() => openDocs("/reverse-proxy")}>Reverse Proxy</a>
                         <a onClick={() => openDocs("/ssl")}>SSL Setup</a>
-                        <a onClick={() => openDocs("/")}>Full Documentation</a>
                     </div>
                 </div>
             </div>
         </div>
     );
-}
+};

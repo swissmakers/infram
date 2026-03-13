@@ -11,7 +11,7 @@ const sidebar = useSidebar({ spec, linkPrefix: "/operations/" });
 
 export default defineConfig({
     title: "Infram",
-    description: "The open source server management software for SSH, VNC & RDP",
+    description: "Open-source platform for secure remote infrastructure operations",
     lastUpdated: true,
     cleanUrls: true,
     metaChunk: true,
@@ -53,7 +53,7 @@ export default defineConfig({
 
         footer: {
             message: "Distributed under the GNU GPL v3 License",
-            copyright: "© 2024 Mathias Wagner",
+            copyright: "© Swissmakers GmbH and contributors",
         },
         search: {
             provider: "local",
@@ -61,38 +61,47 @@ export default defineConfig({
 
         sidebar: [
             {
-                text: "Documentation",
+                text: "Getting Started",
                 items: [
                     { text: "Home", link: "/" },
-                    { text: "Screenshots", link: "/screenshots" },
                     { text: "Install", link: "/installation" },
+                ],
+            },
+            {
+                text: "Operations",
+                items: [
                     { text: "SSL/HTTPS", link: "/ssl" },
                     { text: "Reverse Proxy", link: "/reverse-proxy" },
-                    { text: "Licensing", link: "/licensing" },
-                    {
-                        text: "Authentication",
-                        collapsed: true,
-                        items: [
-                            { text: "OIDC / SSO", link: "/oidc" },
-                            { text: "LDAP", link: "/ldap" },
-                        ],
-                    },
-                    {
-                        text: "Custom Sources",
-                        collapsed: true,
-                        link: "/customsource",
-                        items: [
-                            { text: "Scripts & Snippets", link: "/scripts&snippets" },
-                            { text: "Scripting Variables & Directives", link: "/ScriptingVariables" },
-                        ],
-                    },
+                    { text: "Screenshots", link: "/screenshots" },
+                ],
+            },
+            {
+                text: "Authentication",
+                items: [
+                    { text: "LDAP", link: "/ldap" },
+                    { text: "OIDC / SSO", link: "/oidc" },
+                ],
+            },
+            {
+                text: "Integrations & Automation",
+                items: [
+                    { text: "Custom Sources", link: "/customsource" },
+                    { text: "Scripts & Snippets", link: "/scripts&snippets" },
+                    { text: "Scripting Variables & Directives", link: "/ScriptingVariables" },
+                ],
+            },
+            {
+                text: "API",
+                items: [
+                    { text: "API Reference", link: "/api-reference" },
+                    ...sidebar.generateSidebarGroups(),
+                ],
+            },
+            {
+                text: "Project",
+                items: [
                     { text: "Contributing", link: "/contributing" },
-                    {
-                        text: "API Reference",
-                        collapsed: true,
-                        link: "/api-reference",
-                        items: [...sidebar.generateSidebarGroups()],
-                    },
+                    { text: "Licensing", link: "/licensing" },
                 ],
             },
         ],

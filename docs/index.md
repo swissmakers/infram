@@ -3,50 +3,48 @@ layout: home
 
 hero:
   name: Infram
-  text: Server management
-  tagline: The open source server management software for SSH, VNC & RDP
+  text: Secure Infrastructure Access and Operations
+  tagline: Open-source operations platform for SSH, RDP, VNC, identity-aware access, and auditable remote administration.
   actions:
     - theme: brand
-      text: Install
+      text: Install Infram
       link: /installation
     - theme: alt
-      text: Screenshots
-      link: /screenshots
+      text: Reverse Proxy Guide
+      link: /reverse-proxy
     - theme: alt
       text: GitHub
       link: https://github.com/swissmakers/infra-manager
   image:
     src: /logo.png
-    alt: MySpeed
+    alt: Infram logo
 
 features:
+  - icon: 🔐
+    title: Secure Access
+    details: Access infrastructure over SSH, RDP, VNC, and Telnet with centralized identity controls.
+  - icon: 🧩
+    title: Identity Integration
+    details: Integrate LDAP and OIDC/SSO with support for passkeys and two-factor authentication.
+  - icon: 📂
+    title: File and Session Operations
+    details: Manage terminal and file workflows in one interface with reduced context switching.
+  - icon: ⚙️
+    title: Automation
+    details: Execute scripts and snippets with metadata, guided prompts, and operator-friendly directives.
+  - icon: 📝
+    title: Auditability
+    details: Capture action and session lifecycle events for compliance and troubleshooting.
   - icon: ✅
-    title: Status Checker
-    details: Focused host/service availability checks for clear operational health visibility.
-  - icon: 🔒
-    title: Secure
-    details: Two-factor authentication, session management and encryption built-in.
-  - icon: 📁
-    title: Structured
-    details: Infram is structured into folders and tabs for easy navigation.
-  - icon: 🏢
-    title: Organizations
-    details: Seamlessly share server access with your team members.
-  - icon: ✂️
-    title: Snippets
-    details: Create and manage snippets for quick access to commands.
-  - icon: 📜
-    title: Scripts
-    details: Automate repetitive tasks with customizable scripts.
-    link: /scripts&snippets
-    linkText: Learn more
+    title: Operational Visibility
+    details: Track host/service availability with built-in status checking and centralized views.
 
 ---
 
 <style>
 :root {
-  --vp-home-hero-name-color: #314BD3;
-  --vp-home-hero-image-background-image: linear-gradient(rgba(49,75,211,0.25), rgba(49,75,211,0.25));
+  --vp-home-hero-name-color: #314bd3;
+  --vp-home-hero-image-background-image: linear-gradient(rgba(49, 75, 211, 0.25), rgba(49, 75, 211, 0.25));
   --vp-home-hero-image-filter: blur(100px);
 }
 </style>

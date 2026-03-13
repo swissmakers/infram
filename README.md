@@ -1,263 +1,151 @@
 [![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![GNU GPL v3 License][license-shield]][license-url]
-[![Release][release-shield]][release-url]
+[![Latest Release][release-shield]][release-url]
 
-<br />
-<!--
-<p align="center">
-  <a href="https://github.com/swissmakers/infra-manager">
-    <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="https://i.imgur.com/WhNYRgX.png">
-        <img alt="Infram Banner" src="https://i.imgur.com/TBMT7dt.png">
-    </picture>
-  </a>
-</p>-->
+<div align="center">
 
-## What is infra-manager?
+# Infram
 
-Infram (infra-manager) is a privacy-first and security focused platform for remote infrastructure operations.
-It combines remote access, identity-aware administration, inventory synchronization, and auditability in one system.
+**Open-source platform for secure remote infrastructure operations**
 
-Core capabilities:
+[Quick Start](#quick-start-container) •
+[Documentation](#documentation) •
+[API Reference](docs/api-reference.md) •
+[Security Notes](#security-notes)
 
-- Remote access to Servers / Clients / IoT, via SSH, RDP, VNC (or Telnet)
-- Integrated file management over same SSH-session that used by terminal
-- Team isolation through seperate tenant Organizations and access-rules
-- LDAP / 2FA / FIDO2 capability for identity and access control. (OIDC as addition)
-- Script and snippet automation for repeatable operations (e.g. give a long command "a name", and execute it directly from the WebUI console)
-- NetBox (and Proxmox -> we may remove that) integration for infrastructure sync and manager automation.
-- Audit logs and session lifecycle controls for operational traceability
-- Optional session recording (video) for productive systems
+</div>
 
-## Upstream Attribution
+Infram (infra-manager) provides a central control plane for day-to-day infrastructure access and operations across distributed Linux and mixed-protocol environments. It combines remote access, identity-aware authentication, automation, and auditability in one operational surface.
 
-This project is a fork/rebrand maintained by Swissmakers GmbH.
-It is based on the original Nexterm project by Mathias Wagner.
-Infram follows an independent roadmap centered on production reliability, security hardening, and privacy-by-default operation.
+## What Infram Provides
 
-Original copyright and third-party notices are preserved in `LICENSE` and `NOTICE`.
+- Remote access over SSH, RDP, VNC, and Telnet
+- Integrated remote file operations over SSH sessions
+- Multi-tenant isolation with organizations, folders, and scoped identities
+- Authentication options: local users, LDAP, OIDC/SSO, TOTP, and passkeys
+- Scripts and snippets for repeatable operations and runbooks
+- Session lifecycle visibility, audit events, and status-checking features
 
-## Fork Changes vs Upstream (Nexterm)
+## Quick Start (Container)
 
-Infram is intentionally maintained as an operationally independent software because our product goals prioritize stricter security and privacy controls.
+Image: [`swissmakers/infram`](https://hub.docker.com/r/swissmakers/infram)
 
-### Security and Privacy Hardening
+1) Create persistent storage:
 
-- Removed AI runtime integrations and related backend/frontend feature surfaces.
-- Hardened default behavior with strict outbound TLS validation (`STRICT_TLS=true`).
-- Disabled external source synchronization by default (`ENABLE_SOURCE_SYNC=false`).
-- Added UI/runtime control for external link handling (`VITE_ENABLE_EXTERNAL_LINKS=false` by default).
-- Restricted sensitive audit capabilities to admin-level access.
-- Build/runtime cleanup with reduced non-essential runtime dependencies.
-- Added container-first dependency and vulnerability workflow with optional SBOM generation:
-  - `make security-update`, `make security-audit`, `make security-all`, `make security-sbom`
-  - `yarn security:update`, `yarn security:audit`, `yarn security:all`, `yarn security:sbom`
+```sh
+mkdir -p /opt/podman-infra-manager
+```
 
-### Platform and Feature Architecture
+2) Generate a 64-character hex encryption key:
 
-- Replaced the old broad monitoring module with a focused status-checker architecture (that only checks if a server is online or not).
-- Added NetBox integration and synchronization services:
-  - inventory import for devices/VMs
-  - auto-create/update of managed entries
-  - role/tag filtering and protocol mapping
-  - delete-on-remote-delete synchronization behavior
-- Extended LDAP integration:
-  - additional directory attributes
-  - automatic organization assignment on login
-  - improved org-admin mapping support
-- Evolved File Manager implementation:
-  - SSH-session-based operation model
-  - improved multi-file download/upload behavior and failure handling for e.g. permission-denied paths
-- Improved lockfile/dependency hygiene across root/client/landing/connector.
+```sh
+openssl rand -hex 32
+```
 
-### Upstream Sync Policy
+3) Start Infram:
 
-Once again, the upstream is treated as a historical source, not as the product roadmap baseline.
-Relevant upstream fixes can be selectively backported after compatibility review.
+```sh
+podman run -d \
+  --name infram \
+  --network host \
+  --restart always \
+  -e ENCRYPTION_KEY="<replace-with-generated-key>" \
+  -e TRUST_PROXY=1 \
+  -v /opt/podman-infra-manager:/app/data:Z \
+  swissmakers/infram:latest
+```
 
-## Screenshots
+4) Open `http://<host>:6989`.
 
-<table>
-  <tr>
-    <td><img src="docs/public/assets/showoff/servers.png" alt="Servers" /></td>
-    <td><img src="docs/public/assets/showoff/connections.png" alt="Connections" /></td>
-    <td><img src="docs/public/assets/showoff/sftp.png" alt="SFTP" /></td>
-  </tr>
-  <tr>
-    <td><img src="docs/public/assets/showoff/snippets.png" alt="Snippets" /></td>
-    <td><img src="docs/public/assets/showoff/monitoring.png" alt="Monitoring" /></td>
-    <td><img src="docs/public/assets/showoff/recordings.png" alt="Recordings" /></td>
-  </tr>
-</table>
+> [!TIP]
+> `ENCRYPTION_KEY` can also be supplied as a runtime secret file (`/run/secrets/encryption_key`), which is auto-loaded as `ENCRYPTION_KEY`.
 
-## Install
+## Documentation
 
-You can install Infram by clicking [here](https://github.com/swissmakers/infra-manager).
+- [Installation](docs/installation.md)
+- [Reverse Proxy](docs/reverse-proxy.md)
+- [SSL/HTTPS](docs/ssl.md)
+- [LDAP](docs/ldap.md)
+- [OIDC / SSO](docs/oidc.md)
+- [Custom Sources](docs/customsource.md)
+- [Scripts & Snippets](docs/scripts&snippets.md)
+- [Scripting Variables & Directives](docs/ScriptingVariables.md)
+- [API Reference](docs/api-reference.md)
+- [Screenshots](docs/screenshots.md)
+- [Licensing](docs/licensing.md)
+- [Contributing](docs/contributing.md)
+
+## Configuration Baseline
+
+Core runtime variables:
+
+- `ENCRYPTION_KEY` (required): 64-char hex key used for credential encryption
+- `SERVER_PORT` (default `6989`): HTTP listener
+- `HTTPS_PORT` (default `5878`): optional HTTPS listener when cert files exist
+- `TRUST_PROXY` (default `false`): Express proxy trust policy (`true`, `false`, count, CIDR/IP list)
+- `STRICT_TLS` (default `true`): strict certificate validation for outbound TLS integrations
+- `ENABLE_SOURCE_SYNC` (default `false`): enables/disables custom source sync worker
+- `ENABLE_VERSION_CHECK` (default `true`): enables/disables release check endpoint
+- `VITE_ENABLE_EXTERNAL_LINKS` (default `false`): client-side external URL opening policy
 
 ## Development
 
-### Prerequisites
+Prerequisites:
 
--   Node.js 18+
--   Yarn
--   Docker (optional)
-
-### Local Setup
-
-#### Clone the repository
+- Node.js 18+
+- Yarn
+- Podman or Docker (optional, for local container testing)
 
 ```sh
 git clone https://github.com/swissmakers/infra-manager.git
 cd infra-manager
-```
-
-#### Install dependencies
-
-```sh
 yarn install
-cd client && yarn install
-cd ..
-```
-
-#### Start development mode
-
-```sh
+cd client && yarn install && cd ..
 yarn dev
 ```
 
-## Configuration
-
-The server listens on port 6989 by default. You can modify this behavior using environment variables:
-
--   `SERVER_PORT`: Server listening port (default: 6989)
--   `NODE_ENV`: Runtime environment (development/production)
--   `ENCRYPTION_KEY`: Encryption key for passwords, SSH keys and passphrases. Supports Docker secrets via /run/secrets/encryption_key`
--   `TRUST_PROXY`: Express proxy trust setting for client IP extraction (`false` by default).
--   `LOG_LEVEL`: Logging level for application and guacd (system/info/verbose/debug/warn/error, default: system)
--   `STRICT_TLS`: Enforce TLS certificate validation for outbound integrations like Proxmox and LDAP (default: true)
--   `ENABLE_SOURCE_SYNC`: Enable source synchronization requests and default official source creation (default: false)
--   `ENABLE_VERSION_CHECK`: Allow GitHub version check endpoint (`/api/service/version/check`) (default: true)
--   `VITE_ENABLE_EXTERNAL_LINKS`: Allow opening external links from the web UI (default: false)
-
-### Proxy and Client IP Configuration (`TRUST_PROXY`)
-
-Infram uses Express `trust proxy` behavior to determine the real client IP (`req.ip`) for:
-
-- audit log actor IPs
-- authentication/session IP tracking
-- WebSocket session metadata
-
-`TRUST_PROXY` accepts the same formats as Express:
-
-- `false` (default): do not trust forwarding headers (`X-Forwarded-For`, etc.)
-- `true`: trust all proxies (not recommended in most production environments)
-- integer (for example `1`): trust that many proxy hops
-- CSV/list/network names (for example `loopback,uniquelocal`) to trust specific proxy source ranges
-
-Recommended values:
-
-- Containerized backend behind exactly one Apache reverse proxy: `TRUST_PROXY=1`
-- Multiple chained, controlled reverse proxies: set explicit trusted hops or ranges
-- Direct/no reverse proxy deployments: keep `TRUST_PROXY=false`
-
-Important:
-
-- Never use broad trust settings unless your network boundary is controlled.
-- Incorrect `TRUST_PROXY` values can cause wrong actor IP attribution in audit logs.
-
-### Offline Runtime Defaults
-
-- AI assistant features are removed from the productive app runtime.
-- External source synchronization is disabled by default (`ENABLE_SOURCE_SYNC=false`).
-- External link opening in the web client is disabled by default (`VITE_ENABLE_EXTERNAL_LINKS=false`).
-- GitHub version check remains available through `/api/service/version/check` and can be disabled with `ENABLE_VERSION_CHECK=false`.
-
-### NetBox Inventory Sync
-
-- Add a NetBox integration in the Servers import menu (folder or organization scope).
-- Initial sync imports all matching devices/VMs and auto-creates missing entries.
-- Ongoing sync applies configurable filters (roles/tags) and protocol mapping rules.
-- Default protocol is SSH; rules can switch matching entries to RDP/VNC.
-- Entries removed from NetBox (or filtered out later) are deleted from managed entries during sync.
-
-## Security
-
--   Two-factor authentication
--   Session management
--   Password encryption
--   Docker container isolation
--   Oauth 2.0 OpenID Connect SSO
-
-### Container-Only Security Pipeline
-
-You can run dependency updates and vulnerability audits without installing Node.js, Yarn, pnpm, Flutter or Cargo on your host.
-Only Docker or Podman is required.
+Useful docs commands:
 
 ```sh
-# Update dependency locks (root/client/landing/connector) in containers
+yarn docs:dev
+yarn docs:build
+```
+
+## Security Notes
+
+- Keep Infram behind a reverse proxy, VPN, or private network boundary
+- Set `TRUST_PROXY` correctly to preserve accurate client IP attribution
+- Keep `STRICT_TLS=true` for production unless explicitly troubleshooting
+- Store and rotate `ENCRYPTION_KEY` using your secrets management standard
+- Back up `/app/data` before upgrades
+
+Security pipeline helpers:
+
+```sh
 make security-update
-
-# Run vulnerability audits with fail-on threshold (default: high)
 make security-audit
-
-# Update + audit in one run
 make security-all
-
-# Audit + SBOM generation
 make security-sbom
 ```
 
-Equivalent npm scripts are available:
-
-```sh
-yarn security:update
-yarn security:audit
-yarn security:all
-yarn security:sbom
-```
-
-Useful environment variables:
-
-- `SECURITY_FAIL_ON` (`none|critical|high|moderate|low|info`, default: `high`)
-- `SECURITY_GENERATE_SBOM` (`1` to enable SBOM output under `artifacts/security/`)
-- `SECURITY_NODE_IMAGE` (override Node image, default: `node:22-bookworm-slim`)
-- `SECURITY_SYFT_IMAGE` (override Syft image, default: `anchore/syft:latest`)
-- `SECURITY_DRY_RUN` (`1` to print container commands without executing)
-
 ## Contributing
 
-Contributions are welcome! Please feel free to:
-
-1. Fork the project
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## Useful Links
-
--   [Documentation](https://github.com/swissmakers/infra-manager)
--   [License & Third-Party Notices](docs/licensing.md)
--   [Report a bug](https://github.com/swissmakers/infra-manager/issues)
--   [Request a feature](https://github.com/swissmakers/infra-manager/issues)
-
+Contribution workflow, coding conventions, and validation steps are documented in [docs/contributing.md](docs/contributing.md).
 
 ## License
 
-Distributed under the GNU General Public License v3.0. See `LICENSE` for more information.
+This repository is distributed under **GNU GPL v3.0**. See `LICENSE` and `NOTICE` for terms and third-party attribution.
+
+## Upstream Attribution
+
+Infram is maintained by Swissmakers GmbH and based on the original Nexterm project by Mathias Wagner. Upstream and third-party attribution is preserved in `LICENSE` and `NOTICE`.
 
 [contributors-shield]: https://img.shields.io/github/contributors/swissmakers/infra-manager.svg?style=for-the-badge
 [contributors-url]: https://github.com/swissmakers/infra-manager/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/swissmakers/infra-manager.svg?style=for-the-badge
-[forks-url]: https://github.com/swissmakers/infra-manager/network/members
-[stars-shield]: https://img.shields.io/github/stars/swissmakers/infra-manager.svg?style=for-the-badge
-[stars-url]: https://github.com/swissmakers/infra-manager/stargazers
 [issues-shield]: https://img.shields.io/github/issues/swissmakers/infra-manager.svg?style=for-the-badge
 [issues-url]: https://github.com/swissmakers/infra-manager/issues
 [license-shield]: https://img.shields.io/github/license/swissmakers/infra-manager.svg?style=for-the-badge
-[license-url]: https://github.com/swissmakers/infra-manager/blob/master/LICENSE
+[license-url]: https://github.com/swissmakers/infra-manager/blob/main/LICENSE
 [release-shield]: https://img.shields.io/github/v/release/swissmakers/infra-manager.svg?style=for-the-badge
 [release-url]: https://github.com/swissmakers/infra-manager/releases/latest

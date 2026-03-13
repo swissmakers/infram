@@ -1,62 +1,80 @@
-# 🔐 Enabling SSL/HTTPS
+# SSL/HTTPS
 
-## 📁 Certificate Setup
+Use this guide if you want Infram itself to expose HTTPS. If TLS is terminated at a reverse proxy, keep Infram on HTTP and follow [Reverse Proxy](/reverse-proxy).
 
-Place your SSL certificate files in the `data/certs` folder:
+## How Infram Enables HTTPS
 
-- `cert.pem` - Your SSL certificate
-- `key.pem` - Your private key
+Infram starts an HTTPS listener automatically when these files exist:
 
-Infram will automatically detect them and start an HTTPS server.
+- `/app/data/certs/cert.pem` (certificate chain)
+- `/app/data/certs/key.pem` (private key)
 
-## 🔌 Ports
+When present, HTTP (`SERVER_PORT`, default `6989`) and HTTPS (`HTTPS_PORT`, default `5878`) can run in parallel.
 
-- HTTP runs on port `6989` (default)
-- HTTPS runs on port `5878` by default
+## Container Example
 
-You can change the HTTPS port by setting the `HTTPS_PORT` environment variable.
-
-## 🐳 Docker Setup
-
-Add the following to your existing `docker-compose.yml`:
-
-```diff
+```yaml
 services:
   infram:
+    image: swissmakers/infram:latest
+    container_name: infram
+    restart: always
     environment:
-+     HTTPS_PORT: 5878 # optional, this is the default
+      ENCRYPTION_KEY: "<replace-with-generated-key>"
+      HTTPS_PORT: "5878"
     ports:
-+     - "5878:5878"
+      - "6989:6989"
+      - "5878:5878"
     volumes:
-+     - ./certs:/app/data/certs
+      - ./data:/app/data
+      - ./certs/cert.pem:/app/data/certs/cert.pem:ro
+      - ./certs/key.pem:/app/data/certs/key.pem:ro
 ```
 
-## 🔧 Generating Self-Signed Certs
+## Certificate Sources
 
-For testing purposes, you can generate a self-signed certificate:
+### Let's Encrypt (Recommended)
 
 ```sh
-openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+sudo certbot certonly --standalone -d infram.example.com
+install -m 644 /etc/letsencrypt/live/infram.example.com/fullchain.pem ./certs/cert.pem
+install -m 600 /etc/letsencrypt/live/infram.example.com/privkey.pem ./certs/key.pem
 ```
 
-Then move `cert.pem` and `key.pem` into your `data/certs` folder.
+### Self-Signed (Testing Only)
+
+```sh
+openssl req -x509 -newkey rsa:4096 -sha256 -days 365 \
+  -nodes \
+  -keyout key.pem \
+  -out cert.pem \
+  -subj "/CN=infram.local"
+```
 
 > [!WARNING]
-> Self-signed certificates will show a browser warning. For production, use certificates from Let's Encrypt or your CA.
+> Self-signed certificates are suitable only for development and isolated test environments.
 
-## 🚀 Let's Encrypt with Certbot
+## File Permissions
 
-To obtain certificates from Let's Encrypt:
+- `key.pem`: readable only by the runtime account (recommended mode `600`)
+- `cert.pem`: world-readable is acceptable (`644`)
+- Store cert material outside source control and managed backups where possible
 
-```sh
-sudo certbot certonly --standalone -d yourdomain.com
-```
+## Renewal and Rotation
 
-Then copy the generated files:
+1. Renew certificate from your PKI provider.
+2. Replace `cert.pem` and `key.pem`.
+3. Restart or recreate container to reload TLS material.
+4. Validate expiration date and chain from a client endpoint.
 
-```sh
-cp /etc/letsencrypt/live/yourdomain.com/fullchain.pem ./data/certs/cert.pem
-cp /etc/letsencrypt/live/yourdomain.com/privkey.pem ./data/certs/key.pem
-```
+## Verification
 
-Restart Infram to apply the changes.
+- Open `https://<host>:5878` (or configured `HTTPS_PORT`).
+- Verify browser trust chain and certificate subject/SAN.
+- Confirm login and interactive sessions operate correctly over TLS.
+
+## Common Issues
+
+- **HTTPS not starting**: verify both `cert.pem` and `key.pem` exist in `/app/data/certs`.
+- **Invalid certificate in browser**: ensure SAN/CN matches requested hostname.
+- **Permission denied**: check private key ownership and mode on mounted file.

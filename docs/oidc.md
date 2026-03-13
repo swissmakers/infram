@@ -1,85 +1,79 @@
-# 🔐 OIDC Authentication
+# OIDC / SSO Authentication
 
-SSO via OpenID Connect. Users log in with their existing identity provider.
+Use OpenID Connect (OIDC) to authenticate users with a centralized identity provider.
 
-## Setup
+## Prerequisites
 
-Go to **Settings** → **Authentication** → **Add Provider**.
+- OIDC-compatible IdP (for example Keycloak, Entra ID, Authentik, Google)
+- Public URL for Infram
+- Registered OIDC client/application in your IdP
+- Redirect URI configured in IdP and Infram
 
-![Add OIDC Provider](/assets/add-oidc-provider.png)
+## Required Provider Fields
 
-| Field         | Description              |
-|---------------|--------------------------|
-| Display Name  | Shown on login button    |
-| Issuer URL    | IdP's discovery URL      |
-| Client ID     | From your IdP            |
-| Client Secret | From your IdP            |
-| Redirect URI  | Copy this to your IdP    |
-| Scope         | Usually `openid profile` |
+Configure in **Settings -> Authentication -> Add OIDC Provider**:
 
-## Provider Setup
+- `name`
+- `issuer` (must match IdP metadata exactly)
+- `clientId`
+- `clientSecret` (if confidential client)
+- `redirectUri`
+- `scope` (default: `openid profile`)
 
-### Microsoft Entra ID (Azure AD)
+Recommended baseline scope:
 
-1. [Azure Portal](https://portal.azure.com) → **Microsoft Entra ID** → **App registrations** → **New registration**
-2. Add redirect URI: `https://infram.yourdomain.com/api/auth/oidc/callback`
-3. Copy **Application (client) ID** → Client ID
-4. **Certificates & secrets** → **New client secret** → copy value → Client Secret
-5. Issuer URL: `https://login.microsoftonline.com/{tenant-id}/v2.0`
+`openid profile email`
 
-### Google
+## Redirect URI
 
-1. [Google Cloud Console](https://console.cloud.google.com) → **APIs & Services** → **Credentials**
-2. **Create Credentials** → **OAuth client ID** → **Web application**
-3. Add redirect URI: `https://infram.yourdomain.com/api/auth/oidc/callback`
-4. Issuer URL: `https://accounts.google.com`
+Use the callback endpoint exposed by Infram:
+
+`https://<infram-host>/api/auth/oidc/callback`
 
 > [!WARNING]
-> Google requires app verification for production. Add test users in OAuth consent screen during dev.
+> Redirect URI mismatch is the most common cause of failed OIDC sign-in.
 
-### Keycloak
+## Claim Mapping
 
-1. **Clients** → **Create client**
-2. Enable **Client authentication**
-3. Add redirect URI, copy Client Secret from **Credentials** tab
-4. Issuer URL: `https://keycloak.yourdomain.com/realms/{realm-name}`
+Default mappings:
 
-### Authentik
+| Infram Field | OIDC Claim |
+|---|---|
+| Username | `preferred_username` |
+| First Name | `given_name` |
+| Last Name | `family_name` |
 
-1. **Applications** → **Providers** → **Create** → **OAuth2/OpenID Provider**
-2. Set redirect URI, copy Client ID/Secret
-3. Issuer URL: `https://authentik.yourdomain.com/application/o/{application-slug}/`
+Adjust `usernameAttribute`, `firstNameAttribute`, and `lastNameAttribute` if your IdP uses non-standard claim names.
 
-> [!TIP]
-> The trailing slash matters. Check `/.well-known/openid-configuration` to see the exact issuer value.
+## Provider Examples
 
-### Authelia
+- **Entra ID** issuer: `https://login.microsoftonline.com/<tenant-id>/v2.0`
+- **Google** issuer: `https://accounts.google.com`
+- **Keycloak** issuer: `https://<host>/realms/<realm>`
+- **Authentik** issuer: `https://<host>/application/o/<slug>/`
 
-```yaml
-identity_providers:
-  oidc:
-    clients:
-      - client_id: infram
-        client_secret: '$pbkdf2-sha512$your-hashed-secret'
-        redirect_uris:
-          - https://infram.yourdomain.com/api/auth/oidc/callback
-        scopes: [ openid, profile, email ]
-```
+Always verify the issuer and endpoints through:
 
-Issuer URL: `https://auth.yourdomain.com`
+`<issuer>/.well-known/openid-configuration`
 
-## Attribute Mapping
+## Validation Workflow
 
-Defaults in **Advanced Settings**:
+1. Save provider configuration.
+2. Enable provider.
+3. Confirm login page displays provider button.
+4. Complete login flow and return to Infram.
+5. Verify mapped user profile fields after first login.
 
-| Field      | Claim                |
-|------------|----------------------|
-| Username   | `preferred_username` |
-| First Name | `given_name`         |
-| Last Name  | `family_name`        |
+## Security Guidance
+
+- Keep Infram behind HTTPS when using OIDC.
+- Use confidential clients where supported.
+- Restrict client redirect URIs to exact production URLs.
+- Rotate client secrets according to security policy.
 
 ## Troubleshooting
 
-**Redirect URI mismatch** - Must match exactly. Check trailing slashes, http vs https.
-
-**User attributes wrong** - Check claim names in your IdP's token and adjust mapping.
+- **Issuer mismatch**: use exact `issuer` from metadata.
+- **Callback error**: check redirect URI and proxy forwarding.
+- **Missing username/name fields**: adjust scope and claim mapping.
+- **Login loop**: verify system clock synchronization on both IdP and Infram hosts.

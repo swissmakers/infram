@@ -1,102 +1,160 @@
-# 🚀 Installation
+# Installation
 
-> [!WARNING]
-> Infram is still in beta. Please back up your data regularly and report any issues on [GitHub](https://github.com/swissmakers/infra-manager/issues).
+This guide provides a production-oriented baseline for running Infram with Podman or Docker.
 
-## 🔐 Generate Encryption Key
+## Prerequisites
 
-Infram requires an encryption key to securely store your data. You can generate a strong key using the following command:
+- Linux host with Podman or Docker
+- `openssl` for encryption key generation
+- Persistent storage for `/app/data`
+- Reverse proxy plan for production exposure (recommended)
+
+## Required Runtime Secret
+
+Infram requires `ENCRYPTION_KEY` at startup. The value must be a 64-character hex string.
+
+Generate one securely:
 
 ```sh
 openssl rand -hex 32
 ```
 
-## 🐳 Docker
+You can provide it either as:
+
+- environment variable `ENCRYPTION_KEY`
+- runtime secret file `/run/secrets/encryption_key` (auto-loaded as `ENCRYPTION_KEY`)
+
+## Podman Quick Start
+
+```sh
+mkdir -p /opt/podman-infra-manager
+
+podman run -d \
+  --name infram \
+  --network host \
+  --restart always \
+  -e ENCRYPTION_KEY="<replace-with-generated-key>" \
+  -e TRUST_PROXY=1 \
+  -v /opt/podman-infra-manager:/app/data:Z \
+  swissmakers/infram:latest
+```
+
+## Docker Run
 
 ::: code-group
 
-```shell [Host Network (Recommended)]
+```sh [Host Network]
 docker run -d \
-  -e ENCRYPTION_KEY=aba3aa8e29b9904d5d8d705230b664c053415c54be20ad13be99af0057dfa23a \
-  --network host \
   --name infram \
+  --network host \
   --restart always \
-  -v infram:/app/data \
-  germannewsmaker/infram:latest
+  -e ENCRYPTION_KEY="<replace-with-generated-key>" \
+  -e TRUST_PROXY=1 \
+  -v /opt/podman-infra-manager:/app/data \
+  swissmakers/infram:latest
 ```
 
-```shell [Bridge Network]
+```sh [Bridge Network]
 docker run -d \
-  -e ENCRYPTION_KEY=aba3aa8e29b9904d5d8d705230b664c053415c54be20ad13be99af0057dfa23a \
-  -p 6989:6989 \
   --name infram \
   --restart always \
-  -v infram:/app/data \
-  germannewsmaker/nexterm:latest
+  -p 6989:6989 \
+  -e ENCRYPTION_KEY="<replace-with-generated-key>" \
+  -e TRUST_PROXY=1 \
+  -v /opt/podman-infra-manager:/app/data \
+  swissmakers/infram:latest
 ```
 
 :::
 
 > [!NOTE]
-> **Host Network** is strongly recommended. It allows Infram to access your host's network stack directly, which is required for features like Wake-on-LAN and connecting to servers via `localhost`. Only use **Bridge Network** if you specifically need network isolation.
+> Use host networking if you need host-local network behavior for operations and integrations.
 
-## 📦 Docker Compose
+## Docker Compose
 
 ::: code-group
 
-```yaml [Host Network (Recommended)]
+```yaml [Environment Variable]
 services:
   infram:
-    environment:
-      ENCRYPTION_KEY: "aba3aa8e29b9904d5d8d705230b664c053415c54be20ad13be99af0057dfa23a" # Replace with your generated key
-    network_mode: host
+    image: swissmakers/infram:latest
+    container_name: infram
     restart: always
+    network_mode: host
+    environment:
+      ENCRYPTION_KEY: "<replace-with-generated-key>"
+      TRUST_PROXY: "1"
     volumes:
-      - infram:/app/data
-    image: germannewsmaker/nexterm:latest
+      - infram-data:/app/data
+
 volumes:
-  infram:
+  infram-data:
 ```
 
-```yaml [Bridge Network]
+```yaml [Runtime Secret File]
 services:
   infram:
-    environment:
-      ENCRYPTION_KEY: "aba3aa8e29b9904d5d8d705230b664c053415c54be20ad13be99af0057dfa23a" # Replace with your generated key
-    ports:
-      - "6989:6989"
+    image: swissmakers/infram:latest
+    container_name: infram
     restart: always
+    network_mode: host
+    environment:
+      TRUST_PROXY: "1"
     volumes:
-      - infram:/app/data
-    image: germannewsmaker/nexterm:latest
+      - infram-data:/app/data
+      - ./secrets/encryption_key:/run/secrets/encryption_key:ro
+
 volumes:
-  infram:
+  infram-data:
 ```
 
 :::
 
+Start:
+
 ```sh
-docker-compose up -d
+docker compose up -d
 ```
 
-### 🌐 IPv6 Support
+## Post-Install Verification
 
-To connect to IPv6 servers from within the container using bridge networking, add the following to your existing `docker-compose.yml` (not needed for host network):
+1. Open `http://<host>:6989` (or your reverse-proxy URL).
+2. Complete first-time setup and create an admin account.
+3. Confirm data persistence under `/opt/podman-infra-manager` (or your named volume).
+4. If reverse proxied, verify audit records show real client IP addresses.
+5. Check container logs for startup confirmation and migration success.
 
-```diff
-services:
-  infram:
-+   networks:
-+     - infram-net
+## Upgrade Procedure
 
-+networks:
-+  infram-net:
-+    enable_ipv6: true
+```sh
+docker pull swissmakers/infram:latest
+docker compose down
+docker compose up -d
 ```
 
-## Security Maintenance (Container-Only)
+Podman equivalent:
 
-For dependency updates and vulnerability scans, you can run the built-in container pipeline:
+```sh
+podman pull swissmakers/infram:latest
+podman stop infram && podman rm infram
+# start again with the same run command
+```
+
+## Backup and Restore
+
+- **Backup**: archive `/opt/podman-infra-manager` (or export named volume)
+- **Restore**: stop container, restore data, start container
+- **Before upgrades**: always create and verify a backup
+
+## Runtime Hardening Recommendations
+
+- Keep `STRICT_TLS=true` in production
+- Set `TRUST_PROXY` to the exact proxy topology
+- Keep `ENABLE_SOURCE_SYNC=false` unless source sync is required
+- Set `ENABLE_VERSION_CHECK=false` in restricted networks
+- Keep container runtime and host OS patched
+
+## Security Maintenance Helpers (DEVS only)
 
 ```sh
 make security-update
@@ -104,13 +162,3 @@ make security-audit
 make security-all
 make security-sbom
 ```
-
-This only requires Docker or Podman on the host. The required Node/Yarn/pnpm tooling is executed inside ephemeral containers.
-
-## Offline Runtime Controls
-
-For production environments without internet access:
-
-- Keep `ENABLE_SOURCE_SYNC=false` (default) to prevent outbound source synchronization.
-- Keep `VITE_ENABLE_EXTERNAL_LINKS=false` in the client build (default) to block opening external links from the UI.
-- Version checks are controlled by `ENABLE_VERSION_CHECK` (default: `true`) and can be disabled with `ENABLE_VERSION_CHECK=false`.
