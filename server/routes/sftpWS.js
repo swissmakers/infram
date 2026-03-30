@@ -100,7 +100,13 @@ module.exports = async (ws, req) => {
                 if (serverSession && reuseExistingSsh) {
                     SessionManager.registerSftpHandle(serverSession.sessionId, sftp);
                 }
-                safeSend(ws, Buffer.from([OPERATIONS.READY]));
+                sftp.realpath(".", (rpErr, initialPath) => {
+                    const cwd = !rpErr && initialPath ? initialPath : "/";
+                    safeSend(ws, Buffer.concat([
+                        Buffer.from([OPERATIONS.READY]),
+                        Buffer.from(JSON.stringify({ initialPath: cwd })),
+                    ]));
+                });
 
                 ws.on("message", async (msg) => {
                     if (isClosing) return;

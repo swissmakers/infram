@@ -1,8 +1,8 @@
 <div align="center">
 
-# Infram Enterprise
+# Infram
 
-**Secure infrastructure access and operations platform for enterprise teams**
+**Secure infrastructure access and operations platform for enterprise teams and individuals**
 
 [Deployment Quick Start](#deployment-quick-start-container) •
 [Security and Compliance](#security-and-compliance) •

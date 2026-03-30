@@ -48,8 +48,13 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const propertiesHandlerRef = useRef(null);
     const lastSuccessfulDirectoryRef = useRef("/");
     const pendingNavigationRef = useRef(null);
+    const hasAppliedInitialPathRef = useRef(false);
 
     const wsUrl = getWebSocketUrl("/api/ws/sftp", { sessionToken, sessionId: session.id });
+
+    useEffect(() => {
+        hasAppliedInitialPathRef.current = false;
+    }, [session.id]);
 
     const downloadFile = async (path) => {
         const baseUrl = getBaseUrl();
@@ -192,7 +197,13 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     setIsReady(true);
                     setConnectionError(null);
                     reconnectAttemptsRef.current = 0;
-                    listFiles();
+                    if (payload?.initialPath && !hasAppliedInitialPathRef.current) {
+                        hasAppliedInitialPathRef.current = true;
+                        setDirectory(payload.initialPath);
+                        setHistory([payload.initialPath]);
+                        setHistoryIndex(0);
+                        lastSuccessfulDirectoryRef.current = payload.initialPath;
+                    }
                     break;
                 case OPERATIONS.LIST_FILES:
                     if (payload?.files) {
