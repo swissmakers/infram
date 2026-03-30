@@ -20,6 +20,84 @@ const OPERATIONS = {
     STAT: 0xF, CHECKSUM: 0x10, FOLDER_SIZE: 0x11,
 };
 
+/** i18next escapes `/` etc. in interpolations by default (&#x2F;); file paths must display literally. */
+const i18nUnescapedInterpolation = { interpolation: { escapeValue: false } };
+
+const readAllDirectoryEntries = (reader) => new Promise((resolve, reject) => {
+    const out = [];
+    const readBatch = () => {
+        try {
+            reader.readEntries((entries) => {
+                if (!entries || entries.length === 0) return resolve(out);
+                out.push(...entries);
+                readBatch();
+            }, reject);
+        } catch (e) {
+            reject(e);
+        }
+    };
+    readBatch();
+});
+
+const walkFileSystemEntry = async (entry, pathPrefix) => {
+    if (!entry) return [];
+    if (entry.isFile) {
+        const file = await new Promise((res, rej) => entry.file(res, rej));
+        const rel = `${pathPrefix}${file.name}`.replace(/^\/+/, "");
+        return [{ file, relativePath: rel }];
+    }
+    if (entry.isDirectory) {
+        const reader = entry.createReader();
+        const children = await readAllDirectoryEntries(reader);
+        const dirPrefix = `${pathPrefix}${entry.name}/`;
+        const acc = [];
+        for (const child of children) {
+            acc.push(...await walkFileSystemEntry(child, dirPrefix));
+        }
+        return acc;
+    }
+    return [];
+};
+
+/** Resolves files + relative POSIX paths for a drop (supports folders via webkitGetAsEntry). */
+const collectDroppedFiles = async (dataTransfer) => {
+    const out = [];
+    const seen = new Set();
+    const add = (file, relativePath) => {
+        const rp = String(relativePath || "").replace(/^\/+/, "").split("/").filter(Boolean).join("/");
+        if (!rp || !file) return;
+        const key = `${rp}\0${file.size}\0${file.lastModified}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        out.push({ file, relativePath: rp });
+    };
+
+    // Snapshot synchronously before any await — the live FileList is invalidated after the handler yields.
+    const filesSnapshot = dataTransfer.files?.length ? Array.from(dataTransfer.files) : [];
+
+    const items = dataTransfer.items ? [...dataTransfer.items] : [];
+
+    for (const item of items) {
+        if (item.kind !== "file") continue;
+        const getAsEntry = typeof item.webkitGetAsEntry === "function" ? item.webkitGetAsEntry.bind(item) : null;
+        const entry = getAsEntry ? getAsEntry() : null;
+        if (entry) {
+            const walked = await walkFileSystemEntry(entry, "");
+            for (const w of walked) add(w.file, w.relativePath);
+            continue;
+        }
+        const file = item.getAsFile();
+        if (file) add(file, file.webkitRelativePath || file.name);
+    }
+
+    for (let i = 0; i < filesSnapshot.length; i++) {
+        const file = filesSnapshot[i];
+        add(file, file.webkitRelativePath || file.name);
+    }
+
+    return out;
+};
+
 export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors, isActive, onOpenTerminal }) => {
     const { t } = useTranslation();
     const { sessionToken } = useContext(UserContext);
@@ -48,8 +126,13 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
     const propertiesHandlerRef = useRef(null);
     const lastSuccessfulDirectoryRef = useRef("/");
     const pendingNavigationRef = useRef(null);
+    const hasAppliedInitialPathRef = useRef(false);
 
     const wsUrl = getWebSocketUrl("/api/ws/sftp", { sessionToken, sessionId: session.id });
+
+    useEffect(() => {
+        hasAppliedInitialPathRef.current = false;
+    }, [session.id]);
 
     const downloadFile = async (path) => {
         const baseUrl = getBaseUrl();
@@ -131,8 +214,14 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         }
     };
 
-    const uploadFileHttp = async (file, targetDir) => {
-        const filePath = `${targetDir}/${file.name}`.replace(/\/+/g, '/');
+    const uploadFileHttp = async (file, targetDir, relativePath) => {
+        const rel = (relativePath || file.name || "").split("/").filter(Boolean).join("/");
+        if (!rel) {
+            sendToast(t("common.error"), t("servers.fileManager.toast.uploadFailed", { message: "Missing file path", ...i18nUnescapedInterpolation }));
+            return false;
+        }
+        const filePath = `${targetDir.replace(/\/+$/, "")}/${rel}`.replace(/\/+/g, "/");
+        const label = rel.includes("/") ? rel : file.name;
         setIsUploading(true);
         setUploadProgress(0);
 
@@ -146,11 +235,11 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
             setIsUploading(false);
             setUploadProgress(0);
             listFiles();
-            sendToast(t("common.success"), t("servers.fileManager.toast.uploaded", { name: file.name }));
+            sendToast(t("common.success"), t("servers.fileManager.toast.uploaded", { name: label, ...i18nUnescapedInterpolation }));
             return true;
         } catch (err) {
             console.error("Upload error:", err);
-            sendToast(t("common.error"), t("servers.fileManager.toast.uploadFailed", { message: err.message }));
+            sendToast(t("common.error"), t("servers.fileManager.toast.uploadFailed", { message: err.message, ...i18nUnescapedInterpolation }));
             setIsUploading(false);
             setUploadProgress(0);
             return false;
@@ -159,14 +248,18 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
 
     const processUploadQueue = async () => {
         while (uploadQueueRef.current.length > 0) {
-            const { file, targetDir } = uploadQueueRef.current[0];
-            await uploadFileHttp(file, targetDir);
+            const { file, targetDir, relativePath } = uploadQueueRef.current[0];
+            await uploadFileHttp(file, targetDir, relativePath);
             uploadQueueRef.current.shift();
         }
     };
 
-    const queueUpload = (file, targetDir) => {
-        uploadQueueRef.current.push({ file, targetDir });
+    const queueUpload = (file, targetDir, relativePath) => {
+        uploadQueueRef.current.push({
+            file,
+            targetDir,
+            relativePath: relativePath != null ? relativePath : file.name,
+        });
         if (uploadQueueRef.current.length === 1) processUploadQueue();
     };
 
@@ -192,7 +285,13 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
                     setIsReady(true);
                     setConnectionError(null);
                     reconnectAttemptsRef.current = 0;
-                    listFiles();
+                    if (payload?.initialPath && !hasAppliedInitialPathRef.current) {
+                        hasAppliedInitialPathRef.current = true;
+                        setDirectory(payload.initialPath);
+                        setHistory([payload.initialPath]);
+                        setHistoryIndex(0);
+                        lastSuccessfulDirectoryRef.current = payload.initialPath;
+                    }
                     break;
                 case OPERATIONS.LIST_FILES:
                     if (payload?.files) {
@@ -334,7 +433,21 @@ export const FileRenderer = ({ session, disconnectFromServer, setOpenFileEditors
         else if (e.type === "dragleave" && !dropZoneRef.current.contains(e.relatedTarget)) setDragging(false);
         else if (e.type === "drop") {
             setDragging(false);
-            for (let i = 0; i < e.dataTransfer.files.length; i++) queueUpload(e.dataTransfer.files[i], directory);
+            (async () => {
+                try {
+                    const entries = await collectDroppedFiles(e.dataTransfer);
+                    if (!entries.length) {
+                        sendToast(t("common.error"), t("servers.fileManager.toast.error"));
+                        return;
+                    }
+                    for (const { file, relativePath } of entries) {
+                        queueUpload(file, directory, relativePath);
+                    }
+                } catch (err) {
+                    console.error("Drop handling error:", err);
+                    sendToast(t("common.error"), t("servers.fileManager.toast.uploadFailed", { message: err.message || String(err), ...i18nUnescapedInterpolation }));
+                }
+            })();
         }
     };
 

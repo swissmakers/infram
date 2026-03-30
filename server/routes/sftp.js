@@ -7,7 +7,7 @@ const Entry = require("../models/Entry");
 const Identity = require("../models/Identity");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 const { createSSH } = require("../utils/createSSH");
-const { addFolderToArchive } = require("../utils/sftpHelpers");
+const { addFolderToArchive, ensureSftpParentDirs } = require("../utils/sftpHelpers");
 const logger = require("../utils/logger");
 const archiver = require("archiver");
 const sharp = require("sharp");
@@ -178,11 +178,13 @@ app.post("/upload", async (req, res) => {
     if (!sessionToken || !sessionId || !remotePath) return res.status(400).json({ error: "Missing parameters" });
     if (remotePath.includes("..")) return res.status(400).json({ error: "Invalid path" });
 
-    let ssh = null, tempFile = null, cleaned = false, ownsSsh = true;
+    let ssh = null, sftp = null, tempFile = null, cleaned = false, ownsSsh = true;
     const cleanupAll = () => {
         if (cleaned) return;
         cleaned = true;
         if (tempFile) try { fs.unlinkSync(tempFile); } catch {}
+        try { sftp?.end?.(); } catch {}
+        sftp = null;
         cleanup(ssh, [], ownsSsh);
     };
 
@@ -207,8 +209,9 @@ app.post("/upload", async (req, res) => {
         if (!setup.reused) {
             await connectSSH(ssh, setup.sshOptions);
         }
-        const sftp = await sftpConnect(ssh);
+        sftp = await sftpConnect(ssh);
 
+        await ensureSftpParentDirs(sftp, remotePath);
         await new Promise((resolve, reject) => {
             sftp.fastPut(tempFile, remotePath, { concurrency: 64, chunkSize: 32768 }, (err) => err ? reject(err) : resolve());
         });

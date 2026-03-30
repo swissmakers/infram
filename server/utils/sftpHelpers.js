@@ -1,3 +1,48 @@
+const posixDirname = (p) => {
+    if (!p || p === "/") return "/";
+    const normalized = String(p).replace(/\/+$/, "");
+    const i = normalized.lastIndexOf("/");
+    if (i <= 0) return "/";
+    return normalized.slice(0, i) || "/";
+};
+
+const isSftpDirStat = (st) => {
+    if (!st) return false;
+    if (typeof st.isDirectory === "function") return st.isDirectory();
+    return (st.mode & 0o170000) === 0o040000;
+};
+
+/**
+ * Create parent directories for a remote file path (mkdir -p semantics).
+ * Ignores if a path component already exists as a directory.
+ */
+const ensureSftpParentDirs = (sftp, remoteFilePath) => new Promise((resolve, reject) => {
+    const dir = posixDirname(remoteFilePath);
+    if (dir === "/" || dir === "") return resolve();
+
+    const mkdirOne = (target, cb) => {
+        sftp.mkdir(target, (err) => {
+            if (!err) return cb(null);
+            sftp.stat(target, (stErr, st) => {
+                if (!stErr && isSftpDirStat(st)) return cb(null);
+                cb(err);
+            });
+        });
+    };
+
+    const ensureDir = (target, cb) => {
+        if (target === "/" || target === "") return cb(null);
+        const parent = posixDirname(target);
+        if (parent === target) return cb(null);
+        ensureDir(parent, (err) => {
+            if (err) return cb(err);
+            mkdirOne(target, cb);
+        });
+    };
+
+    ensureDir(dir, (err) => (err ? reject(err) : resolve()));
+});
+
 const deleteFolderRecursive = (sftp, folderPath, callback) => {
     sftp.readdir(folderPath, (err, list) => {
         if (err) return err.code === 2 ? callback(null) : callback(err);
@@ -142,4 +187,10 @@ const addFolderToArchive = (sftp, folderPath, archive, basePath = "", activeStre
     return addFolder(folderPath, basePath);
 };
 
-module.exports = { deleteFolderRecursive, searchDirectories, addFolderToArchive, OPERATIONS };
+module.exports = {
+    deleteFolderRecursive,
+    searchDirectories,
+    addFolderToArchive,
+    ensureSftpParentDirs,
+    OPERATIONS,
+};
