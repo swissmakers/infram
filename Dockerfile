@@ -1,4 +1,4 @@
-FROM node:22-alpine AS client-builder
+FROM node:24-alpine AS client-builder
 
 WORKDIR /app
 RUN apk upgrade --no-cache
@@ -23,7 +23,7 @@ RUN install_ok=0; \
 COPY client/ .
 RUN yarn build
 
-FROM node:22-alpine AS server-builder
+FROM node:24-alpine AS server-builder
 
 ARG VERSION
 
@@ -53,7 +53,7 @@ RUN install_ok=0; \
 
 COPY server/ server/
 
-FROM node:22-alpine AS guacd-builder
+FROM node:24-alpine AS guacd-builder
 RUN apk upgrade --no-cache
 
 RUN apk add --no-cache \
@@ -78,7 +78,7 @@ RUN cd guacamole-server \
     && rm -f /install/usr/local/*.md /install/usr/local/LICENSE \
     && strip /install/usr/local/sbin/guacd /install/usr/local/lib/*.so.* 2>/dev/null || true
 
-FROM node:22-alpine
+FROM node:24-alpine
 RUN apk upgrade --no-cache
 
 RUN apk add --no-cache \
