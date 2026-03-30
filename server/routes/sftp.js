@@ -7,7 +7,7 @@ const Entry = require("../models/Entry");
 const Identity = require("../models/Identity");
 const { createAuditLog, AUDIT_ACTIONS, RESOURCE_TYPES } = require("../controllers/audit");
 const { createSSH } = require("../utils/createSSH");
-const { addFolderToArchive } = require("../utils/sftpHelpers");
+const { addFolderToArchive, ensureSftpParentDirs } = require("../utils/sftpHelpers");
 const logger = require("../utils/logger");
 const archiver = require("archiver");
 const sharp = require("sharp");
@@ -211,6 +211,7 @@ app.post("/upload", async (req, res) => {
         }
         sftp = await sftpConnect(ssh);
 
+        await ensureSftpParentDirs(sftp, remotePath);
         await new Promise((resolve, reject) => {
             sftp.fastPut(tempFile, remotePath, { concurrency: 64, chunkSize: 32768 }, (err) => err ? reject(err) : resolve());
         });
