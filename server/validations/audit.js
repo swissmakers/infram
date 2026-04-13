@@ -7,11 +7,19 @@ module.exports.getAuditLogsValidation = Joi.object({
     ).optional(),
     action: Joi.string().max(100).optional(),
     resource: Joi.string().max(50).optional(),
+    actorId: Joi.number().integer().positive().optional(),
     startDate: Joi.date().iso().optional(),
     endDate: Joi.date().iso().greater(Joi.ref('startDate')).optional(),
     limit: Joi.number().integer().min(1).max(1000).default(50),
     offset: Joi.number().integer().min(0).default(0),
 });
+
+module.exports.getAuditMetadataQueryValidation = Joi.object({
+    organizationId: Joi.alternatives().try(
+        Joi.number().integer().positive(),
+        Joi.string().valid('personal'),
+    ).optional(),
+}).unknown(true);
 
 module.exports.updateOrganizationAuditSettingsValidation = Joi.object({
     requireConnectionReason: Joi.boolean().optional(),

@@ -3,7 +3,8 @@ const fs = require("fs");
 const logger = require("../utils/logger");
 const auditController = require("../controllers/audit");
 const { isAdmin } = require("../middlewares/permission");
-const { getAuditLogsValidation, updateOrganizationAuditSettingsValidation } = require("../validations/audit");
+const { getAuditLogsValidation, getAuditMetadataQueryValidation, updateOrganizationAuditSettingsValidation } = require("../validations/audit");
+const { hasOrganizationAccess } = require("../utils/permission");
 const { validateSchema } = require("../utils/schema");
 
 const app = Router();
@@ -22,6 +23,7 @@ const app = Router();
  * @param {string} endDate.query - Filter logs until this date (ISO 8601 format)
  * @param {number} limit.query - Maximum number of logs to return (default: 50)
  * @param {number} offset.query - Number of logs to skip for pagination (default: 0)
+ * @param {number} actorId.query - Filter by actor account ID (audit_logs.accountId)
  * @return {object} 200 - Audit logs matching the specified criteria
  * @return {object} 400 - Invalid filter parameters
  */
@@ -32,6 +34,7 @@ app.get("/logs", isAdmin, async (req, res) => {
             organizationId: req.query.organizationId === 'personal' ? 'personal' : (req.query.organizationId ? parseInt(req.query.organizationId) : null),
             action: req.query.action, resource: req.query.resource,
             startDate: req.query.startDate, endDate: req.query.endDate,
+            actorId: req.query.actorId ? parseInt(req.query.actorId, 10) : undefined,
             limit: parseInt(req.query.limit) || 50, offset: parseInt(req.query.offset) || 0,
         };
         const result = await auditController.getAuditLogs(req.user.id, filters);
@@ -50,12 +53,19 @@ app.get("/logs", isAdmin, async (req, res) => {
  * @tags Audit
  * @produces application/json
  * @security BearerAuth
+ * @param {number} organizationId.query - Optional; scope actor list like audit logs (omit for all visible orgs + personal)
  * @return {object} 200 - Audit metadata including available actions and resource types
  * @return {object} 500 - Internal server error
  */
 app.get("/metadata", isAdmin, async (req, res) => {
     try {
-        res.json(await auditController.getAuditMetadata());
+        if (validateSchema(res, getAuditMetadataQueryValidation, req.query)) return;
+        const organizationId = req.query.organizationId === 'personal' ? 'personal'
+            : (req.query.organizationId ? parseInt(req.query.organizationId, 10) : null);
+        if (organizationId && organizationId !== 'personal' && !(await hasOrganizationAccess(req.user.id, organizationId))) {
+            return res.status(403).json({ message: "You don't have access to this organization's audit metadata" });
+        }
+        res.json(await auditController.getAuditMetadata(req.user.id, organizationId));
     } catch (error) {
         logger.error("Error in audit metadata route", { error: error.message });
         res.status(500).json({ message: "An error occurred while retrieving audit metadata" });

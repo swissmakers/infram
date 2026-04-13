@@ -191,6 +191,7 @@
       "organization": "Organisation",
       "action": "Aktion",
       "resource": "Ressource",
+      "actor": "Akteur",
       "startDate": "Startdatum",
       "endDate": "Enddatum",
       "clearAll": "Alle löschen",
@@ -199,6 +200,7 @@
         "allResources": "Alle Ressourcen",
         "allOrganizations": "Alle Organisationen (Persönlich + Org)",
         "personalOnly": "Nur persönlich",
+        "allActors": "Alle Akteure",
         "categoryAll": "{{category}} (Alle)"
       }
     },

@@ -15,7 +15,9 @@ export const AuditFilters = ({ filters, metadata, organizations, onChange }) => 
     }, [onChange]);
 
     const clearFilters = useCallback(() => {
-        onChange({ organizationId: null, action: "", resource: "", startDate: "", endDate: "" });
+        onChange({
+            organizationId: null, action: "", resource: "", actorId: null, startDate: "", endDate: "",
+        });
     }, [onChange]);
 
     const actionOptions = useMemo(() => {
@@ -59,7 +61,18 @@ export const AuditFilters = ({ filters, metadata, organizations, onChange }) => 
         ...organizations.map(org => ({ value: org.id.toString(), label: org.name })),
     ], [organizations, t]);
 
-    const activeFilterCount = useMemo(() => Object.values(filters).filter(v => v && v !== "").length, [filters]);
+    const actorOptions = useMemo(() => {
+        const base = [{ value: "", label: t('audit.filters.options.allActors') }];
+        if (!metadata?.actors?.length) return base;
+        return [
+            ...base,
+            ...metadata.actors.map((a) => ({ value: String(a.id), label: a.label })),
+        ];
+    }, [metadata?.actors, t]);
+
+    const activeFilterCount = useMemo(() => Object.entries(filters)
+        .filter(([key, v]) => !["limit", "offset"].includes(key) && v !== "" && v !== null)
+        .length, [filters]);
 
     return (
         <div className="audit-filters">
@@ -96,6 +109,14 @@ export const AuditFilters = ({ filters, metadata, organizations, onChange }) => 
                             <label>{t('audit.filters.resource')}</label>
                             <SelectBox options={resourceOptions} selected={filters.resource}
                                        setSelected={(value) => handleFilterChange("resource", value)} />
+                        </div>
+
+                        <div className="filter-group">
+                            <label>{t('audit.filters.actor')}</label>
+                            <SelectBox options={actorOptions}
+                                       selected={filters.actorId != null ? String(filters.actorId) : ""}
+                                       setSelected={(value) => handleFilterChange("actorId", value ? parseInt(value, 10) : null)}
+                            />
                         </div>
                     </div>
 

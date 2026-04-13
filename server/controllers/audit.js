@@ -8,6 +8,39 @@ const Folder = require("../models/Folder");
 const Script = require("../models/Script");
 const { hasOrganizationAccess } = require("../utils/permission");
 const { Op } = require("sequelize");
+
+const AUDIT_ACTOR_LIST_LIMIT = 500;
+
+const formatActorLabel = (account) => {
+    if (!account) return "";
+    if (account.firstName && account.lastName) return `${account.firstName} ${account.lastName}`.trim();
+    if (account.username) {
+        if (account.authProviderType === "ldap" && account.authProviderName) {
+            return `${account.username}@${account.authProviderName}`;
+        }
+        return account.username;
+    }
+    return `User #${account.id}`;
+};
+
+/** Visibility for audit rows the viewer may read (same rules as list endpoint). */
+const buildAuditLogVisibilityWhere = async (viewerAccountId, organizationId) => {
+    if (organizationId === "personal") {
+        return { accountId: viewerAccountId, organizationId: null };
+    }
+    if (organizationId) {
+        const membership = await OrganizationMember.findOne({
+            where: { organizationId, accountId: viewerAccountId, status: "active" },
+        });
+        if (!membership) throw new Error("Access denied to organization audit logs");
+        return { organizationId };
+    }
+    const memberships = await OrganizationMember.findAll({
+        where: { accountId: viewerAccountId, status: "active" },
+    });
+    const accessibleOrgIds = memberships.map(m => m.organizationId);
+    return { [Op.or]: [{ accountId: viewerAccountId }, { organizationId: { [Op.in]: accessibleOrgIds } }] };
+};
 const logger = require("../utils/logger");
 const { getRecordingInfo } = require("../utils/recordingService");
 const { normalizeIp } = require("../utils/ip");
@@ -124,34 +157,22 @@ const createAuditLog = async ({
 };
 
 const getAuditLogsInternal = async (accountId, filters = {}) => {
-    const { organizationId, action, resource, startDate, endDate, limit = 100, offset = 0 } = filters;
+    const { organizationId, action, resource, startDate, endDate, actorId, limit = 100, offset = 0 } = filters;
 
-    const whereClause = {};
+    const visibilityWhere = await buildAuditLogVisibilityWhere(accountId, organizationId);
+    const parts = [visibilityWhere];
 
-    if (organizationId === "personal") {
-        whereClause.accountId = accountId;
-        whereClause.organizationId = null;
-    } else if (organizationId) {
-        const membership = await OrganizationMember.findOne({
-            where: { organizationId, accountId, status: "active" },
-        });
-        if (!membership) throw new Error("Access denied to organization audit logs");
-        whereClause.organizationId = organizationId;
-    } else {
-        const memberships = await OrganizationMember.findAll({
-            where: { accountId, status: "active" },
-        });
-        const accessibleOrgIds = memberships.map(m => m.organizationId);
-        whereClause[Op.or] = [{ accountId }, { organizationId: { [Op.in]: accessibleOrgIds } }];
-    }
-
-    if (action) whereClause.action = action.includes("*") ? { [Op.like]: action.replace("*", "%") } : action;
-    if (resource) whereClause.resource = resource;
+    if (actorId) parts.push({ accountId: actorId });
+    if (action) parts.push({ action: action.includes("*") ? { [Op.like]: action.replace("*", "%") } : action });
+    if (resource) parts.push({ resource });
     if (startDate || endDate) {
-        whereClause.timestamp = {};
-        if (startDate) whereClause.timestamp[Op.gte] = new Date(startDate).toISOString();
-        if (endDate) whereClause.timestamp[Op.lte] = new Date(endDate).toISOString();
+        const timestamp = {};
+        if (startDate) timestamp[Op.gte] = new Date(startDate).toISOString();
+        if (endDate) timestamp[Op.lte] = new Date(endDate).toISOString();
+        parts.push({ timestamp });
     }
+
+    const whereClause = parts.length === 1 ? parts[0] : { [Op.and]: parts };
 
     const result = await AuditLog.findAndCountAll({
         where: whereClause, order: [["timestamp", "DESC"]], limit, offset,
@@ -275,22 +296,58 @@ module.exports.updateOrganizationAuditSettings = async (accountId, organizationI
     }
 };
 
-module.exports.getAuditMetadata = async () => ({
-    actions: Object.entries(AUDIT_ACTIONS).map(([key, value]) => ({
-        key, value, category: value.split(".")[0],
-    })),
-    resources: Object.entries(RESOURCE_TYPES).map(([key, value]) => ({ key, value })),
-    actionCategories: [
-        { key: "user", label: "User Management", description: "Login, logout, profile changes" },
-        { key: "server", label: "Server Connections", description: "SSH, SFTP, PVE connections" },
-        { key: "file", label: "File Operations", description: "Upload, download, delete, rename" },
-        { key: "identity", label: "Identity Management", description: "Create, update, delete identities" },
-        { key: "organization", label: "Organization Management", description: "Organization and member management" },
-        { key: "folder_mgmt", label: "Folder Management", description: "Create, update, delete folders" },
-        { key: "script", label: "Script Execution", description: "Script and app execution" },
-        { key: "app", label: "App Management", description: "Application installation" },
-    ],
-});
+const getAuditActorsForViewer = async (viewerAccountId, organizationId) => {
+    const visibilityWhere = await buildAuditLogVisibilityWhere(viewerAccountId, organizationId);
+    const rows = await AuditLog.findAll({
+        attributes: ["accountId"],
+        where: visibilityWhere,
+        group: ["accountId"],
+        order: [["accountId", "ASC"]],
+        limit: AUDIT_ACTOR_LIST_LIMIT,
+        raw: true,
+    });
+    const ids = rows.map(r => r.accountId).filter(Boolean);
+    if (!ids.length) return [];
+
+    const accounts = await Account.findAll({
+        where: { id: { [Op.in]: ids } },
+        attributes: ["id", "username", "firstName", "lastName", "authProviderType", "authProviderName"],
+    });
+    const byId = new Map(accounts.map(a => [a.id, a]));
+    return ids
+        .map(id => {
+            const a = byId.get(id);
+            return a ? { id: a.id, label: formatActorLabel(a) } : { id, label: `User #${id}` };
+        })
+        .sort((x, y) => x.label.localeCompare(y.label));
+};
+
+module.exports.getAuditMetadata = async (viewerAccountId, organizationId = null) => {
+    let actors = [];
+    try {
+        actors = await getAuditActorsForViewer(viewerAccountId, organizationId);
+    } catch (e) {
+        logger.error("getAuditMetadata actors failed", { error: e.message, viewerAccountId, organizationId });
+    }
+
+    return {
+        actions: Object.entries(AUDIT_ACTIONS).map(([key, value]) => ({
+            key, value, category: value.split(".")[0],
+        })),
+        resources: Object.entries(RESOURCE_TYPES).map(([key, value]) => ({ key, value })),
+        actionCategories: [
+            { key: "user", label: "User Management", description: "Login, logout, profile changes" },
+            { key: "server", label: "Server Connections", description: "SSH, SFTP, PVE connections" },
+            { key: "file", label: "File Operations", description: "Upload, download, delete, rename" },
+            { key: "identity", label: "Identity Management", description: "Create, update, delete identities" },
+            { key: "organization", label: "Organization Management", description: "Organization and member management" },
+            { key: "folder_mgmt", label: "Folder Management", description: "Create, update, delete folders" },
+            { key: "script", label: "Script Execution", description: "Script and app execution" },
+            { key: "app", label: "App Management", description: "Application installation" },
+        ],
+        actors,
+    };
+};
 
 module.exports.getOrganizationAuditSettingsInternal = async (organizationId) => {
     try {

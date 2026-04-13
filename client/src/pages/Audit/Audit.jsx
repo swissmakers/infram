@@ -29,6 +29,7 @@ export const Audit = () => {
         organizationId: null,
         action: "",
         resource: "",
+        actorId: null,
         startDate: "",
         endDate: "",
         limit: 50,
@@ -43,17 +44,13 @@ export const Audit = () => {
         itemsPerPage: filters.limit,
     }), [total, filters.offset, filters.limit]);
 
-    const fetchData = useCallback(async () => {
+    const fetchOrganizations = useCallback(async () => {
         if (user?.role !== "admin") {
             setForbidden(true);
             return;
         }
         try {
-            const [metadataRes, orgsRes] = await Promise.all([
-                getRequest("audit/metadata"),
-                getRequest("organizations"),
-            ]);
-            setMetadata(metadataRes);
+            const orgsRes = await getRequest("organizations");
             setOrganizations(orgsRes);
             setForbidden(false);
         } catch (error) {
@@ -65,6 +62,28 @@ export const Audit = () => {
         }
     }, [sendToast, t, user?.role]);
 
+    const fetchMetadata = useCallback(async () => {
+        if (user?.role !== "admin") {
+            return;
+        }
+        try {
+            const params = new URLSearchParams();
+            if (filters.organizationId !== null && filters.organizationId !== "") {
+                params.set("organizationId", String(filters.organizationId));
+            }
+            const path = params.toString() ? `audit/metadata?${params}` : "audit/metadata";
+            const metadataRes = await getRequest(path);
+            setMetadata(metadataRes);
+            setForbidden(false);
+        } catch (error) {
+            if (error?.code === 403 || error?.message === "Forbidden") {
+                setForbidden(true);
+                return;
+            }
+            sendToast("Error", t('audit.errors.failedToLoadData'));
+        }
+    }, [filters.organizationId, sendToast, t, user?.role]);
+
     const fetchAuditLogs = useCallback(async () => {
         if (user?.role !== "admin") {
             setForbidden(true);
@@ -74,7 +93,8 @@ export const Audit = () => {
         setLoading(true);
         try {
             const params = new URLSearchParams(
-                Object.entries(filters).filter(([_, value]) => value !== "" && value !== null)
+                Object.entries(filters)
+                    .filter(([_, value]) => value !== "" && value != null)
                     .map(([key, value]) => [key, String(value)]),
             );
 
@@ -96,15 +116,25 @@ export const Audit = () => {
     }, [filters, sendToast, t, user?.role]);
 
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+        fetchOrganizations();
+    }, [fetchOrganizations]);
+
+    useEffect(() => {
+        fetchMetadata();
+    }, [fetchMetadata]);
 
     useEffect(() => {
         fetchAuditLogs();
     }, [fetchAuditLogs]);
 
     const handleFilterChange = useCallback((newFilters) => {
-        setFilters(prev => ({ ...prev, ...newFilters, offset: 0 }));
+        setFilters(prev => {
+            const next = { ...prev, ...newFilters, offset: 0 };
+            if (Object.prototype.hasOwnProperty.call(newFilters, "organizationId")) {
+                next.actorId = null;
+            }
+            return next;
+        });
     }, []);
 
     const handlePageChange = useCallback((page) => {
