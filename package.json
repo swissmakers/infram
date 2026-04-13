@@ -4,11 +4,14 @@
   "main": "server/index.js",
   "repository": "https://github.com/swissmakers/infra-manager.git",
   "author": "Swissmakers GmbH",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@simplewebauthn/server": "^13.2.3",
     "archiver": "^7.0.1",
-    "axios": "^1.13.6",
+    "axios": "^1.15.0",
     "bcrypt": "^6.0.0",
     "decompress": "^4.2.1",
     "esbuild": "^0.27.3",
@@ -59,9 +62,12 @@
     "glob": "^11.1.0",
     "minimatch": "^10.2.3",
     "qs": "^6.14.2",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.0",
     "dottie": "^2.0.7",
-    "fast-xml-parser": "^5.3.8"
+    "fast-xml-parser": "^5.5.7",
+    "brace-expansion": "^5.0.5",
+    "express/path-to-regexp": "0.1.13",
+    "router/path-to-regexp": "8.4.2"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
