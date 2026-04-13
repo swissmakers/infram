@@ -2,6 +2,8 @@ FROM node:24-alpine AS client-builder
 
 WORKDIR /app
 RUN apk upgrade --no-cache
+# Yarn 1.x uses url.parse(); Node 24+ deprecates it (DEP0169). Silence only in build stage.
+ENV NODE_OPTIONS=--disable-warning=DEP0169
 ENV YARN_CACHE_FOLDER=/tmp/yarn-cache
 
 COPY vendor/guacamole-client/guacamole-common-js/ ./vendor/guacamole-client/guacamole-common-js/
@@ -29,6 +31,7 @@ ARG VERSION
 
 WORKDIR /app
 RUN apk upgrade --no-cache
+ENV NODE_OPTIONS=--disable-warning=DEP0169
 ENV YARN_CACHE_FOLDER=/tmp/yarn-cache
 
 RUN apk add --no-cache \
