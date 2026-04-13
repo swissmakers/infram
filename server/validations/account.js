@@ -16,8 +16,8 @@ module.exports.passwordChangeValidation = Joi.object({
 });
 
 module.exports.updateNameValidation = Joi.object({
-    firstName: Joi.string().min(2).max(50),
-    lastName: Joi.string().min(2).max(50),
+    firstName: Joi.string().trim().max(50).allow(''),
+    lastName: Joi.string().trim().max(50).allow(''),
 }).or('firstName', 'lastName');
 
 module.exports.updateSessionSyncValidation = Joi.object({

@@ -86,7 +86,8 @@ app.patch("/name", authenticate, async (req, res) => {
 
     if (validateSchema(res, updateNameValidation, req.body)) return;
 
-    await updateName(req.user.id, req.body);
+    const result = await updateName(req.user.id, req.body);
+    if (result?.code) return res.status(400).json({ message: result.message });
 
     res.json({ message: "Your name has been successfully updated." });
 });

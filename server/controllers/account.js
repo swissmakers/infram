@@ -57,14 +57,15 @@ module.exports.deleteAccount = async (id) => {
 
 module.exports.updateName = async (id, configuration) => {
     const account = await Account.findByPk(id);
-
-    const { firstName, lastName } = configuration;
-
-    if (firstName === null && lastName === null)
-        return { code: 105, message: "You must provide either a first name or a last name" };
-
     if (account === null)
         return { code: 102, message: "The provided account does not exist" };
+
+    const firstName = configuration.firstName !== undefined
+        ? String(configuration.firstName).trim()
+        : (account.firstName ?? "");
+    const lastName = configuration.lastName !== undefined
+        ? String(configuration.lastName).trim()
+        : (account.lastName ?? "");
 
     await Account.update({ firstName, lastName }, { where: { id } });
 };

@@ -63,8 +63,8 @@ export const Account = () => {
     };
 
     const updateName = (config) => {
-        if (config.firstName && config.firstName === user.firstName) return;
-        if (config.lastName && config.lastName === user.lastName) return;
+        if (config.firstName !== undefined && config.firstName === (user.firstName ?? "")) return;
+        if (config.lastName !== undefined && config.lastName === (user.lastName ?? "")) return;
 
         patchRequest(`accounts/name`, config)
             .then(() => {
