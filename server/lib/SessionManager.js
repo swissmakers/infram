@@ -2,7 +2,7 @@ const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 const logger = require("../utils/logger");
 const AuditLog = require("../models/AuditLog");
-const { isRecordingEnabled, getRecordingPath, compressRecording, finalizeGuacRecording } = require("../utils/recordingService");
+const { isRecordingEnabled, getRecordingPath, compressRecording, finalizeGuacRecording, computeCastDuration } = require("../utils/recordingService");
 const stateBroadcaster = require("./StateBroadcaster");
 
 class SessionManager {
@@ -163,22 +163,25 @@ class SessionManager {
         this.get(sessionId).recording = null;
         stream.end();
         await new Promise(r => stream.on("finish", r));
+        const duration = computeCastDuration(path);
         await compressRecording(path, getRecordingPath(auditLogId, "cast", true));
-        await this.markRecordingComplete(auditLogId, "cast");
+        await this.markRecordingComplete(auditLogId, "cast", duration);
     }
 
-    async finalizeGuacRecording(auditLogId) {
+    async finalizeGuacRecording(auditLogId, conn = null) {
         if (await finalizeGuacRecording(auditLogId)) {
-            await this.markRecordingComplete(auditLogId, "guac");
+            const duration = conn?.guacdClient?.getRecordingDuration?.() ?? null;
+            await this.markRecordingComplete(auditLogId, "guac", duration);
         }
     }
 
-    async markRecordingComplete(auditLogId, recordingType) {
+    async markRecordingComplete(auditLogId, recordingType, duration = null) {
         if (!auditLogId) return;
         const log = await AuditLog.findByPk(auditLogId);
         if (!log) return;
-        const details = log.details || {};
-        await AuditLog.update({ details: { ...details, hasRecording: true, recordingType } }, { where: { id: auditLogId } });
+        const details = { ...(log.details || {}), hasRecording: true, recordingType };
+        if (duration !== null && !Number.isNaN(duration)) details.sessionDuration = duration;
+        await AuditLog.update({ details }, { where: { id: auditLogId } });
     }
 
     getLogBuffer(sessionId) {
@@ -255,9 +258,6 @@ class SessionManager {
 
         if (session.masterConnection) {
             const conn = session.masterConnection;
-            if (conn.recordingEnabled && conn.auditLogId) {
-                await this.finalizeGuacRecording(conn.auditLogId);
-            }
             if (conn.guacdConnection) {
                 try { conn.guacdConnection.removeAllListeners(); } catch (e) {}
                 try { conn.guacdConnection.end(); } catch (e) {}
@@ -265,6 +265,9 @@ class SessionManager {
             }
             if (conn.keepAliveInterval) {
                 try { clearInterval(conn.keepAliveInterval); } catch (e) {}
+            }
+            if (conn.recordingEnabled && conn.auditLogId) {
+                await this.finalizeGuacRecording(conn.auditLogId, conn);
             }
             if (conn.stream) {
                 try { conn.stream.close(); } catch (e) {}

@@ -229,6 +229,12 @@ class ClientConnection {
 
         if (this.sessionId) {
             SessionManager.removeWebSocket(this.sessionId, this.webSocket);
+
+            const session = SessionManager.get(this.sessionId);
+            if (session && !session.isHibernated && session.connectedWs.size === 0 && session.sharedWs.size === 0) {
+                logger.info(`Last connection closed, terminating session`, { sessionId: this.sessionId });
+                Promise.resolve(SessionManager.remove(this.sessionId)).catch(() => {});
+            }
         }
         
         this.webSocket.removeAllListeners();

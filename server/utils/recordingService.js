@@ -35,9 +35,53 @@ const compressRecording = async (src, dest) => {
     }
 };
 
+const waitForStableFile = async (filePath, { interval = 200, maxWait = 5000 } = {}) => {
+    const appearDeadline = Date.now() + 2000;
+    while (!fs.existsSync(filePath) && Date.now() < appearDeadline) {
+        await new Promise(r => setTimeout(r, interval));
+    }
+    if (!fs.existsSync(filePath)) return false;
+
+    let lastSize = -1;
+    let stableChecks = 0;
+    const deadline = Date.now() + maxWait;
+    while (Date.now() < deadline) {
+        let size;
+        try { size = fs.statSync(filePath).size; } catch { return true; }
+        if (size === lastSize) {
+            if (++stableChecks >= 2) return true;
+        } else {
+            stableChecks = 0;
+            lastSize = size;
+        }
+        await new Promise(r => setTimeout(r, interval));
+    }
+    return true;
+};
+
 const finalizeGuacRecording = async (id) => {
-    await new Promise(r => setTimeout(r, 500));
+    await waitForStableFile(getGuacdRecordingPath(id));
     return compressRecording(getGuacdRecordingPath(id), getRecordingPath(id, "guac", true));
+};
+
+const computeCastDuration = (filePath, idleTimeLimit = 2) => {
+    try {
+        const lines = fs.readFileSync(filePath, "utf8").split("\n");
+        let duration = 0;
+        let lastTs = 0;
+        for (const line of lines) {
+            if (!line || line[0] !== "[") continue;
+            let ts;
+            try { ts = JSON.parse(line)[0]; } catch { continue; }
+            if (typeof ts !== "number") continue;
+            const gap = ts - lastTs;
+            duration += gap > idleTimeLimit ? idleTimeLimit : Math.max(gap, 0);
+            lastTs = ts;
+        }
+        return Math.round(duration);
+    } catch {
+        return null;
+    }
 };
 
 const getRecordingInfo = (id) => {
@@ -154,5 +198,5 @@ const stop = () => {
 module.exports = {
     RECORDINGS_DIR, ensureRecordingsDir, getRecordingPath, getGuacdRecordingPath,
     compressRecording, finalizeGuacRecording, getRecordingInfo, deleteRecording,
-    getRetentionDays, isRecordingEnabled, cleanupOldRecordings, start, stop,
+    getRetentionDays, isRecordingEnabled, cleanupOldRecordings, computeCastDuration, start, stop,
 };

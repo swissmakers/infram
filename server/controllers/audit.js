@@ -241,6 +241,7 @@ const updateAuditLogWithSessionDuration = async (auditLogId, connectionStartTime
         if (!auditLog) return;
 
         const currentDetails = auditLog.details || {};
+        if (currentDetails.hasRecording) return;
         currentDetails.sessionDuration = Math.round((Date.now() - connectionStartTime) / 1000);
 
         await AuditLog.update({ details: currentDetails }, { where: { id: auditLogId } });

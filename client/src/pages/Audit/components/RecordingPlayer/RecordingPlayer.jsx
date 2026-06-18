@@ -113,15 +113,6 @@ const RecordingPlayerContent = ({ auditLogId, recordingType }) => {
                     cleanup = { clear: () => window.removeEventListener("resize", scaleDisplay) };
                 } else {
                     const data = await response.text();
-                    const lines = data.trim().split("\n");
-                    let duration = 0;
-                    if (lines.length > 1) {
-                        try {
-                            const lastEvent = JSON.parse(lines[lines.length - 1]);
-                            duration = (lastEvent[0] || 0) * 1000;
-                        } catch {}
-                    }
-                    updateState({ duration });
 
                     const terminalPlayer = AsciinemaPlayer.create(
                         { data },
@@ -166,13 +157,27 @@ const RecordingPlayerContent = ({ auditLogId, recordingType }) => {
 
                     const scaleInterval = setInterval(scaleTerminal, 200);
 
+                    terminalPlayer.addEventListener("metadata", (meta) => { if (meta?.duration) updateState({ duration: meta.duration * 1000 }); });
                     terminalPlayer.addEventListener("playing", () => updateState({ playing: true }));
                     terminalPlayer.addEventListener("pause", () => updateState({ playing: false }));
                     terminalPlayer.addEventListener("ended", () => updateState({ playing: false }));
                     terminalPlayer.addEventListener("ready", () => { updateState({ loading: false }); setTimeout(() => { scaleTerminal(); setupResizeObserver(); }, 50); });
                     
                     window.addEventListener("resize", scaleTerminal);
-                    const positionInterval = setInterval(async () => { try { updateState({ position: ((await playerRef.current?.getCurrentTime()) || 0) * 1000 }); } catch {} }, 250);
+                    const positionInterval = setInterval(async () => {
+                        try {
+                            const player = playerRef.current;
+                            if (!player) return;
+                            const [currentTime, dur] = await Promise.all([player.getCurrentTime(), player.getDuration()]);
+                            const position = (currentTime || 0) * 1000;
+                            const duration = (dur || 0) * 1000;
+                            setState(prev => ({
+                                ...prev,
+                                duration: duration > 0 ? duration : prev.duration,
+                                position: duration > 0 ? Math.min(position, duration) : position,
+                            }));
+                        } catch {}
+                    }, 250);
                     cleanup = { clear: () => { window.removeEventListener("resize", scaleTerminal); clearInterval(positionInterval); clearInterval(scaleInterval); resizeObserver?.disconnect(); } };
                 }
             } catch (error) {

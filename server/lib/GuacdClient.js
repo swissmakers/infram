@@ -38,6 +38,8 @@ class GuacdClient {
 
         this.recordingEnabled = options.recordingEnabled || false;
         this.auditLogId = options.auditLogId || null;
+        this.firstSyncTimestamp = null;
+        this.lastSyncTimestamp = null;
         
         this.state = 'connecting';
         this.handshakeComplete = false;
@@ -158,9 +160,24 @@ class GuacdClient {
             }
         }
 
+        if (this.isMaster && this.recordingEnabled && dataToSend.includes('.sync,')) {
+            for (const match of dataToSend.matchAll(/4\.sync,\d+\.(\d+)/g)) {
+                const ts = parseInt(match[1], 10);
+                if (!Number.isNaN(ts)) {
+                    if (this.firstSyncTimestamp === null) this.firstSyncTimestamp = ts;
+                    this.lastSyncTimestamp = ts;
+                }
+            }
+        }
+
         if (this.onDataCallback) {
             this.onDataCallback(dataToSend);
         }
+    }
+
+    getRecordingDuration() {
+        if (this.firstSyncTimestamp === null || this.lastSyncTimestamp === null) return null;
+        return Math.round((this.lastSyncTimestamp - this.firstSyncTimestamp) / 1000);
     }
 
     send(data) {
