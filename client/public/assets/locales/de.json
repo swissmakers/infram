@@ -10,6 +10,9 @@
     "download": "Herunterladen",
     "maximize": "Maximiere",
     "restore": "Wiederherstellen",
+    "branding": {
+      "by": "von"
+    },
     "actions": {
       "cancel": "Abbrechen",
       "confirm": "Bestätigen",
@@ -419,6 +422,9 @@
     },
     "account": {
       "title": "Account",
+      "about": {
+        "title": "Über"
+      },
       "accountName": "Benutzername",
       "firstName": "Vorname",
       "lastName": "Nachname",

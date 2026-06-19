@@ -325,14 +325,12 @@ const CURSOR_STYLES = [
 ];
 
 const ACCENT_COLORS = [
-    { name: "Blue", value: "#314BD3" },
-    { name: "Purple", value: "#7C3AED" },
-    { name: "Pink", value: "#DB2777" },
-    { name: "Red", value: "#DC2626" },
-    { name: "Orange", value: "#EA580C" },
-    { name: "Green", value: "#16A34A" },
-    { name: "Teal", value: "#0D9488" },
-    { name: "Cyan", value: "#0891B2" },
+    { name: "Blue", value: "#2F56C4" },
+    { name: "Slate", value: "#3F546F" },
+    { name: "Indigo", value: "#4F46E5" },
+    { name: "Teal", value: "#0F766E" },
+    { name: "Green", value: "#15803D" },
+    { name: "Red", value: "#B91C1C" },
 ];
 
 export const PreferencesProvider = ({ children, user, refreshUser }) => {
@@ -423,7 +421,7 @@ export const PreferencesProvider = ({ children, user, refreshUser }) => {
         [hasOverride, enableGroupSync, disableGroupSync]);
 
     const themeMode = get("theme.mode", "auto");
-    const accentColor = get("theme.accentColor", "#314BD3");
+    const accentColor = get("theme.accentColor", "#2F56C4");
     const actualTheme = themeMode === "auto" ? getSystemTheme() : themeMode;
 
     useEffect(() => {

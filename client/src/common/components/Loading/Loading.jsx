@@ -7,11 +7,9 @@ export const Loading = memo(() => {
         <div className="loading-container">
             <div className="loading-content">
                 <div className="loading-logo-wrapper">
-                    <InframLogo size={64} className="loading-logo" />
-                    <div className="loading-ring"></div>
-                    <div className="loading-ring loading-ring-2"></div>
-                    <div className="loading-ring loading-ring-3"></div>
+                    <InframLogo size={56} className="loading-logo" />
                 </div>
+                <div className="loading-bar"><div className="loading-bar-indicator" /></div>
             </div>
         </div>
     );

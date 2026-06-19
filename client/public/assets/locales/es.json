@@ -10,6 +10,9 @@
     "download": "Descarga",
     "maximize": "Maximiza",
     "restore": "Restaura",
+    "branding": {
+      "by": "por"
+    },
     "actions": {
       "cancel": "Cancela",
       "confirm": "Confirma",
@@ -419,6 +422,9 @@
     },
     "account": {
       "title": "Cuenta",
+      "about": {
+        "title": "Acerca de"
+      },
       "accountName": "Nombre de la cuenta",
       "firstName": "Nombre",
       "lastName": "Apellidos",

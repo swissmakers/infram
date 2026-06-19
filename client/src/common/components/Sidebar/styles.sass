@@ -1,4 +1,5 @@
 @use "@/common/styles/colors"
+@use "@/common/styles/tokens"
 
 $mobile: 768px
 
@@ -80,8 +81,8 @@ $mobile: 768px
       align-items: center
       color: colors.$white
       border: 1px solid transparent
-      border-radius: 1rem
-      transition: all 0.2s
+      border-radius: tokens.$radius-lg
+      transition: background-color tokens.$transition, border-color tokens.$transition, color tokens.$transition
       cursor: pointer
 
       svg
@@ -125,8 +126,8 @@ $mobile: 768px
     align-items: center
     color: colors.$white
     border: 1px solid transparent
-    border-radius: 1rem
-    transition: all 0.2s
+    border-radius: tokens.$radius-lg
+    transition: background-color tokens.$transition, border-color tokens.$transition, color tokens.$transition
     cursor: pointer
 
     svg
@@ -150,7 +151,7 @@ $mobile: 768px
     border-radius: 0.75rem
     padding: 0.375rem
     min-width: 200px
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.3)
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28)
     opacity: 0
     transform: scale(0.95) translateY(8px)
     transition: opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1), transform 0.12s cubic-bezier(0.4, 0, 0.2, 1)

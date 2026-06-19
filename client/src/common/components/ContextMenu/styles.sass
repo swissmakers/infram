@@ -1,11 +1,12 @@
 @use "@/common/styles/colors"
+@use "@/common/styles/tokens"
 
 $mobile: 768px
 
 .context-menu
   background-color: colors.$lighter-background
   border: 1px solid colors.$dark-gray
-  border-radius: 0.75rem
+  border-radius: tokens.$radius
   padding: 0.375rem
   position: fixed
   z-index: 10000
@@ -13,10 +14,10 @@ $mobile: 768px
   max-width: calc(100vw - 20px)
   max-height: calc(100vh - 20px)
   overflow: visible
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
+  box-shadow: tokens.$shadow-md
   opacity: 0
-  transform: scale(0.95) translateY(-8px)
-  transition: opacity 0.12s cubic-bezier(0.4, 0, 0.2, 1), transform 0.12s cubic-bezier(0.4, 0, 0.2, 1)
+  transform: translateY(-6px)
+  transition: opacity 0.12s ease, transform 0.12s ease
   pointer-events: none
 
   @media (max-width: $mobile)
@@ -26,12 +27,12 @@ $mobile: 768px
 
   &.open
     opacity: 1
-    transform: scale(1) translateY(0)
+    transform: translateY(0)
     pointer-events: auto
 
   &.closed
     opacity: 0
-    transform: scale(0.95) translateY(-8px)
+    transform: translateY(-6px)
     pointer-events: none
 
   .context-menu-item
@@ -39,7 +40,7 @@ $mobile: 768px
     padding: 0.625rem 0.75rem
     cursor: pointer
     transition: background-color 0.1s ease
-    border-radius: 0.5rem
+    border-radius: tokens.$radius-sm
     user-select: none
     display: flex
     align-items: center
@@ -147,14 +148,14 @@ $mobile: 768px
     position: absolute
     background-color: colors.$lighter-background
     border: 1px solid colors.$dark-gray
-    border-radius: 0.75rem
+    border-radius: tokens.$radius
     padding: 0.375rem
     min-width: 200px
     max-width: calc(100vw - 20px)
     max-height: calc(100vh - 100px)
     overflow-y: auto
     z-index: 10001
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3)
+    box-shadow: tokens.$shadow-md
     animation: submenuFadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1)
 
     &.mobile
@@ -184,10 +185,10 @@ $mobile: 768px
 @keyframes submenuFadeIn
   from
     opacity: 0
-    transform: translateX(-8px) scale(0.96)
+    transform: translateX(-6px)
   to
     opacity: 1
-    transform: translateX(0) scale(1)
+    transform: translateX(0)
 
 @keyframes submenuFadeInMobile
   from

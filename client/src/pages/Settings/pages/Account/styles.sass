@@ -9,6 +9,29 @@ $tablet: 1024px
   margin-top: 1rem
   gap: 2rem
 
+  .about-info
+    display: flex
+    flex-direction: column
+    gap: 0.25rem
+
+    .about-app
+      font-weight: 700
+      font-size: 1rem
+      color: colors.$white
+
+    .about-credit
+      font-size: 0.875rem
+      color: colors.$subtext
+
+      a
+        color: colors.$subtext
+        text-decoration: none
+        font-weight: 600
+        transition: color 0.12s ease
+
+        &:hover
+          color: colors.$primary
+
   @media (max-width: $mobile)
     gap: 1.5rem
 
@@ -153,7 +176,7 @@ $tablet: 1024px
             height: 1.25rem
             border-radius: 50%
             overflow: hidden
-            background: linear-gradient(135deg, #f59e0b 50%, #1e293b 50%)
+            background: linear-gradient(135deg, #DADDE2 50%, #2A2F38 50%)
 
             .light-half, .dark-half
               position: absolute

@@ -199,15 +199,6 @@
       border-color: colors.$primary
       border-style: dashed
 
-      &::after
-        content: ''
-        position: absolute
-        inset: 0
-        background: linear-gradient(135deg, transparent 40%, rgba(colors.$primary, 0.1) 50%, transparent 60%)
-        animation: dropShine 1s ease-in-out infinite
-        pointer-events: none
-        border-radius: 0.5rem
-
     &.cut
       opacity: 0.5
 
@@ -426,11 +417,6 @@
   100%
     transform: rotate(360deg)
 
-@keyframes dropShine
-  0%
-    background-position: -100% 0
-  100%
-    background-position: 200% 0
 
 .drag-preview
   position: fixed

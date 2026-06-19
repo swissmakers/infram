@@ -1,4 +1,5 @@
 @use "@/common/styles/colors"
+@use "@/common/styles/tokens"
 
 .btn
   display: flex
@@ -8,10 +9,10 @@
   background-color: colors.$primary-opacity
   border: 1px solid colors.$dark-gray
   color: colors.$white
-  border-radius: 0.5rem
+  border-radius: tokens.$radius
   padding: 0.7rem 0.95rem
   cursor: pointer
-  transition: all 0.2s
+  transition: background-color tokens.$transition, border-color tokens.$transition, filter tokens.$transition, transform tokens.$transition
 
   @media (max-width: 768px)
     padding: 0.65rem 0.85rem
@@ -44,10 +45,10 @@
       font-size: 0.85rem
 
   &:hover
-    filter: brightness(0.8)
+    filter: brightness(0.92)
 
   &:active
-    transform: scale(0.97)
+    transform: scale(0.99)
 
   &:disabled
     background-color: colors.$gray

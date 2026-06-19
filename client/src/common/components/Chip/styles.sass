@@ -1,4 +1,5 @@
 @use "@/common/styles/colors"
+@use "@/common/styles/tokens"
 
 .chip
   display: inline-flex
@@ -7,7 +8,7 @@
   padding: 0.5rem 0.75rem
   background-color: colors.$lighter-background
   border: 1px solid colors.$dark-gray
-  border-radius: 0.5rem
+  border-radius: tokens.$radius
   color: colors.$white
   font-size: 0.875rem
   cursor: pointer

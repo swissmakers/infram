@@ -1,4 +1,5 @@
 @use "@/common/styles/colors"
+@use "@/common/styles/tokens"
 
 .quick-action-overlay
   position: fixed
@@ -7,7 +8,6 @@
   right: 0
   bottom: 0
   background: rgba(0, 0, 0, 0.5)
-  backdrop-filter: blur(4px)
   display: flex
   justify-content: center
   align-items: flex-start
@@ -21,10 +21,10 @@
 .quick-action-container
   background: colors.$lighter-background
   border: 1px solid colors.$dark-gray
-  border-radius: 1rem
+  border-radius: tokens.$radius-lg
   width: 100%
   max-width: 600px
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 0 8px 32px rgba(0, 0, 0, 0.4)
+  box-shadow: tokens.$shadow-lg
   overflow: hidden
   animation: containerSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)
 
@@ -184,15 +184,15 @@
 @keyframes containerSlideIn
   from
     opacity: 0
-    transform: translateY(-20px) scale(0.95)
+    transform: translateY(-8px)
   to
     opacity: 1
-    transform: translateY(0) scale(1)
+    transform: translateY(0)
 
 @keyframes containerSlideOut
   from
     opacity: 1
-    transform: translateY(0) scale(1)
+    transform: translateY(0)
   to
     opacity: 0
-    transform: translateY(-10px) scale(0.98)
+    transform: translateY(-6px)

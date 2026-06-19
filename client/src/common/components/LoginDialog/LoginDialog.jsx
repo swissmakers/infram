@@ -249,6 +249,10 @@ export const LoginDialog = ({ open }) => {
                         <p>{t('common.loginDialog.noAuthMethodsAvailable')}</p>
                     ) : null}
                 </form>
+                <p className="login-credit">
+                    {t('common.branding.by')}{' '}
+                    <a href="https://swissmakers.ch" target="_blank" rel="noopener noreferrer">Swissmakers GmbH</a>
+                </p>
             </div>
         </DialogProvider>
     );

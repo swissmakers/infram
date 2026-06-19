@@ -1,6 +1,6 @@
 import IconInput from "@/common/components/IconInput";
 import "./styles.sass";
-import { mdiAccountCircleOutline, mdiWhiteBalanceSunny, mdiAccountEdit, mdiPalette, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiCloudOffOutline, mdiWeb, mdiTabUnselected, mdiWeatherNight, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus, mdiCheck } from "@mdi/js";
+import { mdiAccountCircleOutline, mdiWhiteBalanceSunny, mdiAccountEdit, mdiPalette, mdiShieldCheck, mdiLockReset, mdiTranslate, mdiSync, mdiCloudSync, mdiCloudOffOutline, mdiWeb, mdiTabUnselected, mdiWeatherNight, mdiFingerprint, mdiKeyVariant, mdiPencil, mdiTrashCan, mdiPlus, mdiCheck, mdiInformationOutline } from "@mdi/js";
 import { useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "@/common/contexts/UserContext.jsx";
 import { usePreferences } from "@/common/contexts/PreferencesContext.jsx";
@@ -429,6 +429,19 @@ export const Account = () => {
                             <p>{t("settings.account.passkeys.noPasskeys")}</p>
                         </div>
                     )}
+                </div>
+            </div>
+
+            <div className="account-section">
+                <h2><Icon path={mdiInformationOutline} size={0.8} style={{marginRight: '8px'}} />{t("settings.account.about.title")}</h2>
+                <div className="section-inner">
+                    <div className="about-info">
+                        <span className="about-app">Infram</span>
+                        <span className="about-credit">
+                            {t("common.branding.by")}{' '}
+                            <a href="https://swissmakers.ch" target="_blank" rel="noopener noreferrer">Swissmakers GmbH</a>
+                        </span>
+                    </div>
                 </div>
             </div>
 
